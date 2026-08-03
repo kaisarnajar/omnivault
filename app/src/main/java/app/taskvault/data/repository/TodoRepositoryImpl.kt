@@ -4,6 +4,8 @@ import app.taskvault.data.local.TodoDao
 import app.taskvault.data.local.toDomainModel
 import app.taskvault.data.local.toEntityModel
 import app.taskvault.data.remote.TodoRemoteDataSource
+import app.taskvault.domain.AuthRepository
+import app.taskvault.domain.AuthState
 import app.taskvault.domain.Todo
 import app.taskvault.domain.TodoRepository
 import kotlinx.coroutines.CoroutineScope
@@ -15,17 +17,26 @@ import java.util.UUID
 
 class TodoRepositoryImpl(
     private val todoDao: TodoDao,
-    private val remoteDataSource: TodoRemoteDataSource
+    private val remoteDataSource: TodoRemoteDataSource,
+    private val authRepository: AuthRepository
 ) : TodoRepository {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
     init {
         scope.launch {
-            try {
-                val remoteTodos = remoteDataSource.getTodos()
-                todoDao.insertTodos(remoteTodos.map { it.toEntityModel() })
-            } catch (e: Exception) {
+            authRepository.authState.collect { state ->
+                if (state is AuthState.Authenticated) {
+                    val userId = authRepository.getCurrentUserId()
+                    if (userId != null) {
+                        try {
+                            val remoteTodos = remoteDataSource.getTodos(userId)
+                            todoDao.insertTodos(remoteTodos.map { it.toEntityModel() })
+                        } catch (e: Exception) { }
+                    }
+                } else {
+                    todoDao.clearTodos()
+                }
             }
         }
     }
@@ -48,25 +59,34 @@ class TodoRepositoryImpl(
             priority = priority
         )
         todoDao.insertTodo(newTodo.toEntityModel())
-        try {
-            remoteDataSource.addTodo(newTodo)
-        } catch (e: Exception) {
+        val userId = authRepository.getCurrentUserId()
+        if (userId != null) {
+            try {
+                remoteDataSource.addTodo(userId, newTodo)
+            } catch (e: Exception) {
+            }
         }
     }
 
     override suspend fun updateTodo(todo: Todo) {
         todoDao.updateTodo(todo.toEntityModel())
-        try {
-            remoteDataSource.updateTodo(todo)
-        } catch (e: Exception) {
+        val userId = authRepository.getCurrentUserId()
+        if (userId != null) {
+            try {
+                remoteDataSource.updateTodo(userId, todo)
+            } catch (e: Exception) {
+            }
         }
     }
 
     override suspend fun deleteTodo(todoId: String) {
         todoDao.deleteTodoById(todoId)
-        try {
-            remoteDataSource.deleteTodo(todoId)
-        } catch (e: Exception) {
+        val userId = authRepository.getCurrentUserId()
+        if (userId != null) {
+            try {
+                remoteDataSource.deleteTodo(userId, todoId)
+            } catch (e: Exception) {
+            }
         }
     }
 }

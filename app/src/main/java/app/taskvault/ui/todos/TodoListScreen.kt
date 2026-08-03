@@ -35,6 +35,7 @@ import java.util.Locale
 fun TodoListScreen(
     viewModel: TodoViewModel,
     onNavigateToAddTodo: () -> Unit,
+    onLogout: () -> Unit,
     currentTheme: Boolean?,
     onThemeChange: (Boolean?) -> Unit
 ) {
@@ -46,7 +47,8 @@ fun TodoListScreen(
         topBar = {
             DashboardTopAppBar(
                 currentTheme = currentTheme,
-                onThemeChange = onThemeChange
+                onThemeChange = onThemeChange,
+                onLogout = onLogout
             )
         },
         floatingActionButton = {
@@ -97,7 +99,8 @@ fun TodoListScreen(
 @Composable
 fun DashboardTopAppBar(
     currentTheme: Boolean?,
-    onThemeChange: (Boolean?) -> Unit
+    onThemeChange: (Boolean?) -> Unit,
+    onLogout: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -156,6 +159,13 @@ fun DashboardTopAppBar(
                     onClick = {
                         onThemeChange(true)
                         expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Logout", color = MaterialTheme.colorScheme.error) },
+                    onClick = {
+                        expanded = false
+                        onLogout()
                     }
                 )
             }

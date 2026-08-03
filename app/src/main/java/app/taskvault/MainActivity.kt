@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,17 +21,24 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import app.taskvault.data.local.TodoDatabase
 import app.taskvault.data.remote.TodoRemoteDataSource
+import app.taskvault.data.repository.AuthRepositoryImpl
 import app.taskvault.data.repository.TodoRepositoryImpl
+import app.taskvault.domain.AuthState
+import app.taskvault.ui.auth.AuthViewModel
+import app.taskvault.ui.auth.LoginScreen
+import app.taskvault.ui.auth.RegisterScreen
 import app.taskvault.ui.todos.AddTodoScreen
 import app.taskvault.ui.todos.TodoListScreen
 import app.taskvault.ui.todos.TodoViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        val repository = createTodoRepository()
+        val authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance())
+        val repository = createTodoRepository(authRepository)
 
         setContent {
             var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
@@ -40,6 +48,7 @@ class MainActivity : ComponentActivity() {
             app.taskvault.ui.theme.TaskVaultTheme(darkTheme = currentTheme) {
                 TaskVaultApp(
                     repository = repository,
+                    authRepository = authRepository,
                     currentTheme = isDarkTheme,
                     onThemeChange = { isDarkTheme = it }
                 )
@@ -47,7 +56,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun createTodoRepository(): TodoRepositoryImpl {
+    private fun createTodoRepository(authRepository: AuthRepositoryImpl): TodoRepositoryImpl {
         val database = Room.databaseBuilder(
             applicationContext,
             TodoDatabase::class.java,
@@ -58,13 +67,14 @@ class MainActivity : ComponentActivity() {
             try { setPersistenceEnabled(true) } catch (e: Exception) {}
         }
         
-        return TodoRepositoryImpl(database.todoDao, TodoRemoteDataSource(firebaseDatabase))
+        return TodoRepositoryImpl(database.todoDao, TodoRemoteDataSource(firebaseDatabase), authRepository)
     }
 }
 
 @Composable
 fun TaskVaultApp(
     repository: TodoRepositoryImpl,
+    authRepository: AuthRepositoryImpl,
     currentTheme: Boolean?,
     onThemeChange: (Boolean?) -> Unit
 ) {
@@ -78,16 +88,57 @@ fun TaskVaultApp(
             factory = object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return TodoViewModel(repository) as T
+                    return TodoViewModel(repository, authRepository) as T
                 }
             }
         )
 
-        NavHost(navController = navController, startDestination = "todo_list") {
+        val authViewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+            factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return AuthViewModel(authRepository) as T
+                }
+            }
+        )
+        
+
+        NavHost(
+            navController = navController, 
+            startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login"
+        ) {
+            composable("login") {
+                LoginScreen(
+                    viewModel = authViewModel,
+                    onNavigateToRegister = { navController.navigate("register") },
+                    onLoginSuccess = { 
+                        navController.navigate("todo_list") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable("register") {
+                RegisterScreen(
+                    viewModel = authViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onRegisterSuccess = { 
+                        navController.navigate("todo_list") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable("todo_list") {
                 TodoListScreen(
                     viewModel = viewModel,
                     onNavigateToAddTodo = { navController.navigate("add_todo") },
+                    onLogout = { 
+                        viewModel.logout()
+                        navController.navigate("login") {
+                            popUpTo("todo_list") { inclusive = true }
+                        }
+                    },
                     currentTheme = currentTheme,
                     onThemeChange = onThemeChange
                 )

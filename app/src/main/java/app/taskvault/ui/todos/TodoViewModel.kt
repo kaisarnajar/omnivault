@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TodoViewModel(
-    private val repository: TodoRepository
+    private val repository: TodoRepository,
+    private val authRepository: app.taskvault.domain.AuthRepository
 ) : ViewModel() {
 
     private val _todos = MutableStateFlow<List<Todo>>(emptyList())
@@ -39,6 +40,12 @@ class TodoViewModel(
     fun deleteTodo(todoId: String) {
         viewModelScope.launch {
             repository.deleteTodo(todoId)
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
         }
     }
 }
