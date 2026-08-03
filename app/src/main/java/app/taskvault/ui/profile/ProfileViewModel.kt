@@ -1,6 +1,5 @@
 package app.taskvault.ui.profile
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.taskvault.domain.ProfileRepository

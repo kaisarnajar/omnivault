@@ -1,6 +1,5 @@
 package app.taskvault.data.repository
 
-import android.net.Uri
 import app.taskvault.domain.ProfileRepository
 import app.taskvault.domain.UserProfile
 import com.google.firebase.auth.FirebaseAuth

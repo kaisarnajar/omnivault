@@ -3,7 +3,6 @@ package app.taskvault.ui.todos
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -92,7 +91,6 @@ fun AddTodoScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-
 
             // Task Title Input
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -267,8 +265,6 @@ fun AddTodoScreen(
                     }
                 }
             }
-
-
 
             Spacer(modifier = Modifier.height(32.dp))
         }

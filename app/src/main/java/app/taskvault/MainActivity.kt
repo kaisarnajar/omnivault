@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +23,6 @@ import app.taskvault.data.remote.TodoRemoteDataSource
 import app.taskvault.data.repository.AuthRepositoryImpl
 import app.taskvault.data.repository.ProfileRepositoryImpl
 import app.taskvault.data.repository.TodoRepositoryImpl
-import app.taskvault.domain.AuthState
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen

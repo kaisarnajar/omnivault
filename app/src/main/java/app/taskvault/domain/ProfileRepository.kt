@@ -1,7 +1,5 @@
 package app.taskvault.domain
 
-import android.net.Uri
-
 data class UserProfile(
     val displayName: String?,
     val photoUrl: String?
