@@ -104,7 +104,7 @@ fun DashboardTopAppBar() {
                 modifier = Modifier.size(24.dp)
             )
             Text(
-                text = "TaskFlow",
+                text = "TaskVault",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
