@@ -12,17 +12,7 @@ class TodoRemoteDataSource(
     suspend fun getTodos(): List<Todo> {
         return try {
             val snapshot = todosRef.get().await()
-            val todos = mutableListOf<Todo>()
-            for (child in snapshot.children) {
-                val id = child.child("id").getValue(String::class.java) ?: continue
-                val title = child.child("title").getValue(String::class.java) ?: ""
-                val description = child.child("description").getValue(String::class.java) ?: ""
-                val isCompleted = child.child("isCompleted").getValue(Boolean::class.java) ?: false
-                val timestamp = child.child("timestamp").getValue(Long::class.java) ?: 0L
-
-                todos.add(Todo(id, title, description, isCompleted, timestamp))
-            }
-            todos
+            snapshot.children.mapNotNull { it.getValue(Todo::class.java) }
         } catch (e: Exception) {
             emptyList()
         }

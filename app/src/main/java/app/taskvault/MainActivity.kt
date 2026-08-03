@@ -24,62 +24,60 @@ import com.google.firebase.database.FirebaseDatabase
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val repository = createTodoRepository()
 
+        setContent {
+            MaterialTheme {
+                TaskVaultApp(repository)
+            }
+        }
+    }
+
+    private fun createTodoRepository(): TodoRepositoryImpl {
         val database = Room.databaseBuilder(
             applicationContext,
             TodoDatabase::class.java,
             "todo_database"
         ).build()
 
-        val firebaseDatabase = FirebaseDatabase.getInstance()
-        try {
-            firebaseDatabase.setPersistenceEnabled(true)
-        } catch (e: Exception) {
+        val firebaseDatabase = FirebaseDatabase.getInstance().apply {
+            try { setPersistenceEnabled(true) } catch (e: Exception) {}
         }
         
-        val remoteDataSource = TodoRemoteDataSource(firebaseDatabase)
-        val repository = TodoRepositoryImpl(database.todoDao, remoteDataSource)
+        return TodoRepositoryImpl(database.todoDao, TodoRemoteDataSource(firebaseDatabase))
+    }
+}
+
+@Composable
+fun TaskVaultApp(repository: TodoRepositoryImpl) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        val navController = rememberNavController()
         
-        val viewModelFactory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(TodoViewModel::class.java)) {
-                    @Suppress("UNCHECKED_CAST")
+        val viewModel: TodoViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+            factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return TodoViewModel(repository) as T
                 }
-                throw IllegalArgumentException("Unknown ViewModel class")
             }
-        }
+        )
 
-        setContent {
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    val viewModel = androidx.lifecycle.viewmodel.compose.viewModel<TodoViewModel>(
-                        factory = viewModelFactory
-                    )
-
-                    NavHost(navController = navController, startDestination = "todo_list") {
-                        composable("todo_list") {
-                            TodoListScreen(
-                                viewModel = viewModel,
-                                onNavigateToAddTodo = {
-                                    navController.navigate("add_todo")
-                                }
-                            )
-                        }
-                        composable("add_todo") {
-                            AddTodoScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = {
-                                    navController.popBackStack()
-                                }
-                            )
-                        }
-                    }
-                }
+        NavHost(navController = navController, startDestination = "todo_list") {
+            composable("todo_list") {
+                TodoListScreen(
+                    viewModel = viewModel,
+                    onNavigateToAddTodo = { navController.navigate("add_todo") }
+                )
+            }
+            composable("add_todo") {
+                AddTodoScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }
