@@ -30,31 +30,14 @@ class ProfileViewModel(
         }
     }
 
-    fun updateProfile(displayName: String, newImageUri: Uri?) {
+    fun updateProfile(displayName: String) {
         _uiState.value = ProfileUiState.Loading
         viewModelScope.launch {
             try {
-                // Update display name
                 if (displayName.isNotBlank()) {
                     val nameResult = profileRepository.updateDisplayName(displayName)
                     if (nameResult.isFailure) {
                         _uiState.value = ProfileUiState.Error("Failed to update name")
-                        return@launch
-                    }
-                }
-
-                // Update image if selected
-                if (newImageUri != null) {
-                    val uploadResult = profileRepository.uploadProfileImage(newImageUri)
-                    if (uploadResult.isSuccess) {
-                        val downloadUrl = uploadResult.getOrNull()!!
-                        val urlResult = profileRepository.updatePhotoUrl(downloadUrl)
-                        if (urlResult.isFailure) {
-                            _uiState.value = ProfileUiState.Error("Failed to save image URL")
-                            return@launch
-                        }
-                    } else {
-                        _uiState.value = ProfileUiState.Error("Failed to upload image")
                         return@launch
                     }
                 }

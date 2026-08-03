@@ -10,6 +10,4 @@ data class UserProfile(
 interface ProfileRepository {
     suspend fun getUserProfile(): UserProfile?
     suspend fun updateDisplayName(name: String): Result<Unit>
-    suspend fun uploadProfileImage(uri: Uri): Result<String>
-    suspend fun updatePhotoUrl(url: String): Result<Unit>
 }

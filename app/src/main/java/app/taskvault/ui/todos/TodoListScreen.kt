@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.taskvault.domain.Todo
 import app.taskvault.ui.profile.ProfileViewModel
-import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -132,31 +131,19 @@ fun DashboardTopAppBar(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             // Profile Image
-            if (!userProfile?.photoUrl.isNullOrEmpty()) {
-                AsyncImage(
-                    model = userProfile?.photoUrl,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .clickable { onNavigateToProfile() },
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .clickable { onNavigateToProfile() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = userProfile?.displayName?.take(1)?.uppercase() ?: "U",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .clickable { onNavigateToProfile() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = userProfile?.displayName?.take(1)?.uppercase() ?: "U",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
             }
             
             Column {

@@ -35,14 +35,13 @@ import app.taskvault.ui.todos.TodoListScreen
 import app.taskvault.ui.todos.TodoViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         val authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance())
-        val profileRepository = ProfileRepositoryImpl(FirebaseAuth.getInstance(), FirebaseStorage.getInstance())
+        val profileRepository = ProfileRepositoryImpl(FirebaseAuth.getInstance())
         val repository = createTodoRepository(authRepository)
 
         setContent {
