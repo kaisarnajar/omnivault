@@ -30,6 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 
 @Composable
 fun AddTodoScreen(
@@ -39,8 +43,19 @@ fun AddTodoScreen(
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var dueDate by remember { mutableStateOf<Long?>(null) }
-    var remindMe by remember { mutableStateOf<Long?>(null) }
     var priority by remember { mutableStateOf("Medium") }
+    
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        // We can handle the result if needed
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
     
     Scaffold(
         topBar = {
@@ -58,7 +73,8 @@ fun AddTodoScreen(
                 Button(
                     onClick = {
                         if (title.isNotBlank()) {
-                            viewModel.addTodo(title, description, dueDate, remindMe, priority)
+                            val computedRemindMe = dueDate?.minus(30 * 60 * 1000L)
+                            viewModel.addTodo(title, description, dueDate, computedRemindMe, priority)
                             onNavigateBack()
                         }
                     },
@@ -146,9 +162,7 @@ fun AddTodoScreen(
 
             DateTimeSelectors(
                 dueDate = dueDate,
-                onDueDateChange = { dueDate = it },
-                remindMe = remindMe,
-                onRemindMeChange = { remindMe = it }
+                onDueDateChange = { dueDate = it }
             )
 
             PrioritySelector(

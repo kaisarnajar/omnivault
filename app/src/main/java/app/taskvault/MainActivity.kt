@@ -70,7 +70,8 @@ class MainActivity : ComponentActivity() {
             try { setPersistenceEnabled(true) } catch (e: Exception) {}
         }
         
-        return TodoRepositoryImpl(database.todoDao, TodoRemoteDataSource(firebaseDatabase), authRepository)
+        val alarmScheduler = app.taskvault.worker.AlarmScheduler(applicationContext)
+        return TodoRepositoryImpl(database.todoDao, TodoRemoteDataSource(firebaseDatabase), authRepository, alarmScheduler)
     }
 }
 
