@@ -41,35 +41,41 @@ fun DateTimeSelectors(
 
             val dateFormatted = dueDate?.let { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it)) } ?: "Today"
 
-            OutlinedTextField(
-                value = dateFormatted,
-                onValueChange = {},
-                readOnly = true,
-                leadingIcon = {
-                    Icon(Icons.Outlined.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.clickable {
-                    val calendar = Calendar.getInstance()
-                    DatePickerDialog(
-                        context,
-                        { _, year, month, dayOfMonth ->
-                            val cal = Calendar.getInstance()
-                            cal.set(year, month, dayOfMonth)
-                            onDueDateChange(cal.timeInMillis)
-                        },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                    ).show()
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = dateFormatted,
+                    onValueChange = {},
+                    readOnly = true,
+                    leadingIcon = {
+                        Icon(Icons.Outlined.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
                 )
-            )
+                Box(modifier = Modifier
+                    .matchParentSize()
+                    .clickable {
+                        val calendar = Calendar.getInstance()
+                        DatePickerDialog(
+                            context,
+                            { _, year, month, dayOfMonth ->
+                                val cal = Calendar.getInstance()
+                                cal.set(year, month, dayOfMonth)
+                                onDueDateChange(cal.timeInMillis)
+                            },
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH)
+                        ).show()
+                    }
+                )
+            }
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
@@ -80,36 +86,42 @@ fun DateTimeSelectors(
 
             val timeFormatted = remindMe?.let { SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it)) } ?: "18:00"
 
-            OutlinedTextField(
-                value = timeFormatted,
-                onValueChange = {},
-                readOnly = true,
-                leadingIcon = {
-                    Icon(Icons.Outlined.NotificationsActive, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.clickable {
-                    val calendar = Calendar.getInstance()
-                    TimePickerDialog(
-                        context,
-                        { _, hourOfDay, minute ->
-                            val cal = Calendar.getInstance()
-                            cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                            cal.set(Calendar.MINUTE, minute)
-                            onRemindMeChange(cal.timeInMillis)
-                        },
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true
-                    ).show()
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = timeFormatted,
+                    onValueChange = {},
+                    readOnly = true,
+                    leadingIcon = {
+                        Icon(Icons.Outlined.NotificationsActive, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
                 )
-            )
+                Box(modifier = Modifier
+                    .matchParentSize()
+                    .clickable {
+                        val calendar = Calendar.getInstance()
+                        TimePickerDialog(
+                            context,
+                            { _, hourOfDay, minute ->
+                                val cal = Calendar.getInstance()
+                                cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                                cal.set(Calendar.MINUTE, minute)
+                                onRemindMeChange(cal.timeInMillis)
+                            },
+                            calendar.get(Calendar.HOUR_OF_DAY),
+                            calendar.get(Calendar.MINUTE),
+                            true
+                        ).show()
+                    }
+                )
+            }
         }
     }
 }

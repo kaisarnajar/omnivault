@@ -31,9 +31,16 @@ fun TodoItemCard(
     onToggleCompletion: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-    val dateString = dateFormat.format(Date(todo.timestamp))
-
+    val dateString = todo.dueDate?.let {
+        SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it))
+    } ?: "No Due Date"
+    
+    val timeString = todo.remindMe?.let {
+        SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it))
+    } ?: ""
+    
+    val displayDate = if (timeString.isNotEmpty()) "$dateString at $timeString" else dateString
+    
     val opacity = if (todo.isCompleted) 0.6f else 1.0f
 
     Box(
@@ -83,7 +90,7 @@ fun TodoItemCard(
                     textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
                 )
                 Text(
-                    text = "Architecture • $dateString", // Hardcoded category as in design
+                    text = "${todo.priority} Priority • $displayDate",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
                 )
