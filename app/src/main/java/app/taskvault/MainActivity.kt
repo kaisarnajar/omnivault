@@ -22,22 +22,27 @@ import androidx.room.Room
 import app.taskvault.data.local.TodoDatabase
 import app.taskvault.data.remote.TodoRemoteDataSource
 import app.taskvault.data.repository.AuthRepositoryImpl
+import app.taskvault.data.repository.ProfileRepositoryImpl
 import app.taskvault.data.repository.TodoRepositoryImpl
 import app.taskvault.domain.AuthState
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
+import app.taskvault.ui.profile.ProfileScreen
+import app.taskvault.ui.profile.ProfileViewModel
 import app.taskvault.ui.todos.AddTodoScreen
 import app.taskvault.ui.todos.TodoListScreen
 import app.taskvault.ui.todos.TodoViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         val authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance())
+        val profileRepository = ProfileRepositoryImpl(FirebaseAuth.getInstance(), FirebaseStorage.getInstance())
         val repository = createTodoRepository(authRepository)
 
         setContent {
@@ -49,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 TaskVaultApp(
                     repository = repository,
                     authRepository = authRepository,
+                    profileRepository = profileRepository,
                     currentTheme = isDarkTheme,
                     onThemeChange = { isDarkTheme = it }
                 )
@@ -75,6 +81,7 @@ class MainActivity : ComponentActivity() {
 fun TaskVaultApp(
     repository: TodoRepositoryImpl,
     authRepository: AuthRepositoryImpl,
+    profileRepository: ProfileRepositoryImpl,
     currentTheme: Boolean?,
     onThemeChange: (Boolean?) -> Unit
 ) {
@@ -102,6 +109,14 @@ fun TaskVaultApp(
             }
         )
         
+        val profileViewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+            factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return ProfileViewModel(profileRepository) as T
+                }
+            }
+        )
 
         NavHost(
             navController = navController, 
@@ -132,7 +147,9 @@ fun TaskVaultApp(
             composable("todo_list") {
                 TodoListScreen(
                     viewModel = viewModel,
+                    profileViewModel = profileViewModel,
                     onNavigateToAddTodo = { navController.navigate("add_todo") },
+                    onNavigateToProfile = { navController.navigate("profile") },
                     onLogout = { 
                         viewModel.logout()
                         navController.navigate("login") {
@@ -146,6 +163,12 @@ fun TaskVaultApp(
             composable("add_todo") {
                 AddTodoScreen(
                     viewModel = viewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable("profile") {
+                ProfileScreen(
+                    viewModel = profileViewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

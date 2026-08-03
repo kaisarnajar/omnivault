@@ -27,6 +27,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.taskvault.domain.Todo
+import app.taskvault.ui.profile.ProfileViewModel
+import coil.compose.AsyncImage
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,21 +37,32 @@ import java.util.Locale
 @Composable
 fun TodoListScreen(
     viewModel: TodoViewModel,
+    profileViewModel: ProfileViewModel,
     onNavigateToAddTodo: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     onLogout: () -> Unit,
     currentTheme: Boolean?,
     onThemeChange: (Boolean?) -> Unit
 ) {
     val todos by viewModel.todos.collectAsState()
+    val userProfile by profileViewModel.userProfile.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    
+    // Refresh profile on screen entry to get latest
+    LaunchedEffect(Unit) {
+        profileViewModel.loadProfile()
+    }
+    
     val filteredTodos = todos.filter { it.title.contains(searchQuery, ignoreCase = true) }
 
     Scaffold(
         topBar = {
             DashboardTopAppBar(
+                userProfile = userProfile,
                 currentTheme = currentTheme,
                 onThemeChange = onThemeChange,
-                onLogout = onLogout
+                onLogout = onLogout,
+                onNavigateToProfile = onNavigateToProfile
             )
         },
         floatingActionButton = {
@@ -98,35 +112,67 @@ fun TodoListScreen(
 
 @Composable
 fun DashboardTopAppBar(
+    userProfile: app.taskvault.domain.UserProfile?,
     currentTheme: Boolean?,
     onThemeChange: (Boolean?) -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var themeMenuExpanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp)
+            .height(80.dp) // Slightly taller to accommodate profile info
             .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(
-                imageVector = Icons.Default.CloudDone,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
-            Text(
-                text = "TaskVault",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+            // Profile Image
+            if (!userProfile?.photoUrl.isNullOrEmpty()) {
+                AsyncImage(
+                    model = userProfile?.photoUrl,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .clickable { onNavigateToProfile() },
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
-            )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .clickable { onNavigateToProfile() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = userProfile?.displayName?.take(1)?.uppercase() ?: "U",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+            
+            Column {
+                Text(
+                    text = "Welcome back,",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = userProfile?.displayName ?: "TaskVault User",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            }
         }
         Box {
             IconButton(onClick = { expanded = true }) {
@@ -141,24 +187,17 @@ fun DashboardTopAppBar(
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("System Default") },
+                    text = { Text("Profile") },
                     onClick = {
-                        onThemeChange(null)
                         expanded = false
+                        onNavigateToProfile()
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Light Mode") },
+                    text = { Text("Theme") },
                     onClick = {
-                        onThemeChange(false)
                         expanded = false
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Dark Mode") },
-                    onClick = {
-                        onThemeChange(true)
-                        expanded = false
+                        themeMenuExpanded = true
                     }
                 )
                 DropdownMenuItem(
@@ -166,6 +205,34 @@ fun DashboardTopAppBar(
                     onClick = {
                         expanded = false
                         onLogout()
+                    }
+                )
+            }
+            
+            // Sub-menu for Theme
+            DropdownMenu(
+                expanded = themeMenuExpanded,
+                onDismissRequest = { themeMenuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("System Default") },
+                    onClick = {
+                        onThemeChange(null)
+                        themeMenuExpanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Light Mode") },
+                    onClick = {
+                        onThemeChange(false)
+                        themeMenuExpanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Dark Mode") },
+                    onClick = {
+                        onThemeChange(true)
+                        themeMenuExpanded = false
                     }
                 )
             }
