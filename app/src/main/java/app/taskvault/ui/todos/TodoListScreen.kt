@@ -34,13 +34,20 @@ import java.util.Locale
 @Composable
 fun TodoListScreen(
     viewModel: TodoViewModel,
-    onNavigateToAddTodo: () -> Unit
+    onNavigateToAddTodo: () -> Unit,
+    currentTheme: Boolean?,
+    onThemeChange: (Boolean?) -> Unit
 ) {
     val todos by viewModel.todos.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
+    val filteredTodos = todos.filter { it.title.contains(searchQuery, ignoreCase = true) }
 
     Scaffold(
         topBar = {
-            DashboardTopAppBar()
+            DashboardTopAppBar(
+                currentTheme = currentTheme,
+                onThemeChange = onThemeChange
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -62,15 +69,18 @@ fun TodoListScreen(
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                SearchBarPlaceholder()
+                TaskSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it }
+                )
             }
             item {
-                DashboardStats()
+                DashboardStats(todos = todos)
             }
             item {
                 TaskListHeader()
             }
-            items(todos, key = { it.id }) { todo ->
+            items(filteredTodos, key = { it.id }) { todo ->
                 TodoItemCard(
                     todo = todo,
                     onToggleCompletion = { viewModel.toggleTodoCompletion(todo) },
@@ -85,7 +95,12 @@ fun TodoListScreen(
 }
 
 @Composable
-fun DashboardTopAppBar() {
+fun DashboardTopAppBar(
+    currentTheme: Boolean?,
+    onThemeChange: (Boolean?) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,22 +125,52 @@ fun DashboardTopAppBar() {
                 )
             )
         }
-        IconButton(onClick = { }) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        Box {
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("System Default") },
+                    onClick = {
+                        onThemeChange(null)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Light Mode") },
+                    onClick = {
+                        onThemeChange(false)
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Dark Mode") },
+                    onClick = {
+                        onThemeChange(true)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
-fun SearchBarPlaceholder() {
-    var text by remember { mutableStateOf("") }
+fun TaskSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit
+) {
     OutlinedTextField(
-        value = text,
-        onValueChange = { text = it },
+        value = query,
+        onValueChange = onQueryChange,
         placeholder = { Text("Find a task...", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)) },
         leadingIcon = {
             Icon(
@@ -150,7 +195,10 @@ fun SearchBarPlaceholder() {
 }
 
 @Composable
-fun DashboardStats() {
+fun DashboardStats(todos: List<Todo>) {
+    val totalTasks = todos.size
+    val completedTasks = todos.count { it.isCompleted }
+
     // Weekly Progress
     Box(
         modifier = Modifier
@@ -177,7 +225,7 @@ fun DashboardStats() {
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                 )
                 Text(
-                    text = "12 / 20 Tasks",
+                    text = "$completedTasks / $totalTasks Tasks",
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -191,7 +239,7 @@ fun TaskListHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp),
+            .padding(top = 8.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -199,12 +247,6 @@ fun TaskListHeader() {
             text = "Today's Tasks",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = "View All",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { }
         )
     }
 }

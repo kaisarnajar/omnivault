@@ -1,7 +1,10 @@
 package app.taskvault.ui.todos
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +18,11 @@ import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -29,6 +37,11 @@ fun AddTodoScreen(
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var dueDate by remember { mutableStateOf<Long?>(null) }
+    var remindMe by remember { mutableStateOf<Long?>(null) }
+    var priority by remember { mutableStateOf("Medium") }
+    
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -46,7 +59,7 @@ fun AddTodoScreen(
                 Button(
                     onClick = {
                         if (title.isNotBlank()) {
-                            viewModel.addTodo(title, description)
+                            viewModel.addTodo(title, description, dueDate, remindMe, priority)
                             onNavigateBack()
                         }
                     },
@@ -144,14 +157,31 @@ fun AddTodoScreen(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    
+                    val dateFormatted = dueDate?.let { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it)) } ?: "Today"
+                    
                     OutlinedTextField(
-                        value = "Today",
+                        value = dateFormatted,
                         onValueChange = {},
                         readOnly = true,
                         leadingIcon = {
                             Icon(Icons.Outlined.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         },
                         shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.clickable {
+                            val calendar = Calendar.getInstance()
+                            DatePickerDialog(
+                                context,
+                                { _, year, month, dayOfMonth ->
+                                    val cal = Calendar.getInstance()
+                                    cal.set(year, month, dayOfMonth)
+                                    dueDate = cal.timeInMillis
+                                },
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                            ).show()
+                        },
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
@@ -166,14 +196,32 @@ fun AddTodoScreen(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    
+                    val timeFormatted = remindMe?.let { SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it)) } ?: "18:00"
+                    
                     OutlinedTextField(
-                        value = "18:00",
+                        value = timeFormatted,
                         onValueChange = {},
                         readOnly = true,
                         leadingIcon = {
                             Icon(Icons.Outlined.NotificationsActive, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         },
                         shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.clickable {
+                            val calendar = Calendar.getInstance()
+                            TimePickerDialog(
+                                context,
+                                { _, hourOfDay, minute ->
+                                    val cal = Calendar.getInstance()
+                                    cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                                    cal.set(Calendar.MINUTE, minute)
+                                    remindMe = cal.timeInMillis
+                                },
+                                calendar.get(Calendar.HOUR_OF_DAY),
+                                calendar.get(Calendar.MINUTE),
+                                true
+                            ).show()
+                        },
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
@@ -200,12 +248,13 @@ fun AddTodoScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     listOf("Low", "Medium", "High").forEachIndexed { index, prio ->
-                        val isSelected = index == 1 // Medium is selected
+                        val isSelected = priority == prio
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent)
+                                .clickable { priority = prio }
                                 .padding(vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {

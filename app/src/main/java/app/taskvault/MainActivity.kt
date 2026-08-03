@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -29,8 +33,16 @@ class MainActivity : ComponentActivity() {
         val repository = createTodoRepository()
 
         setContent {
-            app.taskvault.ui.theme.TaskVaultTheme {
-                TaskVaultApp(repository)
+            var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
+            val systemTheme = androidx.compose.foundation.isSystemInDarkTheme()
+            val currentTheme = isDarkTheme ?: systemTheme
+
+            app.taskvault.ui.theme.TaskVaultTheme(darkTheme = currentTheme) {
+                TaskVaultApp(
+                    repository = repository,
+                    currentTheme = isDarkTheme,
+                    onThemeChange = { isDarkTheme = it }
+                )
             }
         }
     }
@@ -40,7 +52,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             TodoDatabase::class.java,
             "todo_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
 
         val firebaseDatabase = FirebaseDatabase.getInstance().apply {
             try { setPersistenceEnabled(true) } catch (e: Exception) {}
@@ -51,7 +63,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TaskVaultApp(repository: TodoRepositoryImpl) {
+fun TaskVaultApp(
+    repository: TodoRepositoryImpl,
+    currentTheme: Boolean?,
+    onThemeChange: (Boolean?) -> Unit
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -71,7 +87,9 @@ fun TaskVaultApp(repository: TodoRepositoryImpl) {
             composable("todo_list") {
                 TodoListScreen(
                     viewModel = viewModel,
-                    onNavigateToAddTodo = { navController.navigate("add_todo") }
+                    onNavigateToAddTodo = { navController.navigate("add_todo") },
+                    currentTheme = currentTheme,
+                    onThemeChange = onThemeChange
                 )
             }
             composable("add_todo") {

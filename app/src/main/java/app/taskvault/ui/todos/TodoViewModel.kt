@@ -24,9 +24,9 @@ class TodoViewModel(
         }
     }
 
-    fun addTodo(title: String, description: String) {
+    fun addTodo(title: String, description: String, dueDate: Long?, remindMe: Long?, priority: String) {
         viewModelScope.launch {
-            repository.addTodo(title, description)
+            repository.addTodo(title, description, dueDate, remindMe, priority)
         }
     }
 

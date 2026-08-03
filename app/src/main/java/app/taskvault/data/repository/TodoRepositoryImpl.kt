@@ -36,13 +36,16 @@ class TodoRepositoryImpl(
         }
     }
 
-    override suspend fun addTodo(title: String, description: String) {
+    override suspend fun addTodo(title: String, description: String, dueDate: Long?, remindMe: Long?, priority: String) {
         val newTodo = Todo(
             id = UUID.randomUUID().toString(),
             title = title,
             description = description,
             isCompleted = false,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            dueDate = dueDate,
+            remindMe = remindMe,
+            priority = priority
         )
         todoDao.insertTodo(newTodo.toEntityModel())
         try {
