@@ -25,7 +25,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Manual Dependency Injection
         val database = Room.databaseBuilder(
             applicationContext,
             TodoDatabase::class.java,
@@ -33,11 +32,9 @@ class MainActivity : ComponentActivity() {
         ).build()
 
         val firebaseDatabase = FirebaseDatabase.getInstance()
-        // Enable offline persistence for Firebase
         try {
             firebaseDatabase.setPersistenceEnabled(true)
         } catch (e: Exception) {
-            // Might throw if already initialized
         }
         
         val remoteDataSource = TodoRemoteDataSource(firebaseDatabase)

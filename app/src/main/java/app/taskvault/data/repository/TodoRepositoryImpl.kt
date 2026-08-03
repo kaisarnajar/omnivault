@@ -21,13 +21,11 @@ class TodoRepositoryImpl(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     init {
-        // Simple initial sync strategy: fetch from remote and save to Room
         scope.launch {
             try {
                 val remoteTodos = remoteDataSource.getTodos()
                 todoDao.insertTodos(remoteTodos.map { it.toEntityModel() })
             } catch (e: Exception) {
-                // Ignore failure, we will rely on offline data
             }
         }
     }
@@ -46,13 +44,10 @@ class TodoRepositoryImpl(
             isCompleted = false,
             timestamp = System.currentTimeMillis()
         )
-        // 1. Save locally for instant UI update
         todoDao.insertTodo(newTodo.toEntityModel())
-        // 2. Sync to remote
         try {
             remoteDataSource.addTodo(newTodo)
         } catch (e: Exception) {
-            // In a real production app, we would enqueue a WorkManager job here
         }
     }
 
@@ -61,7 +56,6 @@ class TodoRepositoryImpl(
         try {
             remoteDataSource.updateTodo(todo)
         } catch (e: Exception) {
-             // Queue work
         }
     }
 
@@ -70,7 +64,6 @@ class TodoRepositoryImpl(
         try {
             remoteDataSource.deleteTodo(todoId)
         } catch (e: Exception) {
-            // Queue work
         }
     }
 }
