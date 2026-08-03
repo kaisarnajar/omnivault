@@ -2,6 +2,7 @@ package app.taskvault.ui.todos
 
 import app.taskvault.ui.components.DateTimeSelectors
 import app.taskvault.ui.components.PrioritySelector
+import app.taskvault.ui.components.AddTodoTopAppBar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.background
@@ -160,37 +161,3 @@ fun AddTodoScreen(
     }
 }
 
-@Composable
-fun AddTodoTopAppBar(onNavigateBack: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = onNavigateBack) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-        Text(
-            text = "New Task",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
-        )
-        IconButton(onClick = { }) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
