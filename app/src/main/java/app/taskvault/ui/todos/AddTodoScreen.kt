@@ -11,14 +11,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -82,36 +80,6 @@ fun AddTodoScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Task Header Image Placeholder (Gradient Backdrop)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-                                MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
-                    )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.BottomStart)
-                        .clip(RoundedCornerShape(50))
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = "CREATION MODE",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
 
             // Task Title Input
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -251,42 +219,7 @@ fun AddTodoScreen(
                 }
             }
 
-            // Offline Sync Toggle (Visual Only)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Outlined.CloudSync, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                    }
-                    Column {
-                        Text(
-                            text = "Sync when online",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Automatically back up tasks",
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                Switch(checked = true, onCheckedChange = { })
-            }
+
 
             Spacer(modifier = Modifier.height(32.dp))
         }
