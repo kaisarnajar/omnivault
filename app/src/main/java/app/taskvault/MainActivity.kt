@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         val repository = createTodoRepository()
 
         setContent {
-            MaterialTheme {
+            app.taskvault.ui.theme.TaskVaultTheme {
                 TaskVaultApp(repository)
             }
         }
