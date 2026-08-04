@@ -35,8 +35,13 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import android.media.RingtoneManager
+import android.media.MediaPlayer
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import app.taskvault.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +63,38 @@ fun PomodoroScreen(
     val currentMode by viewModel.currentMode.collectAsState()
     
     var showSettingsDialog by remember { mutableStateOf(false) }
+    var selectedSound by remember { mutableStateOf("None") }
+    val mediaPlayer = remember { mutableStateOf<MediaPlayer?>(null) }
+    
+    DisposableEffect(selectedSound) {
+        mediaPlayer.value?.release()
+        val soundRes = when (selectedSound) {
+            "White Noise" -> R.raw.white_noise
+            "Rain" -> R.raw.rain
+            "Cafe" -> R.raw.cafe
+            else -> null
+        }
+        
+        if (soundRes != null) {
+            mediaPlayer.value = MediaPlayer.create(context, soundRes)
+            mediaPlayer.value?.isLooping = true
+            if (isPlaying) mediaPlayer.value?.start()
+        } else {
+            mediaPlayer.value = null
+        }
+        
+        onDispose {
+            mediaPlayer.value?.release()
+        }
+    }
+    
+    LaunchedEffect(isPlaying) {
+        if (isPlaying) {
+            mediaPlayer.value?.start()
+        } else {
+            mediaPlayer.value?.pause()
+        }
+    }
 
     // Hardcode total time per mode for progress animation
     val totalTime = when (currentMode) {
@@ -162,7 +199,34 @@ fun PomodoroScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            // Ambient Sound Selector
+            Text(
+                text = "AMBIENT SOUND",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
+            ) {
+                val sounds = listOf("None", "White Noise", "Rain", "Cafe")
+                sounds.forEach { sound ->
+                    FilterChip(
+                        selected = selectedSound == sound,
+                        onClick = { selectedSound = sound },
+                        label = { Text(sound) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Controls
             Row(
