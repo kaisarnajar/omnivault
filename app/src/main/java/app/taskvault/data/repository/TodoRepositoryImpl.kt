@@ -65,7 +65,8 @@ class TodoRepositoryImpl(
         dueDate: Long?,
         remindMe: Long?,
         priority: String,
-        category: String
+        category: String,
+        eisenhowerTag: String
     ) {
         val newTodo =
             Todo(
@@ -78,7 +79,8 @@ class TodoRepositoryImpl(
                 dueDate = dueDate,
                 remindMe = remindMe,
                 priority = priority,
-                category = category
+                category = category,
+                eisenhowerTag = eisenhowerTag
             )
         todoDao.insertTodo(newTodo.toEntityModel())
 

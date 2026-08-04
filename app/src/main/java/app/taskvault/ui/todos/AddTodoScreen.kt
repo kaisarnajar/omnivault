@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.taskvault.ui.components.AddTodoTopAppBar
 import app.taskvault.ui.components.DateTimeSelectors
+import app.taskvault.ui.components.EisenhowerSelector
 import app.taskvault.ui.components.PrioritySelector
 
 @Composable
@@ -35,6 +36,7 @@ fun AddTodoScreen(
     var dueDate by remember { mutableStateOf<Long?>(null) }
     var priority by remember { mutableStateOf("Medium") }
     var category by remember { mutableStateOf("") }
+    var eisenhowerTag by remember { mutableStateOf("") }
 
     // Pre-fill if editing
     LaunchedEffect(selectedTodo) {
@@ -44,6 +46,7 @@ fun AddTodoScreen(
             dueDate = it.dueDate
             priority = it.priority
             category = it.category
+            eisenhowerTag = it.eisenhowerTag
         }
     }
 
@@ -84,9 +87,9 @@ fun AddTodoScreen(
                             val finalCategory = if (category.isBlank()) "General" else category.trim()
                             
                             if (selectedTodo != null) {
-                                viewModel.updateTodoDetail(selectedTodo!!.id, title, description, dueDate, computedRemindMe, priority, finalCategory)
+                                viewModel.updateTodoDetail(selectedTodo!!.id, title, description, dueDate, computedRemindMe, priority, finalCategory, eisenhowerTag)
                             } else {
-                                viewModel.addTodo(title, description, dueDate, computedRemindMe, priority, finalCategory)
+                                viewModel.addTodo(title, description, dueDate, computedRemindMe, priority, finalCategory, eisenhowerTag)
                             }
                             onNavigateBack()
                         }
@@ -228,6 +231,11 @@ fun AddTodoScreen(
                     }
                 }
             }
+
+            EisenhowerSelector(
+                selectedTag = eisenhowerTag,
+                onTagSelect = { eisenhowerTag = it }
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
         }

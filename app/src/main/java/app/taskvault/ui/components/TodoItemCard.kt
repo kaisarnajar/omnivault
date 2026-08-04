@@ -138,6 +138,24 @@ fun TodoItemCard(
                             .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(4.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
+                    
+                    if (todo.eisenhowerTag.isNotEmpty()) {
+                        val (tagColor, tagBgColor) = when (todo.eisenhowerTag) {
+                            "Do" -> Color(0xFFD32F2F) to Color(0xFFFFEBEE)
+                            "Schedule" -> Color(0xFF1976D2) to Color(0xFFE3F2FD)
+                            "Delegate" -> Color(0xFF388E3C) to Color(0xFFE8F5E9)
+                            "Delete" -> Color(0xFF616161) to Color(0xFFF5F5F5)
+                            else -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.secondaryContainer
+                        }
+                        Text(
+                            text = todo.eisenhowerTag,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = tagColor,
+                            modifier = Modifier
+                                .background(tagBgColor, RoundedCornerShape(4.dp))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
                 }
             }
 
