@@ -12,7 +12,20 @@
           "package_name": "app.taskvault"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1017154580726-59celrtll4gbnh7uqn0g86dtthlf1t72.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.taskvault",
+            "certificate_hash": "0760abfb3c3dc6d01617a9009ea5e0c7413093c6"
+          }
+        },
+        {
+          "client_id": "1017154580726-ji2sfmggskjlm4tdn5c6d6oh6o9jtm9s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBoD2XN6HhiF_yHNMliKCvG6xi_XRTOWFU"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017154580726-ji2sfmggskjlm4tdn5c6d6oh6o9jtm9s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
