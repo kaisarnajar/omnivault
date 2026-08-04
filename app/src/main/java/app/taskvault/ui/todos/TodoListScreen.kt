@@ -40,6 +40,7 @@ fun TodoListScreen(
         val matchesSearch = todo.title.contains(searchQuery, ignoreCase = true)
         
         val matchesFilter = when (selectedFilter) {
+            "All Tasks" -> !todo.isCompleted
             "Today" -> !todo.isCompleted && (todo.dueDate == null || DateUtils.isToday(todo.dueDate))
             "This Week" -> !todo.isCompleted && todo.dueDate != null && DateUtils.isThisWeek(todo.dueDate)
             "This Month" -> !todo.isCompleted && todo.dueDate != null && DateUtils.isThisMonth(todo.dueDate)
