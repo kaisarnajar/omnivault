@@ -31,9 +31,11 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showResetDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val uiState by viewModel.uiState.collectAsState()
+    val resetState by viewModel.resetPasswordState.collectAsState()
 
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -107,6 +109,15 @@ fun LoginScreen(
                 singleLine = true,
             )
 
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                Text(
+                    text = "Forgot Password?",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable { showResetDialog = true }.padding(vertical = 8.dp)
+                )
+            }
+
             if (uiState is AuthUiState.Error) {
                 Text(
                     text = (uiState as AuthUiState.Error).message,
@@ -164,5 +175,72 @@ fun LoginScreen(
                 )
             }
         }
+    }
+
+    if (showResetDialog) {
+        var resetEmail by remember { mutableStateOf(email) }
+        
+        AlertDialog(
+            onDismissRequest = { 
+                showResetDialog = false
+                viewModel.resetPasswordState()
+            },
+            title = { Text("Reset Password") },
+            text = {
+                Column {
+                    if (resetState is ResetPasswordState.Success) {
+                        Text("Reset link sent! Check your inbox.", color = MaterialTheme.colorScheme.primary)
+                    } else {
+                        Text("Enter your email address and we will send you a link to reset your password.", modifier = Modifier.padding(bottom = 16.dp))
+                        OutlinedTextField(
+                            value = resetEmail,
+                            onValueChange = { resetEmail = it },
+                            label = { Text("Email") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                        )
+                        if (resetState is ResetPasswordState.Error) {
+                            Text(
+                                text = (resetState as ResetPasswordState.Error).message,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                if (resetState !is ResetPasswordState.Success) {
+                    Button(
+                        onClick = { viewModel.sendPasswordResetEmail(resetEmail) },
+                        enabled = resetEmail.isNotBlank() && resetState !is ResetPasswordState.Loading
+                    ) {
+                        if (resetState is ResetPasswordState.Loading) {
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp), color = MaterialTheme.colorScheme.onPrimary)
+                        } else {
+                            Text("Send Link")
+                        }
+                    }
+                } else {
+                    Button(onClick = { 
+                        showResetDialog = false
+                        viewModel.resetPasswordState()
+                    }) {
+                        Text("OK")
+                    }
+                }
+            },
+            dismissButton = {
+                if (resetState !is ResetPasswordState.Success) {
+                    TextButton(onClick = { 
+                        showResetDialog = false 
+                        viewModel.resetPasswordState()
+                    }) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
     }
 }

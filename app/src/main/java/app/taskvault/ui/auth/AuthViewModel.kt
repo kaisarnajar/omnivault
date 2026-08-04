@@ -16,6 +16,9 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
+    private val _resetPasswordState = MutableStateFlow<ResetPasswordState>(ResetPasswordState.Idle)
+    val resetPasswordState: StateFlow<ResetPasswordState> = _resetPasswordState.asStateFlow()
+
     fun login(
         email: String,
         password: String,
@@ -61,6 +64,22 @@ class AuthViewModel(
     fun resetState() {
         _uiState.value = AuthUiState.Idle
     }
+
+    fun sendPasswordResetEmail(email: String) {
+        _resetPasswordState.value = ResetPasswordState.Loading
+        viewModelScope.launch {
+            val result = authRepository.sendPasswordResetEmail(email)
+            if (result.isSuccess) {
+                _resetPasswordState.value = ResetPasswordState.Success
+            } else {
+                _resetPasswordState.value = ResetPasswordState.Error(result.exceptionOrNull()?.message ?: "Failed to send reset email")
+            }
+        }
+    }
+
+    fun resetPasswordState() {
+        _resetPasswordState.value = ResetPasswordState.Idle
+    }
 }
 
 sealed class AuthUiState {
@@ -71,4 +90,11 @@ sealed class AuthUiState {
     object Success : AuthUiState()
 
     data class Error(val message: String) : AuthUiState()
+}
+
+sealed class ResetPasswordState {
+    object Idle : ResetPasswordState()
+    object Loading : ResetPasswordState()
+    object Success : ResetPasswordState()
+    data class Error(val message: String) : ResetPasswordState()
 }
