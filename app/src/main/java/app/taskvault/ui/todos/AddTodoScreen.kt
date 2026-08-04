@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -214,8 +215,11 @@ fun AddTodoScreen(
                 )
                 
                 // Quick Category Suggestions
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val suggestions = listOf("Work", "Personal", "Health")
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.horizontalScroll(rememberScrollState())
+                ) {
+                    val suggestions = listOf("Work", "Personal", "Health", "Study", "Shopping", "Finance", "Other")
                     suggestions.forEach { suggestion ->
                         AssistChip(
                             onClick = { category = suggestion },
