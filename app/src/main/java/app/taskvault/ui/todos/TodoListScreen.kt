@@ -23,7 +23,6 @@ fun TodoListScreen(
     viewModel: TodoViewModel,
     profileViewModel: ProfileViewModel,
     onNavigateToAddTodo: () -> Unit,
-    onNavigateToPomodoro: () -> Unit,
     onLogout: () -> Unit,
     onThemeChange: (Boolean?) -> Unit,
 ) {
@@ -57,7 +56,6 @@ fun TodoListScreen(
                 userProfile = userProfile,
                 onThemeChange = onThemeChange,
                 onLogout = onLogout,
-                onNavigateToPomodoro = onNavigateToPomodoro,
             )
         },
         floatingActionButton = {

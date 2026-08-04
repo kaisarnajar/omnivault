@@ -31,6 +31,7 @@ import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
 import app.taskvault.ui.components.BottomNavBar
 import app.taskvault.ui.calendar.CalendarScreen
+import app.taskvault.ui.tools.ToolsScreen
 import app.taskvault.ui.pomodoro.PomodoroScreen
 import app.taskvault.ui.pomodoro.PomodoroViewModel
 import app.taskvault.ui.profile.ProfileScreen
@@ -146,7 +147,7 @@ fun TaskVaultApp(
         val currentBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = currentBackStackEntry?.destination?.route
 
-        val showBottomNav = currentRoute in listOf("todo_list", "calendar", "profile")
+        val showBottomNav = currentRoute in listOf("todo_list", "calendar", "tools", "profile")
 
         Scaffold(
             bottomBar = {
@@ -198,7 +199,6 @@ fun TaskVaultApp(
                     viewModel = viewModel,
                     profileViewModel = profileViewModel,
                     onNavigateToAddTodo = { navController.navigate("add_todo") },
-                    onNavigateToPomodoro = { navController.navigate("pomodoro") },
                     onLogout = {
                         viewModel.logout()
                         navController.navigate("login") {
@@ -228,6 +228,11 @@ fun TaskVaultApp(
             composable("calendar") {
                 CalendarScreen(
                     viewModel = viewModel
+                )
+            }
+            composable("tools") {
+                ToolsScreen(
+                    onNavigateToTool = { route -> navController.navigate(route) }
                 )
             }
             }

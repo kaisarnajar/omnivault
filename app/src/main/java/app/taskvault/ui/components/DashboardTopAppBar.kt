@@ -20,8 +20,7 @@ import app.taskvault.domain.UserProfile
 fun DashboardTopAppBar(
     userProfile: UserProfile?,
     onThemeChange: (Boolean?) -> Unit,
-    onLogout: () -> Unit,
-    onNavigateToPomodoro: () -> Unit
+    onLogout: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var themeMenuExpanded by remember { mutableStateOf(false) }
@@ -54,13 +53,6 @@ fun DashboardTopAppBar(
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onNavigateToPomodoro) {
-                Icon(
-                    imageVector = Icons.Outlined.Timer,
-                    contentDescription = "Pomodoro Timer",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
             Box {
                 IconButton(onClick = { expanded = true }) {
                     Icon(
