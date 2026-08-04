@@ -18,8 +18,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel,
-    onNavigateBack: () -> Unit,
+    viewModel: ProfileViewModel
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -48,18 +47,16 @@ fun ProfileScreen(
             TopAppBar(
                 title = { Text(if (isEditing) "Edit Profile" else "Profile") },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (isEditing) {
+                    if (isEditing) {
+                        IconButton(onClick = {
                             isEditing = false
                             // Reset fields
                             displayName = userProfile?.displayName ?: ""
                             email = userProfile?.email ?: ""
                             viewModel.resetState()
-                        } else {
-                            onNavigateBack()
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancel")
                         }
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors =

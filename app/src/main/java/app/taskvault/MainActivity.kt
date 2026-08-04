@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -26,6 +29,8 @@ import app.taskvault.data.repository.TodoRepositoryImpl
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
+import app.taskvault.ui.components.BottomNavBar
+import app.taskvault.ui.calendar.CalendarScreen
 import app.taskvault.ui.pomodoro.PomodoroScreen
 import app.taskvault.ui.pomodoro.PomodoroViewModel
 import app.taskvault.ui.profile.ProfileScreen
@@ -138,10 +143,34 @@ fun TaskVaultApp(
                     },
             )
 
-        NavHost(
-            navController = navController,
-            startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login",
-        ) {
+        val currentBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = currentBackStackEntry?.destination?.route
+
+        val showBottomNav = currentRoute in listOf("todo_list", "calendar", "profile")
+
+        Scaffold(
+            bottomBar = {
+                if (showBottomNav) {
+                    BottomNavBar(
+                        currentRoute = currentRoute,
+                        onNavigate = { route ->
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+            }
+        ) { padding ->
+            NavHost(
+                navController = navController,
+                startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login",
+                modifier = Modifier.padding(padding)
+            ) {
             composable("login") {
                 LoginScreen(
                     viewModel = authViewModel,
@@ -169,7 +198,6 @@ fun TaskVaultApp(
                     viewModel = viewModel,
                     profileViewModel = profileViewModel,
                     onNavigateToAddTodo = { navController.navigate("add_todo") },
-                    onNavigateToProfile = { navController.navigate("profile") },
                     onNavigateToPomodoro = { navController.navigate("pomodoro") },
                     onLogout = {
                         viewModel.logout()
@@ -188,8 +216,7 @@ fun TaskVaultApp(
             }
             composable("profile") {
                 ProfileScreen(
-                    viewModel = profileViewModel,
-                    onNavigateBack = { navController.popBackStack() },
+                    viewModel = profileViewModel
                 )
             }
             composable("pomodoro") {
@@ -197,6 +224,12 @@ fun TaskVaultApp(
                     viewModel = pomodoroViewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
+            }
+            composable("calendar") {
+                CalendarScreen(
+                    viewModel = viewModel
+                )
+            }
             }
         }
     }

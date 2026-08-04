@@ -23,7 +23,6 @@ fun TodoListScreen(
     viewModel: TodoViewModel,
     profileViewModel: ProfileViewModel,
     onNavigateToAddTodo: () -> Unit,
-    onNavigateToProfile: () -> Unit,
     onNavigateToPomodoro: () -> Unit,
     onLogout: () -> Unit,
     onThemeChange: (Boolean?) -> Unit,
@@ -58,7 +57,6 @@ fun TodoListScreen(
                 userProfile = userProfile,
                 onThemeChange = onThemeChange,
                 onLogout = onLogout,
-                onNavigateToProfile = onNavigateToProfile,
                 onNavigateToPomodoro = onNavigateToPomodoro,
             )
         },

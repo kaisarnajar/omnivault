@@ -21,7 +21,6 @@ fun DashboardTopAppBar(
     userProfile: UserProfile?,
     onThemeChange: (Boolean?) -> Unit,
     onLogout: () -> Unit,
-    onNavigateToProfile: () -> Unit,
     onNavigateToPomodoro: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -38,23 +37,6 @@ fun DashboardTopAppBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            // Profile Image Fallback (since photo upload was removed)
-            Box(
-                modifier =
-                    Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .clickable { onNavigateToProfile() },
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = userProfile?.displayName?.take(1)?.uppercase() ?: "U",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            }
-
             Column {
                 Text(
                     text = "Welcome back,",
@@ -91,13 +73,6 @@ fun DashboardTopAppBar(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
             ) {
-                DropdownMenuItem(
-                    text = { Text("Profile") },
-                    onClick = {
-                        expanded = false
-                        onNavigateToProfile()
-                    },
-                )
                 DropdownMenuItem(
                     text = { Text("Theme") },
                     onClick = {
