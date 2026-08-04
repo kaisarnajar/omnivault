@@ -133,7 +133,7 @@ fun TaskVaultApp(
                     object : ViewModelProvider.Factory {
                         @Suppress("UNCHECKED_CAST")
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return PomodoroViewModel(repository) as T
+                            return PomodoroViewModel() as T
                         }
                     },
             )
@@ -170,7 +170,7 @@ fun TaskVaultApp(
                     profileViewModel = profileViewModel,
                     onNavigateToAddTodo = { navController.navigate("add_todo") },
                     onNavigateToProfile = { navController.navigate("profile") },
-                    onNavigateToPomodoro = { taskId -> navController.navigate("pomodoro/$taskId") },
+                    onNavigateToPomodoro = { navController.navigate("pomodoro") },
                     onLogout = {
                         viewModel.logout()
                         navController.navigate("login") {
@@ -192,16 +192,7 @@ fun TaskVaultApp(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
-            composable(
-                route = "pomodoro/{taskId}",
-                arguments = listOf(androidx.navigation.navArgument("taskId") { type = androidx.navigation.NavType.StringType })
-            ) { backStackEntry ->
-                val taskId = backStackEntry.arguments?.getString("taskId")
-                androidx.compose.runtime.LaunchedEffect(taskId) {
-                    if (taskId != null) {
-                        pomodoroViewModel.loadTask(taskId)
-                    }
-                }
+            composable("pomodoro") {
                 PomodoroScreen(
                     viewModel = pomodoroViewModel,
                     onNavigateBack = { navController.popBackStack() }

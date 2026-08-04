@@ -32,7 +32,6 @@ fun PomodoroScreen(
     viewModel: PomodoroViewModel,
     onNavigateBack: () -> Unit
 ) {
-    val task by viewModel.task.collectAsState()
     val timeRemaining by viewModel.timeRemaining.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
 
@@ -70,24 +69,6 @@ fun PomodoroScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Task Title Display
-            task?.let {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                        .padding(horizontal = 24.dp, vertical = 12.dp)
-                ) {
-                    Text(
-                        text = it.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                Spacer(modifier = Modifier.height(48.dp))
-            }
-
             // Circular Timer
             Box(
                 modifier = Modifier

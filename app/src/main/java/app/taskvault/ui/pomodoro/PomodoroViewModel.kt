@@ -11,12 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class PomodoroViewModel(
-    private val repository: TodoRepositoryImpl
-) : ViewModel() {
-
-    private val _task = MutableStateFlow<Todo?>(null)
-    val task: StateFlow<Todo?> = _task.asStateFlow()
+class PomodoroViewModel : ViewModel() {
 
     private val _timeRemaining = MutableStateFlow(25 * 60) // 25 minutes in seconds
     val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
@@ -25,14 +20,6 @@ class PomodoroViewModel(
     val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
     private var timerJob: Job? = null
-
-    fun loadTask(taskId: String) {
-        viewModelScope.launch {
-            repository.getTodos().collect { todos ->
-                _task.value = todos.find { it.id == taskId }
-            }
-        }
-    }
 
     fun toggleTimer() {
         if (_isPlaying.value) {

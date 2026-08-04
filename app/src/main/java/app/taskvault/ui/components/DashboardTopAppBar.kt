@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +22,7 @@ fun DashboardTopAppBar(
     onThemeChange: (Boolean?) -> Unit,
     onLogout: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    onNavigateToPomodoro: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var themeMenuExpanded by remember { mutableStateOf(false) }
@@ -69,14 +71,22 @@ fun DashboardTopAppBar(
                 )
             }
         }
-        Box {
-            IconButton(onClick = { expanded = true }) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onNavigateToPomodoro) {
                 Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
+                    imageVector = Icons.Outlined.Timer,
+                    contentDescription = "Pomodoro Timer",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
@@ -130,6 +140,7 @@ fun DashboardTopAppBar(
                         themeMenuExpanded = false
                     },
                 )
+                }
             }
         }
     }

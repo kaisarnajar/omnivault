@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,8 +33,7 @@ fun TodoItemCard(
     todo: Todo,
     onToggleCompletion: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    onNavigateToPomodoro: () -> Unit
+    onDelete: () -> Unit
 ) {
     val dateString =
         todo.dueDate?.let {
@@ -133,16 +131,6 @@ fun TodoItemCard(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity),
                 )
-            }
-
-            if (!todo.isCompleted) {
-                IconButton(onClick = onNavigateToPomodoro) {
-                    Icon(
-                        Icons.Outlined.Timer,
-                        contentDescription = "Pomodoro Timer",
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = opacity)
-                    )
-                }
             }
 
             IconButton(onClick = onEdit) {
