@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,8 +38,13 @@ fun ToolsScreen(
             description = "Stay focused with a timer.",
             icon = Icons.Default.Timer,
             route = "pomodoro"
+        ),
+        ToolItem(
+            title = "Brain Dump",
+            description = "Jot down quick thoughts.",
+            icon = Icons.Default.Edit,
+            route = "scratchpad"
         )
-        // Add more tools here in the future
     )
 
     Scaffold(

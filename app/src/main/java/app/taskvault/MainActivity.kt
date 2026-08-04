@@ -43,12 +43,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ComponentActivity() {
+    private lateinit var database: TodoDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance())
         val profileRepository = ProfileRepositoryImpl(FirebaseAuth.getInstance())
+        
+        database = Room.databaseBuilder(
+            applicationContext,
+            TodoDatabase::class.java,
+            "todo_database",
+        ).fallbackToDestructiveMigration().build()
+        
         val repository = createTodoRepository(authRepository)
+        val scratchpadRepository = app.taskvault.data.repository.ScratchpadRepositoryImpl(database.scratchpadDao, authRepository)
 
         setContent {
             var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
@@ -60,6 +70,7 @@ class MainActivity : ComponentActivity() {
                     repository = repository,
                     authRepository = authRepository,
                     profileRepository = profileRepository,
+                    scratchpadRepository = scratchpadRepository,
                     onThemeChange = { isDarkTheme = it }
                 )
             }
@@ -67,12 +78,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun createTodoRepository(authRepository: AuthRepositoryImpl): TodoRepositoryImpl {
-        val database =
-            Room.databaseBuilder(
-                applicationContext,
-                TodoDatabase::class.java,
-                "todo_database",
-            ).fallbackToDestructiveMigration().build()
 
         val firebaseDatabase =
             FirebaseDatabase.getInstance().apply {
@@ -92,6 +97,7 @@ fun TaskVaultApp(
     repository: TodoRepositoryImpl,
     authRepository: AuthRepositoryImpl,
     profileRepository: ProfileRepositoryImpl,
+    scratchpadRepository: app.taskvault.data.repository.ScratchpadRepositoryImpl,
     onThemeChange: (Boolean?) -> Unit,
 ) {
     Surface(
@@ -143,6 +149,17 @@ fun TaskVaultApp(
                         @Suppress("UNCHECKED_CAST")
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
                             return PomodoroViewModel(pomodoroPreferencesRepository) as T
+                        }
+                    },
+            )
+
+        val scratchpadViewModel: app.taskvault.ui.scratchpad.ScratchpadViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel(
+                factory =
+                    object : ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            return app.taskvault.ui.scratchpad.ScratchpadViewModel(scratchpadRepository) as T
                         }
                     },
             )
@@ -236,6 +253,12 @@ fun TaskVaultApp(
             composable("tools") {
                 ToolsScreen(
                     onNavigateToTool = { route -> navController.navigate(route) }
+                )
+            }
+            composable("scratchpad") {
+                app.taskvault.ui.scratchpad.ScratchpadScreen(
+                    viewModel = scratchpadViewModel,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
             }
