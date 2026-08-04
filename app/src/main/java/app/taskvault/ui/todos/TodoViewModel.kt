@@ -17,6 +17,9 @@ class TodoViewModel(
     private val _todos = MutableStateFlow<List<Todo>>(emptyList())
     val todos: StateFlow<List<Todo>> = _todos.asStateFlow()
 
+    private val _selectedTodo = MutableStateFlow<Todo?>(null)
+    val selectedTodo: StateFlow<Todo?> = _selectedTodo.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.getTodos().collect { todoList ->
@@ -28,6 +31,25 @@ class TodoViewModel(
     fun addTodo(title: String, description: String, dueDate: Long?, remindMe: Long?, priority: String) {
         viewModelScope.launch {
             repository.addTodo(title, description, dueDate, remindMe, priority)
+        }
+    }
+
+    fun selectTodoForEdit(todo: Todo?) {
+        _selectedTodo.value = todo
+    }
+
+    fun updateTodoDetail(id: String, title: String, description: String, dueDate: Long?, remindMe: Long?, priority: String) {
+        viewModelScope.launch {
+            val currentTodo = _todos.value.find { it.id == id }
+            if (currentTodo != null) {
+                repository.updateTodo(currentTodo.copy(
+                    title = title,
+                    description = description,
+                    dueDate = dueDate,
+                    remindMe = remindMe,
+                    priority = priority
+                ))
+            }
         }
     }
 

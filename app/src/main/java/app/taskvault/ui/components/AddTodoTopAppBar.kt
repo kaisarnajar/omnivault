@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AddTodoTopAppBar(onNavigateBack: () -> Unit) {
+fun AddTodoTopAppBar(isEditing: Boolean = false, onNavigateBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,7 +38,7 @@ fun AddTodoTopAppBar(onNavigateBack: () -> Unit) {
             )
         }
         Text(
-            text = "New Task",
+            text = if (isEditing) "Edit Task" else "New Task",
             style = MaterialTheme.typography.headlineMedium.copy(
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold

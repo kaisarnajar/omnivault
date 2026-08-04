@@ -40,10 +40,21 @@ fun AddTodoScreen(
     viewModel: TodoViewModel,
     onNavigateBack: () -> Unit
 ) {
+    val selectedTodo by viewModel.selectedTodo.collectAsState()
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var dueDate by remember { mutableStateOf<Long?>(null) }
     var priority by remember { mutableStateOf("Medium") }
+    
+    // Pre-fill if editing
+    LaunchedEffect(selectedTodo) {
+        selectedTodo?.let {
+            title = it.title
+            description = it.description
+            dueDate = it.dueDate
+            priority = it.priority
+        }
+    }
     
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -59,7 +70,10 @@ fun AddTodoScreen(
     
     Scaffold(
         topBar = {
-            AddTodoTopAppBar(onNavigateBack = onNavigateBack)
+            AddTodoTopAppBar(
+                isEditing = selectedTodo != null,
+                onNavigateBack = onNavigateBack
+            )
         },
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
@@ -74,7 +88,11 @@ fun AddTodoScreen(
                     onClick = {
                         if (title.isNotBlank()) {
                             val computedRemindMe = dueDate?.minus(30 * 60 * 1000L)
-                            viewModel.addTodo(title, description, dueDate, computedRemindMe, priority)
+                            if (selectedTodo != null) {
+                                viewModel.updateTodoDetail(selectedTodo!!.id, title, description, dueDate, computedRemindMe, priority)
+                            } else {
+                                viewModel.addTodo(title, description, dueDate, computedRemindMe, priority)
+                            }
                             onNavigateBack()
                         }
                     },
@@ -91,7 +109,7 @@ fun AddTodoScreen(
                     Icon(Icons.Default.AddTask, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        "Create Task",
+                        if (selectedTodo != null) "Save Changes" else "Create Task",
                         style = MaterialTheme.typography.headlineMedium.copy(fontSize = 18.sp)
                     )
                 }

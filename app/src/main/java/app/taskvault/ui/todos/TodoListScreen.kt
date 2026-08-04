@@ -67,7 +67,10 @@ fun TodoListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavigateToAddTodo,
+                onClick = {
+                    viewModel.selectTodoForEdit(null)
+                    onNavigateToAddTodo()
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -100,6 +103,10 @@ fun TodoListScreen(
                 TodoItemCard(
                     todo = todo,
                     onToggleCompletion = { viewModel.toggleTodoCompletion(todo) },
+                    onEdit = {
+                        viewModel.selectTodoForEdit(todo)
+                        onNavigateToAddTodo()
+                    },
                     onDelete = { viewModel.deleteTodo(todo.id) }
                 )
             }
