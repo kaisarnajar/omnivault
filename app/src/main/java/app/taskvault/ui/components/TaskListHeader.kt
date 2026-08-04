@@ -14,16 +14,17 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TaskListHeader() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "Today's Tasks",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

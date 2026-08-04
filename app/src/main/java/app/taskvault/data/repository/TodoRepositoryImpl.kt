@@ -19,9 +19,8 @@ class TodoRepositoryImpl(
     private val todoDao: TodoDao,
     private val remoteDataSource: TodoRemoteDataSource,
     private val authRepository: AuthRepository,
-    private val alarmScheduler: app.taskvault.worker.AlarmScheduler
+    private val alarmScheduler: app.taskvault.worker.AlarmScheduler,
 ) : TodoRepository {
-
     private val scope = CoroutineScope(Dispatchers.IO)
 
     init {
@@ -33,7 +32,8 @@ class TodoRepositoryImpl(
                         try {
                             val remoteTodos = remoteDataSource.getTodos(userId)
                             todoDao.insertTodos(remoteTodos.map { it.toEntityModel() })
-                        } catch (e: Exception) { }
+                        } catch (e: Exception) {
+                        }
                     }
                 } else {
                     todoDao.clearTodos()
@@ -48,23 +48,30 @@ class TodoRepositoryImpl(
         }
     }
 
-    override suspend fun addTodo(title: String, description: String, dueDate: Long?, remindMe: Long?, priority: String) {
-        val newTodo = Todo(
-            id = UUID.randomUUID().toString(),
-            title = title,
-            description = description,
-            isCompleted = false,
-            timestamp = System.currentTimeMillis(),
-            dueDate = dueDate,
-            remindMe = remindMe,
-            priority = priority
-        )
+    override suspend fun addTodo(
+        title: String,
+        description: String,
+        dueDate: Long?,
+        remindMe: Long?,
+        priority: String,
+    ) {
+        val newTodo =
+            Todo(
+                id = UUID.randomUUID().toString(),
+                title = title,
+                description = description,
+                isCompleted = false,
+                timestamp = System.currentTimeMillis(),
+                dueDate = dueDate,
+                remindMe = remindMe,
+                priority = priority,
+            )
         todoDao.insertTodo(newTodo.toEntityModel())
-        
+
         if (remindMe != null) {
             alarmScheduler.scheduleAlarm(newTodo.id.hashCode(), newTodo.title, remindMe)
         }
-        
+
         val userId = authRepository.getCurrentUserId()
         if (userId != null) {
             try {
@@ -76,7 +83,7 @@ class TodoRepositoryImpl(
 
     override suspend fun updateTodo(todo: Todo) {
         todoDao.updateTodo(todo.toEntityModel())
-        
+
         if (todo.remindMe != null) {
             alarmScheduler.scheduleAlarm(todo.id.hashCode(), todo.title, todo.remindMe)
         } else {

@@ -20,29 +20,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AddTodoTopAppBar(isEditing: Boolean = false, onNavigateBack: () -> Unit) {
+fun AddTodoTopAppBar(
+    isEditing: Boolean = false,
+    onNavigateBack: () -> Unit,
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 20.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onNavigateBack) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
         Text(
             text = if (isEditing) "Edit Task" else "New Task",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
+            style =
+                MaterialTheme.typography.headlineMedium.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                ),
         )
         // Removed unused Settings icon to clean up UI
         Box(modifier = Modifier.padding(24.dp))

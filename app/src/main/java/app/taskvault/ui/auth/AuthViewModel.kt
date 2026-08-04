@@ -9,15 +9,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
-
     val authState = authRepository.authState
 
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
-    fun login(email: String, password: String) {
+    fun login(
+        email: String,
+        password: String,
+    ) {
         _uiState.value = AuthUiState.Loading
         viewModelScope.launch {
             val result = authRepository.login(email, password)
@@ -29,7 +31,10 @@ class AuthViewModel(
         }
     }
 
-    fun register(email: String, password: String) {
+    fun register(
+        email: String,
+        password: String,
+    ) {
         _uiState.value = AuthUiState.Loading
         viewModelScope.launch {
             val result = authRepository.register(email, password)
@@ -48,7 +53,10 @@ class AuthViewModel(
 
 sealed class AuthUiState {
     object Idle : AuthUiState()
+
     object Loading : AuthUiState()
+
     object Success : AuthUiState()
+
     data class Error(val message: String) : AuthUiState()
 }

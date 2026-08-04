@@ -33,18 +33,20 @@ fun TodoItemCard(
     todo: Todo,
     onToggleCompletion: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
-    val dateString = todo.dueDate?.let {
-        SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it))
-    } ?: "No Due Date"
-    
-    val timeString = todo.dueDate?.let {
-        SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it))
-    } ?: ""
-    
+    val dateString =
+        todo.dueDate?.let {
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it))
+        } ?: "No Due Date"
+
+    val timeString =
+        todo.dueDate?.let {
+            SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it))
+        } ?: ""
+
     val displayDate = if (timeString.isNotEmpty()) "$dateString at $timeString" else dateString
-    
+
     val opacity = if (todo.isCompleted) 0.6f else 1.0f
 
     var showDeleteDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
@@ -59,54 +61,58 @@ fun TodoItemCard(
                     onClick = {
                         showDeleteDialog = false
                         onDelete()
-                    }
+                    },
                 ) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(
-                    onClick = { showDeleteDialog = false }
+                    onClick = { showDeleteDialog = false },
                 ) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (todo.isCompleted) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
-            .clickable { onToggleCompletion() }
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(
+                    if (todo.isCompleted) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface,
+                )
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                .clickable { onToggleCompletion() }
+                .padding(16.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             // Custom Checkbox
             Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(if (todo.isCompleted) MaterialTheme.colorScheme.secondary else Color.Transparent)
-                    .border(
-                        2.dp,
-                        if (todo.isCompleted) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(6.dp)
-                    )
-                    .clickable { onToggleCompletion() },
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(if (todo.isCompleted) MaterialTheme.colorScheme.secondary else Color.Transparent)
+                        .border(
+                            2.dp,
+                            if (todo.isCompleted) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                            RoundedCornerShape(6.dp),
+                        )
+                        .clickable { onToggleCompletion() },
+                contentAlignment = Alignment.Center,
             ) {
                 if (todo.isCompleted) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
@@ -118,12 +124,12 @@ fun TodoItemCard(
                     text = todo.title,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = opacity),
-                    textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
+                    textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
                 )
                 Text(
                     text = "${todo.priority} Priority • $displayDate",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity),
                 )
             }
 
@@ -131,7 +137,7 @@ fun TodoItemCard(
                 Icon(
                     Icons.Default.Edit,
                     contentDescription = "Edit",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity),
                 )
             }
 
@@ -139,7 +145,7 @@ fun TodoItemCard(
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity),
                 )
             }
         }

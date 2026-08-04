@@ -5,7 +5,7 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
 class TodoRemoteDataSource(
-    private val firebaseDatabase: FirebaseDatabase
+    private val firebaseDatabase: FirebaseDatabase,
 ) {
     private fun getTodosRef(userId: String) = firebaseDatabase.getReference("users/$userId/todos")
 
@@ -18,15 +18,24 @@ class TodoRemoteDataSource(
         }
     }
 
-    suspend fun addTodo(userId: String, todo: Todo) {
+    suspend fun addTodo(
+        userId: String,
+        todo: Todo,
+    ) {
         getTodosRef(userId).child(todo.id).setValue(todo).await()
     }
 
-    suspend fun updateTodo(userId: String, todo: Todo) {
+    suspend fun updateTodo(
+        userId: String,
+        todo: Todo,
+    ) {
         getTodosRef(userId).child(todo.id).setValue(todo).await()
     }
 
-    suspend fun deleteTodo(userId: String, todoId: String) {
+    suspend fun deleteTodo(
+        userId: String,
+        todoId: String,
+    ) {
         getTodosRef(userId).child(todoId).removeValue().await()
     }
 }

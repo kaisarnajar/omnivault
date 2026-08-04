@@ -14,7 +14,7 @@ data class TodoEntity(
     val timestamp: Long,
     val dueDate: Long?,
     val remindMe: Long?,
-    val priority: String
+    val priority: String,
 )
 
 fun TodoEntity.toDomainModel(): Todo {
@@ -26,7 +26,7 @@ fun TodoEntity.toDomainModel(): Todo {
         timestamp = timestamp,
         dueDate = dueDate,
         remindMe = remindMe,
-        priority = priority
+        priority = priority,
     )
 }
 
@@ -39,6 +39,6 @@ fun Todo.toEntityModel(): TodoEntity {
         timestamp = timestamp,
         dueDate = dueDate,
         remindMe = remindMe,
-        priority = priority
+        priority = priority,
     )
 }

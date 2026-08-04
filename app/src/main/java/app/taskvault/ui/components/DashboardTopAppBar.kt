@@ -20,34 +20,36 @@ fun DashboardTopAppBar(
     userProfile: UserProfile?,
     onThemeChange: (Boolean?) -> Unit,
     onLogout: () -> Unit,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var themeMenuExpanded by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 20.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             // Profile Image Fallback (since photo upload was removed)
             Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .clickable { onNavigateToProfile() },
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .clickable { onNavigateToProfile() },
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = userProfile?.displayName?.take(1)?.uppercase() ?: "U",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
 
@@ -55,14 +57,15 @@ fun DashboardTopAppBar(
                 Text(
                     text = "Welcome back,",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = userProfile?.displayName ?: "TaskVault User",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    style =
+                        MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        ),
                 )
             }
         }
@@ -71,61 +74,61 @@ fun DashboardTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Settings,
                     contentDescription = "Settings",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
             ) {
                 DropdownMenuItem(
                     text = { Text("Profile") },
                     onClick = {
                         expanded = false
                         onNavigateToProfile()
-                    }
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text("Theme") },
                     onClick = {
                         expanded = false
                         themeMenuExpanded = true
-                    }
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text("Logout", color = MaterialTheme.colorScheme.error) },
                     onClick = {
                         expanded = false
                         onLogout()
-                    }
+                    },
                 )
             }
 
             // Sub-menu for Theme
             DropdownMenu(
                 expanded = themeMenuExpanded,
-                onDismissRequest = { themeMenuExpanded = false }
+                onDismissRequest = { themeMenuExpanded = false },
             ) {
                 DropdownMenuItem(
                     text = { Text("System Default") },
                     onClick = {
                         onThemeChange(null)
                         themeMenuExpanded = false
-                    }
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text("Light Mode") },
                     onClick = {
                         onThemeChange(false)
                         themeMenuExpanded = false
-                    }
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text("Dark Mode") },
                     onClick = {
                         onThemeChange(true)
                         themeMenuExpanded = false
-                    }
+                    },
                 )
             }
         }

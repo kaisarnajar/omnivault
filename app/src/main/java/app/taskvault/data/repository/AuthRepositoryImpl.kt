@@ -9,21 +9,25 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class AuthRepositoryImpl(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
 ) : AuthRepository {
-
-    override val authState: Flow<AuthState> = callbackFlow {
-        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
-            val state = if (auth.currentUser != null) AuthState.Authenticated else AuthState.Unauthenticated
-            trySend(state)
+    override val authState: Flow<AuthState> =
+        callbackFlow {
+            val authStateListener =
+                FirebaseAuth.AuthStateListener { auth ->
+                    val state = if (auth.currentUser != null) AuthState.Authenticated else AuthState.Unauthenticated
+                    trySend(state)
+                }
+            firebaseAuth.addAuthStateListener(authStateListener)
+            awaitClose {
+                firebaseAuth.removeAuthStateListener(authStateListener)
+            }
         }
-        firebaseAuth.addAuthStateListener(authStateListener)
-        awaitClose {
-            firebaseAuth.removeAuthStateListener(authStateListener)
-        }
-    }
 
-    override suspend fun login(email: String, password: String): Result<Unit> {
+    override suspend fun login(
+        email: String,
+        password: String,
+    ): Result<Unit> {
         return try {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
             Result.success(Unit)
@@ -32,7 +36,10 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun register(email: String, password: String): Result<Unit> {
+    override suspend fun register(
+        email: String,
+        password: String,
+    ): Result<Unit> {
         return try {
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             Result.success(Unit)

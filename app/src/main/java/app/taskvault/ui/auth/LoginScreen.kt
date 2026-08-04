@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 fun LoginScreen(
     viewModel: AuthViewModel,
     onNavigateToRegister: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -35,29 +35,31 @@ fun LoginScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(24.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
                 text = "TaskVault",
-                style = MaterialTheme.typography.displayMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                style =
+                    MaterialTheme.typography.displayMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    ),
             )
-            
+
             Text(
                 text = "Sign in to continue",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -69,7 +71,7 @@ fun LoginScreen(
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true
+                singleLine = true,
             )
 
             OutlinedTextField(
@@ -80,14 +82,14 @@ fun LoginScreen(
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true
+                singleLine = true,
             )
 
             if (uiState is AuthUiState.Error) {
                 Text(
                     text = (uiState as AuthUiState.Error).message,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
 
@@ -95,11 +97,12 @@ fun LoginScreen(
 
             Button(
                 onClick = { viewModel.login(email, password) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = uiState !is AuthUiState.Loading && email.isNotBlank() && password.isNotBlank()
+                enabled = uiState !is AuthUiState.Loading && email.isNotBlank() && password.isNotBlank(),
             ) {
                 if (uiState is AuthUiState.Loading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
@@ -116,7 +119,7 @@ fun LoginScreen(
                     text = "Sign up",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { onNavigateToRegister() }
+                    modifier = Modifier.clickable { onNavigateToRegister() },
                 )
             }
         }

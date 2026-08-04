@@ -11,9 +11,8 @@ import kotlinx.coroutines.launch
 
 class TodoViewModel(
     private val repository: TodoRepository,
-    private val authRepository: app.taskvault.domain.AuthRepository
+    private val authRepository: app.taskvault.domain.AuthRepository,
 ) : ViewModel() {
-
     private val _todos = MutableStateFlow<List<Todo>>(emptyList())
     val todos: StateFlow<List<Todo>> = _todos.asStateFlow()
 
@@ -28,7 +27,13 @@ class TodoViewModel(
         }
     }
 
-    fun addTodo(title: String, description: String, dueDate: Long?, remindMe: Long?, priority: String) {
+    fun addTodo(
+        title: String,
+        description: String,
+        dueDate: Long?,
+        remindMe: Long?,
+        priority: String,
+    ) {
         viewModelScope.launch {
             repository.addTodo(title, description, dueDate, remindMe, priority)
         }
@@ -38,17 +43,26 @@ class TodoViewModel(
         _selectedTodo.value = todo
     }
 
-    fun updateTodoDetail(id: String, title: String, description: String, dueDate: Long?, remindMe: Long?, priority: String) {
+    fun updateTodoDetail(
+        id: String,
+        title: String,
+        description: String,
+        dueDate: Long?,
+        remindMe: Long?,
+        priority: String,
+    ) {
         viewModelScope.launch {
             val currentTodo = _todos.value.find { it.id == id }
             if (currentTodo != null) {
-                repository.updateTodo(currentTodo.copy(
-                    title = title,
-                    description = description,
-                    dueDate = dueDate,
-                    remindMe = remindMe,
-                    priority = priority
-                ))
+                repository.updateTodo(
+                    currentTodo.copy(
+                        title = title,
+                        description = description,
+                        dueDate = dueDate,
+                        remindMe = remindMe,
+                        priority = priority,
+                    ),
+                )
             }
         }
     }

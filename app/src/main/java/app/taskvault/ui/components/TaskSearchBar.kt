@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TaskSearchBar(
     query: String,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (String) -> Unit,
 ) {
     OutlinedTextField(
         value = query,
@@ -28,20 +28,22 @@ fun TaskSearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = MaterialTheme.colorScheme.outline
+                tint = MaterialTheme.colorScheme.outline,
             )
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(56.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent
-        ),
-        singleLine = true
+        colors =
+            TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+            ),
+        singleLine = true,
     )
 }

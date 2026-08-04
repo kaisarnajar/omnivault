@@ -8,5 +8,5 @@ data class Todo(
     val timestamp: Long = 0L,
     val dueDate: Long? = null,
     val remindMe: Long? = null,
-    val priority: String = "Medium"
+    val priority: String = "Medium",
 )

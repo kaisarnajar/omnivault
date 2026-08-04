@@ -37,7 +37,7 @@ import com.google.firebase.database.FirebaseDatabase
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         val authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance())
         val profileRepository = ProfileRepositoryImpl(FirebaseAuth.getInstance())
         val repository = createTodoRepository(authRepository)
@@ -52,7 +52,6 @@ class MainActivity : ComponentActivity() {
                     repository = repository,
                     authRepository = authRepository,
                     profileRepository = profileRepository,
-                    currentTheme = isDarkTheme,
                     onThemeChange = { isDarkTheme = it }
                 )
             }
@@ -60,16 +59,21 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun createTodoRepository(authRepository: AuthRepositoryImpl): TodoRepositoryImpl {
-        val database = Room.databaseBuilder(
-            applicationContext,
-            TodoDatabase::class.java,
-            "todo_database"
-        ).fallbackToDestructiveMigration().build()
+        val database =
+            Room.databaseBuilder(
+                applicationContext,
+                TodoDatabase::class.java,
+                "todo_database",
+            ).fallbackToDestructiveMigration().build()
 
-        val firebaseDatabase = FirebaseDatabase.getInstance().apply {
-            try { setPersistenceEnabled(true) } catch (e: Exception) {}
-        }
-        
+        val firebaseDatabase =
+            FirebaseDatabase.getInstance().apply {
+                try {
+                    setPersistenceEnabled(true)
+                } catch (e: Exception) {
+                }
+            }
+
         val alarmScheduler = app.taskvault.worker.AlarmScheduler(applicationContext)
         return TodoRepositoryImpl(database.todoDao, TodoRemoteDataSource(firebaseDatabase), authRepository, alarmScheduler)
     }
@@ -80,66 +84,71 @@ fun TaskVaultApp(
     repository: TodoRepositoryImpl,
     authRepository: AuthRepositoryImpl,
     profileRepository: ProfileRepositoryImpl,
-    currentTheme: Boolean?,
-    onThemeChange: (Boolean?) -> Unit
+    onThemeChange: (Boolean?) -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.background,
     ) {
         val navController = rememberNavController()
-        
-        val viewModel: TodoViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-            factory = object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return TodoViewModel(repository, authRepository) as T
-                }
-            }
-        )
 
-        val authViewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-            factory = object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return AuthViewModel(authRepository) as T
-                }
-            }
-        )
-        
-        val profileViewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-            factory = object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return ProfileViewModel(profileRepository) as T
-                }
-            }
-        )
+        val viewModel: TodoViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel(
+                factory =
+                    object : ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            return TodoViewModel(repository, authRepository) as T
+                        }
+                    },
+            )
+
+        val authViewModel: AuthViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel(
+                factory =
+                    object : ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            return AuthViewModel(authRepository) as T
+                        }
+                    },
+            )
+
+        val profileViewModel: ProfileViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel(
+                factory =
+                    object : ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            return ProfileViewModel(profileRepository) as T
+                        }
+                    },
+            )
 
         NavHost(
-            navController = navController, 
-            startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login"
+            navController = navController,
+            startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login",
         ) {
             composable("login") {
                 LoginScreen(
                     viewModel = authViewModel,
                     onNavigateToRegister = { navController.navigate("register") },
-                    onLoginSuccess = { 
+                    onLoginSuccess = {
                         navController.navigate("todo_list") {
                             popUpTo("login") { inclusive = true }
                         }
-                    }
+                    },
                 )
             }
             composable("register") {
                 RegisterScreen(
                     viewModel = authViewModel,
                     onNavigateBack = { navController.popBackStack() },
-                    onRegisterSuccess = { 
+                    onRegisterSuccess = {
                         navController.navigate("todo_list") {
                             popUpTo("login") { inclusive = true }
                         }
-                    }
+                    },
                 )
             }
             composable("todo_list") {
@@ -148,26 +157,25 @@ fun TaskVaultApp(
                     profileViewModel = profileViewModel,
                     onNavigateToAddTodo = { navController.navigate("add_todo") },
                     onNavigateToProfile = { navController.navigate("profile") },
-                    onLogout = { 
+                    onLogout = {
                         viewModel.logout()
                         navController.navigate("login") {
                             popUpTo("todo_list") { inclusive = true }
                         }
                     },
-                    currentTheme = currentTheme,
-                    onThemeChange = onThemeChange
+                    onThemeChange = onThemeChange,
                 )
             }
             composable("add_todo") {
                 AddTodoScreen(
                     viewModel = viewModel,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
             composable("profile") {
                 ProfileScreen(
                     viewModel = profileViewModel,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
         }

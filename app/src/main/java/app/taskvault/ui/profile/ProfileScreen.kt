@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -62,33 +62,36 @@ fun ProfileScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                    ),
             )
-        }
+        },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(androidx.compose.foundation.shape.CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(120.dp)
+                        .clip(androidx.compose.foundation.shape.CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = androidx.compose.material.icons.Icons.Default.Person,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -99,7 +102,7 @@ fun ProfileScreen(
                     label = { Text("Display Name") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    singleLine = true
+                    singleLine = true,
                 )
 
                 OutlinedTextField(
@@ -108,22 +111,22 @@ fun ProfileScreen(
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    singleLine = true
+                    singleLine = true,
                 )
             } else {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
                         text = userProfile?.displayName ?: "No Name",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
                         text = userProfile?.email ?: "No Email",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -133,7 +136,7 @@ fun ProfileScreen(
                     text = (uiState as ProfileUiState.Error).message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp),
                 )
             }
 
@@ -142,11 +145,12 @@ fun ProfileScreen(
             if (isEditing) {
                 Button(
                     onClick = { viewModel.updateProfile(displayName, email) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-                    enabled = uiState !is ProfileUiState.Loading && displayName.isNotBlank() && email.isNotBlank()
+                    enabled = uiState !is ProfileUiState.Loading && displayName.isNotBlank() && email.isNotBlank(),
                 ) {
                     if (uiState is ProfileUiState.Loading) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
@@ -157,10 +161,11 @@ fun ProfileScreen(
             } else {
                 Button(
                     onClick = { isEditing = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
                 ) {
                     Text("Edit Profile", fontWeight = FontWeight.Bold)
                 }

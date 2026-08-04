@@ -10,9 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
-
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
 
@@ -29,7 +28,10 @@ class ProfileViewModel(
         }
     }
 
-    fun updateProfile(displayName: String, email: String) {
+    fun updateProfile(
+        displayName: String,
+        email: String,
+    ) {
         _uiState.value = ProfileUiState.Loading
         viewModelScope.launch {
             try {
@@ -40,7 +42,7 @@ class ProfileViewModel(
                         return@launch
                     }
                 }
-                
+
                 if (email.isNotBlank() && email != _userProfile.value?.email) {
                     val emailResult = profileRepository.updateEmail(email)
                     if (emailResult.isFailure) {
@@ -66,7 +68,10 @@ class ProfileViewModel(
 
 sealed class ProfileUiState {
     object Idle : ProfileUiState()
+
     object Loading : ProfileUiState()
+
     object Success : ProfileUiState()
+
     data class Error(val message: String) : ProfileUiState()
 }
