@@ -11,8 +11,7 @@ interface TodoRepository {
         dueDate: Long?,
         remindMe: Long?,
         priority: String,
-        category: String,
-        tags: List<String>,
+        category: String
     )
 
     suspend fun updateTodo(todo: Todo)

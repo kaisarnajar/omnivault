@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,9 @@ class PomodoroViewModel(
     val pomodoroDuration = preferencesRepository.pomodoroDuration
     val shortBreakDuration = preferencesRepository.shortBreakDuration
     val longBreakDuration = preferencesRepository.longBreakDuration
+
+    private val _timerEvent = kotlinx.coroutines.flow.MutableSharedFlow<Unit>()
+    val timerEvent: kotlinx.coroutines.flow.SharedFlow<Unit> = _timerEvent.asSharedFlow()
 
     private var timerJob: Job? = null
 
@@ -62,8 +66,9 @@ class PomodoroViewModel(
                 delay(1000L)
                 _timeRemaining.value -= 1
             }
-            if (_timeRemaining.value == 0) {
+            if (_timeRemaining.value == 0 && _isPlaying.value) {
                 _isPlaying.value = false
+                _timerEvent.emit(Unit)
             }
         }
     }

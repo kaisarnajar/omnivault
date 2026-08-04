@@ -34,6 +34,9 @@ import app.taskvault.domain.PomodoroMode
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
+import android.media.RingtoneManager
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +44,15 @@ fun PomodoroScreen(
     viewModel: PomodoroViewModel,
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.timerEvent.collect {
+            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val ringtone = RingtoneManager.getRingtone(context, uri)
+            ringtone?.play()
+        }
+    }
     val timeRemaining by viewModel.timeRemaining.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentMode by viewModel.currentMode.collectAsState()

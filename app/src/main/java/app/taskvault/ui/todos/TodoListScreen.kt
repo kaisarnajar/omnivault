@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.taskvault.ui.components.DashboardStats
 import app.taskvault.ui.components.DashboardTopAppBar
 import app.taskvault.ui.components.TaskListHeader
 import app.taskvault.ui.components.TaskSearchBar
@@ -92,9 +91,6 @@ fun TodoListScreen(
                     query = searchQuery,
                     onQueryChange = { searchQuery = it },
                 )
-            }
-            item {
-                DashboardStats(todos = todos)
             }
             item {
                 TaskListHeader(
