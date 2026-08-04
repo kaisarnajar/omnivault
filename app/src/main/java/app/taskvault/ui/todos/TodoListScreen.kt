@@ -1,5 +1,6 @@
 package app.taskvault.ui.todos
 
+import app.taskvault.util.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,13 +30,26 @@ fun TodoListScreen(
     val todos by viewModel.todos.collectAsState()
     val userProfile by profileViewModel.userProfile.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    var selectedFilter by remember { mutableStateOf("Today") }
 
     // Refresh profile on screen entry to get latest
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
     }
 
-    val filteredTodos = todos.filter { it.title.contains(searchQuery, ignoreCase = true) }
+    val filteredTodos = todos.filter { todo ->
+        val matchesSearch = todo.title.contains(searchQuery, ignoreCase = true)
+        
+        val matchesFilter = when (selectedFilter) {
+            "Today" -> !todo.isCompleted && (todo.dueDate == null || DateUtils.isToday(todo.dueDate))
+            "This Week" -> !todo.isCompleted && todo.dueDate != null && DateUtils.isThisWeek(todo.dueDate)
+            "This Month" -> !todo.isCompleted && todo.dueDate != null && DateUtils.isThisMonth(todo.dueDate)
+            "Completed" -> todo.isCompleted
+            else -> true
+        }
+
+        matchesSearch && matchesFilter
+    }
 
     Scaffold(
         topBar = {
@@ -79,7 +93,10 @@ fun TodoListScreen(
                 DashboardStats(todos = todos)
             }
             item {
-                TaskListHeader()
+                TaskListHeader(
+                    selectedFilter = selectedFilter,
+                    onFilterSelected = { selectedFilter = it }
+                )
             }
             items(filteredTodos, key = { it.id }) { todo ->
                 TodoItemCard(
