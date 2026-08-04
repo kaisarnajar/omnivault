@@ -12,6 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -42,9 +45,17 @@ class TodoRepositoryImpl(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getTodos(): Flow<List<Todo>> {
-        return todoDao.getTodos().map { entities ->
-            entities.map { it.toDomainModel() }
+        return authRepository.authState.flatMapLatest { state ->
+            if (state is AuthState.Authenticated) {
+                val userId = authRepository.getCurrentUserId() ?: return@flatMapLatest flowOf(emptyList())
+                todoDao.getTodos(userId).map { entities ->
+                    entities.map { it.toDomainModel() }
+                }
+            } else {
+                flowOf(emptyList())
+            }
         }
     }
 
@@ -59,6 +70,7 @@ class TodoRepositoryImpl(
         val newTodo =
             Todo(
                 id = UUID.randomUUID().toString(),
+                userId = authRepository.getCurrentUserId() ?: "",
                 title = title,
                 description = description,
                 isCompleted = false,

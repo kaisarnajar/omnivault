@@ -8,6 +8,7 @@ import app.taskvault.domain.Todo
 data class TodoEntity(
     @PrimaryKey
     val id: String,
+    val userId: String,
     val title: String,
     val description: String,
     val isCompleted: Boolean,
@@ -21,6 +22,7 @@ data class TodoEntity(
 fun TodoEntity.toDomainModel(): Todo {
     return Todo(
         id = id,
+        userId = userId,
         title = title,
         description = description,
         isCompleted = isCompleted,
@@ -35,6 +37,7 @@ fun TodoEntity.toDomainModel(): Todo {
 fun Todo.toEntityModel(): TodoEntity {
     return TodoEntity(
         id = id,
+        userId = userId,
         title = title,
         description = description,
         isCompleted = isCompleted,
