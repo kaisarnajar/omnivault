@@ -26,6 +26,8 @@ import app.taskvault.data.repository.TodoRepositoryImpl
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
+import app.taskvault.ui.pomodoro.PomodoroScreen
+import app.taskvault.ui.pomodoro.PomodoroViewModel
 import app.taskvault.ui.profile.ProfileScreen
 import app.taskvault.ui.profile.ProfileViewModel
 import app.taskvault.ui.todos.AddTodoScreen
@@ -125,6 +127,17 @@ fun TaskVaultApp(
                     },
             )
 
+        val pomodoroViewModel: PomodoroViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel(
+                factory =
+                    object : ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            return PomodoroViewModel(repository) as T
+                        }
+                    },
+            )
+
         NavHost(
             navController = navController,
             startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login",
@@ -157,6 +170,7 @@ fun TaskVaultApp(
                     profileViewModel = profileViewModel,
                     onNavigateToAddTodo = { navController.navigate("add_todo") },
                     onNavigateToProfile = { navController.navigate("profile") },
+                    onNavigateToPomodoro = { taskId -> navController.navigate("pomodoro/$taskId") },
                     onLogout = {
                         viewModel.logout()
                         navController.navigate("login") {
@@ -176,6 +190,21 @@ fun TaskVaultApp(
                 ProfileScreen(
                     viewModel = profileViewModel,
                     onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable(
+                route = "pomodoro/{taskId}",
+                arguments = listOf(androidx.navigation.navArgument("taskId") { type = androidx.navigation.NavType.StringType })
+            ) { backStackEntry ->
+                val taskId = backStackEntry.arguments?.getString("taskId")
+                androidx.compose.runtime.LaunchedEffect(taskId) {
+                    if (taskId != null) {
+                        pomodoroViewModel.loadTask(taskId)
+                    }
+                }
+                PomodoroScreen(
+                    viewModel = pomodoroViewModel,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
         }
