@@ -29,7 +29,7 @@ class ProfileViewModel(
         }
     }
 
-    fun updateProfile(displayName: String) {
+    fun updateProfile(displayName: String, email: String) {
         _uiState.value = ProfileUiState.Loading
         viewModelScope.launch {
             try {
@@ -37,6 +37,15 @@ class ProfileViewModel(
                     val nameResult = profileRepository.updateDisplayName(displayName)
                     if (nameResult.isFailure) {
                         _uiState.value = ProfileUiState.Error("Failed to update name")
+                        return@launch
+                    }
+                }
+                
+                if (email.isNotBlank() && email != _userProfile.value?.email) {
+                    val emailResult = profileRepository.updateEmail(email)
+                    if (emailResult.isFailure) {
+                        val errorMsg = emailResult.exceptionOrNull()?.message ?: "Failed to update email"
+                        _uiState.value = ProfileUiState.Error("Email update failed. (You may need to re-login): $errorMsg")
                         return@launch
                     }
                 }
