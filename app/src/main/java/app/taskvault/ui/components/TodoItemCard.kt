@@ -39,7 +39,7 @@ fun TodoItemCard(
         SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it))
     } ?: "No Due Date"
     
-    val timeString = todo.remindMe?.let {
+    val timeString = todo.dueDate?.let {
         SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it))
     } ?: ""
     
