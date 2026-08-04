@@ -83,4 +83,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
+    
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

@@ -133,13 +133,16 @@ fun TaskVaultApp(
                     },
             )
 
+        val context = androidx.compose.ui.platform.LocalContext.current
+        val pomodoroPreferencesRepository = remember(context) { app.taskvault.data.repository.PomodoroPreferencesRepository(context) }
+
         val pomodoroViewModel: PomodoroViewModel =
             androidx.lifecycle.viewmodel.compose.viewModel(
                 factory =
                     object : ViewModelProvider.Factory {
                         @Suppress("UNCHECKED_CAST")
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return PomodoroViewModel() as T
+                            return PomodoroViewModel(pomodoroPreferencesRepository) as T
                         }
                     },
             )

@@ -128,21 +128,13 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
+            app.taskvault.ui.components.GradientButton(
+                text = "Login",
                 onClick = { viewModel.login(email, password) },
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 enabled = uiState !is AuthUiState.Loading && email.isNotBlank() && password.isNotBlank(),
-            ) {
-                if (uiState is AuthUiState.Loading) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-                } else {
-                    Text("Login", fontSize = 18.sp)
-                }
-            }
+                isLoading = uiState is AuthUiState.Loading
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 

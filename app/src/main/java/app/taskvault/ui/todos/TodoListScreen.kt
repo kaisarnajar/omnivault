@@ -2,6 +2,7 @@ package app.taskvault.ui.todos
 
 import app.taskvault.util.DateUtils
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +18,7 @@ import app.taskvault.ui.components.TaskListHeader
 import app.taskvault.ui.components.TaskSearchBar
 import app.taskvault.ui.components.TodoItemCard
 import app.taskvault.ui.profile.ProfileViewModel
+import app.taskvault.ui.components.gradientBackground
 
 @Composable
 fun TodoListScreen(
@@ -60,15 +62,18 @@ fun TodoListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.selectTodoForEdit(null)
-                    onNavigateToAddTodo()
-                },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+            Box(
+                modifier = Modifier
+                    .padding(bottom = 16.dp, end = 16.dp)
+                    .size(64.dp)
+                    .gradientBackground(androidx.compose.foundation.shape.CircleShape)
+                    .clickable {
+                        viewModel.selectTodoForEdit(null)
+                        onNavigateToAddTodo()
+                    },
+                contentAlignment = androidx.compose.ui.Alignment.Center
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Task")
+                Icon(Icons.Default.Add, contentDescription = "Add Task", tint = androidx.compose.ui.graphics.Color.White)
             }
         },
         containerColor = MaterialTheme.colorScheme.background,

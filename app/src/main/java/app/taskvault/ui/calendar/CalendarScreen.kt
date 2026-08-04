@@ -86,75 +86,79 @@ fun CalendarScreen(
                 }
             }
 
-            // Days of week header
-            val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                daysOfWeek.forEach { day ->
-                    Text(
-                        text = day,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            app.taskvault.ui.components.GlassCard(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            ) {
+                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                    // Days of week header
+                    val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                        daysOfWeek.forEach { day ->
+                            Text(
+                                text = day,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            // Calendar Grid
-            val daysInMonth = currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
-            val firstDayOfMonth = currentMonth.clone() as Calendar
-            firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1)
-            val startDayOfWeek = firstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1 // 0-indexed (Sunday = 0)
+                    // Calendar Grid
+                    val daysInMonth = currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+                    val firstDayOfMonth = currentMonth.clone() as Calendar
+                    firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1)
+                    val startDayOfWeek = firstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1 // 0-indexed (Sunday = 0)
 
-            val totalCells = startDayOfWeek + daysInMonth
-            val rows = Math.ceil(totalCells / 7.0).toInt()
+                    val totalCells = startDayOfWeek + daysInMonth
+                    val rows = Math.ceil(totalCells / 7.0).toInt()
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                for (i in 0 until rows) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        for (j in 0..6) {
-                            val cellIndex = i * 7 + j
-                            val dayNumber = cellIndex - startDayOfWeek + 1
+                    for (i in 0 until rows) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            for (j in 0..6) {
+                                val cellIndex = i * 7 + j
+                                val dayNumber = cellIndex - startDayOfWeek + 1
 
-                            if (dayNumber in 1..daysInMonth) {
-                                val cellDate = currentMonth.clone() as Calendar
-                                cellDate.set(Calendar.DAY_OF_MONTH, dayNumber)
-                                
-                                val isSelected = isSameDay(selectedDate.timeInMillis, cellDate.timeInMillis)
-                                val hasTasks = todos.any { it.dueDate != null && isSameDay(it.dueDate, cellDate.timeInMillis) }
+                                if (dayNumber in 1..daysInMonth) {
+                                    val cellDate = currentMonth.clone() as Calendar
+                                    cellDate.set(Calendar.DAY_OF_MONTH, dayNumber)
+                                    
+                                    val isSelected = isSameDay(selectedDate.timeInMillis, cellDate.timeInMillis)
+                                    val hasTasks = todos.any { it.dueDate != null && isSameDay(it.dueDate, cellDate.timeInMillis) }
 
-                                Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
-                                        .clickable { selectedDate = cellDate },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = dayNumber.toString(),
-                                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        if (hasTasks) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(4.dp)
-                                                    .clip(CircleShape)
-                                                    .background(if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                            .clickable { selectedDate = cellDate },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Text(
+                                                text = dayNumber.toString(),
+                                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                                style = MaterialTheme.typography.bodyMedium
                                             )
+                                            if (hasTasks) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(4.dp)
+                                                        .clip(CircleShape)
+                                                        .background(if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+                                                )
+                                            }
                                         }
                                     }
+                                } else {
+                                    Spacer(modifier = Modifier.size(40.dp))
                                 }
-                            } else {
-                                Spacer(modifier = Modifier.size(40.dp))
                             }
                         }
                     }

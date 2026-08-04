@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.taskvault.ui.components.gradientBackground
 
 data class ToolItem(
     val title: String,
@@ -70,16 +71,11 @@ fun ToolsScreen(
 
 @Composable
 fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
-    Card(
+    app.taskvault.ui.components.GlassCard(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(16.dp))
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier
@@ -92,13 +88,13 @@ fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
                 modifier = Modifier
                     .size(56.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .gradientBackground(),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = tool.icon,
                     contentDescription = tool.title,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = androidx.compose.ui.graphics.Color.White,
                     modifier = Modifier.size(32.dp)
                 )
             }

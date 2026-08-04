@@ -140,32 +140,19 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             if (isEditing) {
-                Button(
+                app.taskvault.ui.components.GradientButton(
+                    text = "Save Profile",
                     onClick = { viewModel.updateProfile(displayName, email) },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
                     enabled = uiState !is ProfileUiState.Loading && displayName.isNotBlank() && email.isNotBlank(),
-                ) {
-                    if (uiState is ProfileUiState.Loading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
-                    } else {
-                        Text("Save Profile", fontWeight = FontWeight.Bold)
-                    }
-                }
+                    isLoading = uiState is ProfileUiState.Loading
+                )
             } else {
-                Button(
+                app.taskvault.ui.components.GradientButton(
+                    text = "Edit Profile",
                     onClick = { isEditing = true },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-                ) {
-                    Text("Edit Profile", fontWeight = FontWeight.Bold)
-                }
+                    modifier = Modifier.fillMaxWidth().height(56.dp)
+                )
             }
         }
     }

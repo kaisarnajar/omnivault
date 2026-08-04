@@ -3,6 +3,7 @@ package app.taskvault.ui.pomodoro
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
+import app.taskvault.ui.components.gradientBackground
+import app.taskvault.domain.PomodoroMode
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,8 +43,16 @@ fun PomodoroScreen(
 ) {
     val timeRemaining by viewModel.timeRemaining.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val currentMode by viewModel.currentMode.collectAsState()
+    
+    var showSettingsDialog by remember { mutableStateOf(false) }
 
-    val totalTime = 25 * 60f
+    // Hardcode total time per mode for progress animation
+    val totalTime = when (currentMode) {
+        PomodoroMode.POMODORO -> viewModel.pomodoroDuration.collectAsState(initial = 25).value * 60f
+        PomodoroMode.SHORT_BREAK -> viewModel.shortBreakDuration.collectAsState(initial = 5).value * 60f
+        PomodoroMode.LONG_BREAK -> viewModel.longBreakDuration.collectAsState(initial = 15).value * 60f
+    }
     val progress by animateFloatAsState(
         targetValue = timeRemaining / totalTime,
         label = "progress"
@@ -54,6 +71,11 @@ fun PomodoroScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                actions = {
+                    IconButton(onClick = { showSettingsDialog = true }) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )
@@ -67,8 +89,31 @@ fun PomodoroScreen(
                 .padding(padding)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
+            // Mode Selector
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                PomodoroMode.values().forEach { mode ->
+                    val isSelected = currentMode == mode
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { viewModel.setMode(mode) },
+                        label = { Text(mode.displayName) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(48.dp))
+
             // Circular Timer
             Box(
                 modifier = Modifier
@@ -126,20 +171,74 @@ fun PomodoroScreen(
                     )
                 }
 
-                FloatingActionButton(
-                    onClick = { viewModel.toggleTimer() },
-                    modifier = Modifier.size(80.dp),
-                    shape = CircleShape,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .gradientBackground(CircleShape)
+                        .clickable { viewModel.toggleTimer() },
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                         contentDescription = if (isPlaying) "Pause" else "Play",
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(40.dp),
+                        tint = androidx.compose.ui.graphics.Color.White
                     )
                 }
             }
         }
+    }
+
+    if (showSettingsDialog) {
+        val currentPomo by viewModel.pomodoroDuration.collectAsState(initial = 25)
+        val currentShort by viewModel.shortBreakDuration.collectAsState(initial = 5)
+        val currentLong by viewModel.longBreakDuration.collectAsState(initial = 15)
+
+        var pomoInput by remember { mutableStateOf(currentPomo.toString()) }
+        var shortInput by remember { mutableStateOf(currentShort.toString()) }
+        var longInput by remember { mutableStateOf(currentLong.toString()) }
+
+        AlertDialog(
+            onDismissRequest = { showSettingsDialog = false },
+            title = { Text("Timer Settings") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = pomoInput,
+                        onValueChange = { pomoInput = it },
+                        label = { Text("Pomodoro (minutes)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    OutlinedTextField(
+                        value = shortInput,
+                        onValueChange = { shortInput = it },
+                        label = { Text("Short Break (minutes)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    OutlinedTextField(
+                        value = longInput,
+                        onValueChange = { longInput = it },
+                        label = { Text("Long Break (minutes)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val p = pomoInput.toIntOrNull() ?: 25
+                    val s = shortInput.toIntOrNull() ?: 5
+                    val l = longInput.toIntOrNull() ?: 15
+                    viewModel.saveSettings(p, s, l)
+                    showSettingsDialog = false
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSettingsDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }

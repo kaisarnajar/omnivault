@@ -30,7 +30,7 @@ fun DashboardTopAppBar(
             Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(androidx.compose.ui.graphics.Color.Transparent)
                 .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,

@@ -76,21 +76,17 @@ fun TodoItemCard(
         )
     }
 
-    Box(
+    GlassCard(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    if (todo.isCompleted) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface,
-                )
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
                 .clickable { onToggleCompletion() }
-                .padding(16.dp),
+                .padding(bottom = 8.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
         ) {
             // Custom Checkbox
             Box(
