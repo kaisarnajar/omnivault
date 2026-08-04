@@ -15,6 +15,8 @@ data class TodoEntity(
     val dueDate: Long?,
     val remindMe: Long?,
     val priority: String,
+    val category: String,
+    val tags: List<String>,
 )
 
 fun TodoEntity.toDomainModel(): Todo {
@@ -27,6 +29,8 @@ fun TodoEntity.toDomainModel(): Todo {
         dueDate = dueDate,
         remindMe = remindMe,
         priority = priority,
+        category = category,
+        tags = tags,
     )
 }
 
@@ -40,5 +44,7 @@ fun Todo.toEntityModel(): TodoEntity {
         dueDate = dueDate,
         remindMe = remindMe,
         priority = priority,
+        category = category,
+        tags = tags,
     )
 }

@@ -33,9 +33,11 @@ class TodoViewModel(
         dueDate: Long?,
         remindMe: Long?,
         priority: String,
+        category: String,
+        tags: List<String>,
     ) {
         viewModelScope.launch {
-            repository.addTodo(title, description, dueDate, remindMe, priority)
+            repository.addTodo(title, description, dueDate, remindMe, priority, category, tags)
         }
     }
 
@@ -50,6 +52,8 @@ class TodoViewModel(
         dueDate: Long?,
         remindMe: Long?,
         priority: String,
+        category: String,
+        tags: List<String>,
     ) {
         viewModelScope.launch {
             val currentTodo = _todos.value.find { it.id == id }
@@ -61,6 +65,8 @@ class TodoViewModel(
                         dueDate = dueDate,
                         remindMe = remindMe,
                         priority = priority,
+                        category = category,
+                        tags = tags,
                     ),
                 )
             }

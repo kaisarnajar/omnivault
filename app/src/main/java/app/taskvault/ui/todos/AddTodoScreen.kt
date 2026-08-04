@@ -33,6 +33,8 @@ fun AddTodoScreen(
     var description by remember { mutableStateOf("") }
     var dueDate by remember { mutableStateOf<Long?>(null) }
     var priority by remember { mutableStateOf("Medium") }
+    var category by remember { mutableStateOf("") }
+    var tagsInput by remember { mutableStateOf("") }
 
     // Pre-fill if editing
     LaunchedEffect(selectedTodo) {
@@ -41,6 +43,8 @@ fun AddTodoScreen(
             description = it.description
             dueDate = it.dueDate
             priority = it.priority
+            category = it.category
+            tagsInput = it.tags.joinToString(", ")
         }
     }
 
@@ -78,10 +82,13 @@ fun AddTodoScreen(
                     onClick = {
                         if (title.isNotBlank()) {
                             val computedRemindMe = dueDate?.minus(30 * 60 * 1000L)
+                            val finalCategory = if (category.isBlank()) "General" else category.trim()
+                            val parsedTags = tagsInput.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                            
                             if (selectedTodo != null) {
-                                viewModel.updateTodoDetail(selectedTodo!!.id, title, description, dueDate, computedRemindMe, priority)
+                                viewModel.updateTodoDetail(selectedTodo!!.id, title, description, dueDate, computedRemindMe, priority, finalCategory, parsedTags)
                             } else {
-                                viewModel.addTodo(title, description, dueDate, computedRemindMe, priority)
+                                viewModel.addTodo(title, description, dueDate, computedRemindMe, priority, finalCategory, parsedTags)
                             }
                             onNavigateBack()
                         }
@@ -183,6 +190,69 @@ fun AddTodoScreen(
                 selectedPriority = priority,
                 onPrioritySelect = { priority = it },
             )
+
+            // Category Input
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "CATEGORY",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                OutlinedTextField(
+                    value = category,
+                    onValueChange = { category = it },
+                    placeholder = { Text("e.g., Work, Personal, Fitness", color = MaterialTheme.colorScheme.outlineVariant) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    colors =
+                        TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                        ),
+                    singleLine = true,
+                )
+                
+                // Quick Category Suggestions
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val suggestions = listOf("Work", "Personal", "Health")
+                    suggestions.forEach { suggestion ->
+                        AssistChip(
+                            onClick = { category = suggestion },
+                            label = { Text(suggestion) },
+                        )
+                    }
+                }
+            }
+
+            // Tags Input
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = "TAGS (Comma separated)",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                OutlinedTextField(
+                    value = tagsInput,
+                    onValueChange = { tagsInput = it },
+                    placeholder = { Text("e.g., urgent, frontend, bug", color = MaterialTheme.colorScheme.outlineVariant) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    colors =
+                        TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                        ),
+                    singleLine = true,
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }

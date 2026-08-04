@@ -9,4 +9,6 @@ data class Todo(
     val dueDate: Long? = null,
     val remindMe: Long? = null,
     val priority: String = "Medium",
+    val category: String = "General",
+    val tags: List<String> = emptyList(),
 )

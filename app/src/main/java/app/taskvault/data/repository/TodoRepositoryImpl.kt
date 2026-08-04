@@ -54,6 +54,8 @@ class TodoRepositoryImpl(
         dueDate: Long?,
         remindMe: Long?,
         priority: String,
+        category: String,
+        tags: List<String>,
     ) {
         val newTodo =
             Todo(
@@ -65,6 +67,8 @@ class TodoRepositoryImpl(
                 dueDate = dueDate,
                 remindMe = remindMe,
                 priority = priority,
+                category = category,
+                tags = tags,
             )
         todoDao.insertTodo(newTodo.toEntityModel())
 
