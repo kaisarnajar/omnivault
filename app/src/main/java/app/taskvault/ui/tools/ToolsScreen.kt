@@ -40,10 +40,10 @@ fun ToolsScreen(
             route = "pomodoro"
         ),
         ToolItem(
-            title = "Brain Dump",
-            description = "Jot down quick thoughts.",
+            title = "Notes",
+            description = "Take down quick notes.",
             icon = Icons.Default.Edit,
-            route = "scratchpad"
+            route = "notes_list"
         )
     )
 

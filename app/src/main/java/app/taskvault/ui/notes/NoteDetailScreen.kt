@@ -1,4 +1,4 @@
-package app.taskvault.ui.scratchpad
+package app.taskvault.ui.notes
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -13,16 +13,17 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScratchpadScreen(
-    viewModel: ScratchpadViewModel,
+fun NoteDetailScreen(
+    viewModel: NoteDetailViewModel,
     onNavigateBack: () -> Unit
 ) {
+    val title by viewModel.title.collectAsState()
     val content by viewModel.content.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Brain Dump", fontWeight = FontWeight.Bold) },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -41,14 +42,38 @@ fun ScratchpadScreen(
                 .padding(padding)
         ) {
             TextField(
+                value = title,
+                onValueChange = { viewModel.updateTitle(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                placeholder = {
+                    Text(
+                        "Title",
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                textStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+            )
+
+            TextField(
                 value = content,
                 onValueChange = { viewModel.updateContent(it) },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp),
                 placeholder = {
                     Text(
-                        "Dump your thoughts here...",
+                        "Note...",
                         color = MaterialTheme.colorScheme.outlineVariant,
                         fontSize = 18.sp
                     )

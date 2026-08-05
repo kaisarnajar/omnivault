@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
         ).fallbackToDestructiveMigration().build()
         
         val repository = createTodoRepository(authRepository)
-        val scratchpadRepository = app.taskvault.data.repository.ScratchpadRepositoryImpl(database.scratchpadDao, authRepository)
+        val noteRepository = app.taskvault.data.repository.NoteRepositoryImpl(database.noteDao, authRepository)
 
         setContent {
             var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                     repository = repository,
                     authRepository = authRepository,
                     profileRepository = profileRepository,
-                    scratchpadRepository = scratchpadRepository,
+                    noteRepository = noteRepository,
                     onThemeChange = { isDarkTheme = it }
                 )
             }
@@ -97,7 +97,7 @@ fun TaskVaultApp(
     repository: TodoRepositoryImpl,
     authRepository: AuthRepositoryImpl,
     profileRepository: ProfileRepositoryImpl,
-    scratchpadRepository: app.taskvault.data.repository.ScratchpadRepositoryImpl,
+    noteRepository: app.taskvault.data.repository.NoteRepositoryImpl,
     onThemeChange: (Boolean?) -> Unit,
 ) {
     Surface(
@@ -153,13 +153,13 @@ fun TaskVaultApp(
                     },
             )
 
-        val scratchpadViewModel: app.taskvault.ui.scratchpad.ScratchpadViewModel =
+        val notesListViewModel: app.taskvault.ui.notes.NotesListViewModel =
             androidx.lifecycle.viewmodel.compose.viewModel(
                 factory =
                     object : ViewModelProvider.Factory {
                         @Suppress("UNCHECKED_CAST")
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return app.taskvault.ui.scratchpad.ScratchpadViewModel(scratchpadRepository) as T
+                            return app.taskvault.ui.notes.NotesListViewModel(noteRepository) as T
                         }
                     },
             )
@@ -255,9 +255,33 @@ fun TaskVaultApp(
                     onNavigateToTool = { route -> navController.navigate(route) }
                 )
             }
-            composable("scratchpad") {
-                app.taskvault.ui.scratchpad.ScratchpadScreen(
-                    viewModel = scratchpadViewModel,
+            composable("notes_list") {
+                app.taskvault.ui.notes.NotesListScreen(
+                    viewModel = notesListViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToNote = { noteId ->
+                        val id = noteId ?: java.util.UUID.randomUUID().toString()
+                        navController.navigate("note_detail/$id")
+                    }
+                )
+            }
+            composable(
+                route = "note_detail/{noteId}",
+                arguments = listOf(androidx.navigation.navArgument("noteId") { type = androidx.navigation.NavType.StringType })
+            ) { backStackEntry ->
+                val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
+                val noteDetailViewModel: app.taskvault.ui.notes.NoteDetailViewModel =
+                    androidx.lifecycle.viewmodel.compose.viewModel(
+                        factory =
+                            object : ViewModelProvider.Factory {
+                                @Suppress("UNCHECKED_CAST")
+                                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                    return app.taskvault.ui.notes.NoteDetailViewModel(noteRepository, noteId) as T
+                                }
+                            },
+                    )
+                app.taskvault.ui.notes.NoteDetailScreen(
+                    viewModel = noteDetailViewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

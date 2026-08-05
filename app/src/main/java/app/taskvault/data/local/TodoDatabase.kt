@@ -4,8 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [TodoEntity::class, ScratchpadEntity::class], version = 7, exportSchema = false)
+@Database(entities = [TodoEntity::class, NoteEntity::class], version = 8, exportSchema = false)
 abstract class TodoDatabase : RoomDatabase() {
     abstract val todoDao: TodoDao
-    abstract val scratchpadDao: ScratchpadDao
+    abstract val noteDao: NoteDao
 }
