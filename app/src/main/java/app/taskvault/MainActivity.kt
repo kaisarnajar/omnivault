@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
         
         val repository = createTodoRepository(authRepository)
         val noteRepository = app.taskvault.data.repository.NoteRepositoryImpl(database.noteDao, authRepository)
+        val pomodoroHistoryRepository = app.taskvault.data.repository.PomodoroHistoryRepositoryImpl(database.pomodoroDao, authRepository)
 
         setContent {
             var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
@@ -71,6 +72,7 @@ class MainActivity : ComponentActivity() {
                     authRepository = authRepository,
                     profileRepository = profileRepository,
                     noteRepository = noteRepository,
+                    pomodoroHistoryRepository = pomodoroHistoryRepository,
                     onThemeChange = { isDarkTheme = it }
                 )
             }
@@ -98,6 +100,7 @@ fun TaskVaultApp(
     authRepository: AuthRepositoryImpl,
     profileRepository: ProfileRepositoryImpl,
     noteRepository: app.taskvault.data.repository.NoteRepositoryImpl,
+    pomodoroHistoryRepository: app.taskvault.data.repository.PomodoroHistoryRepositoryImpl,
     onThemeChange: (Boolean?) -> Unit,
 ) {
     Surface(
@@ -142,13 +145,16 @@ fun TaskVaultApp(
         val context = androidx.compose.ui.platform.LocalContext.current
         val pomodoroPreferencesRepository = remember(context) { app.taskvault.data.repository.PomodoroPreferencesRepository(context) }
 
-        val pomodoroViewModel: PomodoroViewModel =
+        val pomodoroViewModel: app.taskvault.ui.pomodoro.PomodoroViewModel =
             androidx.lifecycle.viewmodel.compose.viewModel(
                 factory =
                     object : ViewModelProvider.Factory {
                         @Suppress("UNCHECKED_CAST")
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return PomodoroViewModel(pomodoroPreferencesRepository) as T
+                            return app.taskvault.ui.pomodoro.PomodoroViewModel(
+                                pomodoroPreferencesRepository,
+                                pomodoroHistoryRepository
+                            ) as T
                         }
                     },
             )

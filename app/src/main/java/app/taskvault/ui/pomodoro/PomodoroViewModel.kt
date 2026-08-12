@@ -3,6 +3,8 @@ package app.taskvault.ui.pomodoro
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.taskvault.data.repository.PomodoroPreferencesRepository
+import app.taskvault.domain.PomodoroHistoryRepository
+import app.taskvault.data.local.PomodoroSessionEntity
 import app.taskvault.domain.PomodoroMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class PomodoroViewModel(
-    private val preferencesRepository: PomodoroPreferencesRepository
+    private val preferencesRepository: PomodoroPreferencesRepository,
+    private val historyRepository: PomodoroHistoryRepository
 ) : ViewModel() {
 
     private val _currentMode = MutableStateFlow(PomodoroMode.POMODORO)
@@ -34,12 +37,21 @@ class PomodoroViewModel(
     private val _timerEvent = kotlinx.coroutines.flow.MutableSharedFlow<Unit>()
     val timerEvent: kotlinx.coroutines.flow.SharedFlow<Unit> = _timerEvent.asSharedFlow()
 
+    private val _historySessions = MutableStateFlow<List<PomodoroSessionEntity>>(emptyList())
+    val historySessions: StateFlow<List<PomodoroSessionEntity>> = _historySessions.asStateFlow()
+
     private var timerJob: Job? = null
 
     init {
         viewModelScope.launch {
             val defaultDuration = preferencesRepository.pomodoroDuration.first()
             _timeRemaining.value = defaultDuration * 60
+        }
+        
+        viewModelScope.launch {
+            historyRepository.getSessions().collect { sessions ->
+                _historySessions.value = sessions
+            }
         }
     }
 
@@ -69,6 +81,12 @@ class PomodoroViewModel(
             if (_timeRemaining.value == 0 && _isPlaying.value) {
                 _isPlaying.value = false
                 _timerEvent.emit(Unit)
+                
+                // Save session if it was a POMODORO mode
+                if (_currentMode.value == PomodoroMode.POMODORO) {
+                    val duration = preferencesRepository.pomodoroDuration.first()
+                    historyRepository.saveSession(duration)
+                }
             }
         }
     }
