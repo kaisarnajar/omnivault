@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TaskVault"
+rootProject.name = "OmniVault"
 include(":app")

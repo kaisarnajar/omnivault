@@ -73,7 +73,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 // Need to use an existing icon. Since we don't know what's in drawable,
                 // we can fallback to application info icon or android.R.drawable.ic_lock_idle_alarm
                 .setSmallIcon(android.R.drawable.ic_popup_reminder)
-                .setContentTitle("TaskVault Reminder")
+                .setContentTitle("OmniVault Reminder")
                 .setContentText("Your task '$title' is due in 30 minutes!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)

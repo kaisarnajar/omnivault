@@ -43,7 +43,7 @@ fun DashboardTopAppBar(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = userProfile?.displayName ?: "TaskVault User",
+                    text = userProfile?.displayName ?: "OmniVault User",
                     style =
                         MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,

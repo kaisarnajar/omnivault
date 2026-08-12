@@ -72,7 +72,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = "TaskVault",
+                text = "OmniVault",
                 style =
                     MaterialTheme.typography.displayMedium.copy(
                         fontWeight = FontWeight.Bold,
