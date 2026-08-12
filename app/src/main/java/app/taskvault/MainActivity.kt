@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
+import app.taskvault.ui.splash.SplashScreen
 
 import app.taskvault.ui.calendar.CalendarScreen
 import app.taskvault.ui.tools.ToolsScreen
@@ -81,9 +82,23 @@ fun TaskVaultApp(
         Scaffold { padding ->
             NavHost(
                 navController = navController,
-                startDestination = if (FirebaseAuth.getInstance().currentUser != null) "tools" else "login",
+                startDestination = "splash",
                 modifier = Modifier.padding(padding)
             ) {
+                composable("splash") {
+                    SplashScreen(
+                        onNavigateToLogin = {
+                            navController.navigate("login") {
+                                popUpTo("splash") { inclusive = true }
+                            }
+                        },
+                        onNavigateToHome = {
+                            navController.navigate("tools") {
+                                popUpTo("splash") { inclusive = true }
+                            }
+                        }
+                    )
+                }
                 composable("login") {
                     LoginScreen(
                         viewModel = authViewModel,
