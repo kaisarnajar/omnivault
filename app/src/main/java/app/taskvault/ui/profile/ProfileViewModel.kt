@@ -3,6 +3,7 @@ package app.taskvault.ui.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.taskvault.domain.ProfileRepository
+import app.taskvault.domain.TodoRepository
 import app.taskvault.domain.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val profileRepository: ProfileRepository,
+    private val todoRepository: TodoRepository,
 ) : ViewModel() {
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
@@ -58,6 +60,12 @@ class ProfileViewModel(
             } catch (e: Exception) {
                 _uiState.value = ProfileUiState.Error(e.message ?: "An error occurred")
             }
+        }
+    }
+
+    fun seedData() {
+        viewModelScope.launch {
+            todoRepository.seedSampleData()
         }
     }
 

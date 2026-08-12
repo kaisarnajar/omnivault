@@ -18,4 +18,7 @@ interface TodoRepository {
     suspend fun updateTodo(todo: Todo)
 
     suspend fun deleteTodo(todoId: String)
+
+    suspend fun clearCompletedTodos()
+    suspend fun seedSampleData()
 }

@@ -127,4 +127,42 @@ class TodoRepositoryImpl(
             }
         }
     }
+    
+    override suspend fun clearCompletedTodos() {
+        val userId = authRepository.getCurrentUserId() ?: return
+    }
+
+    override suspend fun seedSampleData() {
+        val userId = authRepository.getCurrentUserId() ?: return
+        val categories = listOf("Work", "Personal", "Health", "Study", "Finance", "Other")
+        val priorities = listOf("High", "Medium", "Low")
+        val eisenhowerTags = listOf("Do", "Schedule", "Delegate", "Delete")
+        
+        val randomTasks = mutableListOf<Todo>()
+        val currentTime = System.currentTimeMillis()
+        
+        for (i in 1..50) {
+            val isCompleted = Math.random() > 0.8
+            val todo = Todo(
+                id = UUID.randomUUID().toString(),
+                userId = userId,
+                title = "Sample Task $i",
+                description = "This is a randomly generated sample task to test performance and scrolling.",
+                isCompleted = isCompleted,
+                timestamp = currentTime - (Math.random() * 86400000 * 10).toLong(), // Random timestamp in last 10 days
+                dueDate = if (Math.random() > 0.5) currentTime + (Math.random() * 86400000 * 5).toLong() else null, // Random due date in next 5 days
+                remindMe = null,
+                priority = priorities.random(),
+                category = categories.random(),
+                eisenhowerTag = eisenhowerTags.random()
+            )
+            randomTasks.add(todo)
+            todoDao.insertTodo(todo.toEntityModel())
+        }
+        
+        // Batch push to remote (best effort via single adds)
+        randomTasks.forEach { 
+            try { remoteDataSource.addTodo(userId, it) } catch (e: Exception) {} 
+        }
+    }
 }

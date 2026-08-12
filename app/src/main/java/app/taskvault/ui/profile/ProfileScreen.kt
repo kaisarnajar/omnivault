@@ -153,6 +153,16 @@ fun ProfileScreen(
                     onClick = { isEditing = true },
                     modifier = Modifier.fillMaxWidth().height(56.dp)
                 )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                OutlinedButton(
+                    onClick = { viewModel.seedData() },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Debug: Generate Sample Tasks")
+                }
             }
         }
     }
