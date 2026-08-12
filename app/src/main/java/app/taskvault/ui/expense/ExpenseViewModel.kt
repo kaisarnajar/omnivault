@@ -11,7 +11,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class ExpenseViewModel(
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class ExpenseViewModel @Inject constructor(
     private val repository: ExpenseRepository
 ) : ViewModel() {
 

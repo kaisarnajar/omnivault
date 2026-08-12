@@ -10,7 +10,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import java.util.UUID
 
-class ExpenseRepositoryImpl(
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+
+
+import javax.inject.Inject
+
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+class ExpenseRepositoryImpl @Inject constructor(
     private val expenseDao: ExpenseDao,
     private val authRepository: AuthRepository
 ) : ExpenseRepository {

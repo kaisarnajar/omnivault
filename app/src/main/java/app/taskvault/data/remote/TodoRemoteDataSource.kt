@@ -4,7 +4,9 @@ import app.taskvault.domain.Todo
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
-class TodoRemoteDataSource(
+import javax.inject.Inject
+
+class TodoRemoteDataSource @Inject constructor(
     private val firebaseDatabase: FirebaseDatabase,
 ) {
     private fun getTodosRef(userId: String) = firebaseDatabase.getReference("users/$userId/todos")

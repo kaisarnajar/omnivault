@@ -10,7 +10,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import java.util.UUID
 
-class PomodoroHistoryRepositoryImpl(
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+
+
+import javax.inject.Inject
+
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+class PomodoroHistoryRepositoryImpl @Inject constructor(
     private val pomodoroDao: PomodoroDao,
     private val authRepository: AuthRepository
 ) : PomodoroHistoryRepository {

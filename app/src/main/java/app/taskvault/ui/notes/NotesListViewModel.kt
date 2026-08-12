@@ -9,7 +9,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class NotesListViewModel(
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class NotesListViewModel @Inject constructor(
     private val repository: NoteRepository
 ) : ViewModel() {
 

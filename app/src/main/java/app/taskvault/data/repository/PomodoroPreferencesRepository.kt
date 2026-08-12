@@ -9,9 +9,14 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+import javax.inject.Inject
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "pomodoro_settings")
 
-class PomodoroPreferencesRepository(private val context: Context) {
+class PomodoroPreferencesRepository @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     
     companion object {
         val POMODORO_DURATION_KEY = intPreferencesKey("pomodoro_duration")

@@ -15,7 +15,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class PomodoroViewModel(
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class PomodoroViewModel @Inject constructor(
     private val preferencesRepository: PomodoroPreferencesRepository,
     private val historyRepository: PomodoroHistoryRepository
 ) : ViewModel() {

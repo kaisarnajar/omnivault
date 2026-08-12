@@ -10,7 +10,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import java.util.UUID
 
-class NoteRepositoryImpl(
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+
+
+import javax.inject.Inject
+
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao,
     private val authRepository: AuthRepository
 ) : NoteRepository {

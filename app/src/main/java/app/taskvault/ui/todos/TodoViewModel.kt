@@ -9,7 +9,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TodoViewModel(
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class TodoViewModel @Inject constructor(
     private val repository: TodoRepository,
     private val authRepository: app.taskvault.domain.AuthRepository,
 ) : ViewModel() {

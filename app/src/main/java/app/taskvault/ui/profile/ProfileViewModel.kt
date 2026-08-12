@@ -13,7 +13,12 @@ import kotlinx.coroutines.launch
 import app.taskvault.domain.NoteRepository
 import app.taskvault.domain.PomodoroHistoryRepository
 
-class ProfileViewModel(
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val todoRepository: TodoRepository,
     private val noteRepository: NoteRepository,

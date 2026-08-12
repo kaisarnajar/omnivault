@@ -18,7 +18,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class TodoRepositoryImpl(
+
+import javax.inject.Inject
+
+class TodoRepositoryImpl @Inject constructor(
     private val todoDao: TodoDao,
     private val remoteDataSource: TodoRemoteDataSource,
     private val authRepository: AuthRepository,
@@ -129,7 +132,7 @@ class TodoRepositoryImpl(
     }
     
     override suspend fun clearCompletedTodos() {
-        val userId = authRepository.getCurrentUserId() ?: return
+        // Not currently implemented: user logic goes here.
     }
 
     override suspend fun seedSampleData() {

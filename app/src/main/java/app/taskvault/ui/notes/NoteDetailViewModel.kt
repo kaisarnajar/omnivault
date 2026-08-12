@@ -9,10 +9,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-class NoteDetailViewModel(
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.lifecycle.SavedStateHandle
+
+@HiltViewModel
+class NoteDetailViewModel @Inject constructor(
     private val repository: NoteRepository,
-    private val noteId: String
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val noteId: String = savedStateHandle.get<String>("noteId") ?: ""
 
     private val _title = MutableStateFlow("")
     val title: StateFlow<String> = _title.asStateFlow()

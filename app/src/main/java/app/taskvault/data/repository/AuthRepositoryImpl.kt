@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class AuthRepositoryImpl(
+
+import javax.inject.Inject
+
+class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) : AuthRepository {
     override val authState: Flow<AuthState> =

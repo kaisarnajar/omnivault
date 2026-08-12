@@ -6,7 +6,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import kotlinx.coroutines.tasks.await
 
-class ProfileRepositoryImpl(
+
+import javax.inject.Inject
+
+class ProfileRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) : ProfileRepository {
     override suspend fun getUserProfile(): UserProfile? {

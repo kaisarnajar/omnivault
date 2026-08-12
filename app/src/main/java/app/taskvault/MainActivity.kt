@@ -14,18 +14,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
-import app.taskvault.data.local.TodoDatabase
-import app.taskvault.data.remote.TodoRemoteDataSource
-import app.taskvault.data.repository.AuthRepositoryImpl
-import app.taskvault.data.repository.ProfileRepositoryImpl
-import app.taskvault.data.repository.TodoRepositoryImpl
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
@@ -39,29 +32,21 @@ import app.taskvault.ui.profile.ProfileViewModel
 import app.taskvault.ui.todos.AddTodoScreen
 import app.taskvault.ui.todos.TodoListScreen
 import app.taskvault.ui.todos.TodoViewModel
+import app.taskvault.ui.expense.ExpenseScreen
+import app.taskvault.ui.expense.ExpenseViewModel
+import app.taskvault.ui.notes.NotesListScreen
+import app.taskvault.ui.notes.NotesListViewModel
+import app.taskvault.ui.notes.NoteDetailScreen
+import app.taskvault.ui.notes.NoteDetailViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var database: TodoDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val authRepository = AuthRepositoryImpl(FirebaseAuth.getInstance())
-        val profileRepository = ProfileRepositoryImpl(FirebaseAuth.getInstance())
         
-        database = Room.databaseBuilder(
-            applicationContext,
-            TodoDatabase::class.java,
-            "todo_database",
-        ).fallbackToDestructiveMigration().build()
-        
-        val repository = createTodoRepository(authRepository)
-        val noteRepository = app.taskvault.data.repository.NoteRepositoryImpl(database.noteDao, authRepository)
-        val pomodoroHistoryRepository = app.taskvault.data.repository.PomodoroHistoryRepositoryImpl(database.pomodoroDao, authRepository)
-        val expenseRepository = app.taskvault.data.repository.ExpenseRepositoryImpl(database.expenseDao, authRepository)
-
         setContent {
             var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
             val systemTheme = androidx.compose.foundation.isSystemInDarkTheme()
@@ -69,41 +54,15 @@ class MainActivity : ComponentActivity() {
 
             app.taskvault.ui.theme.TaskVaultTheme(darkTheme = currentTheme) {
                 TaskVaultApp(
-                    repository = repository,
-                    authRepository = authRepository,
-                    profileRepository = profileRepository,
-                    noteRepository = noteRepository,
-                    pomodoroHistoryRepository = pomodoroHistoryRepository,
-                    expenseRepository = expenseRepository,
                     onThemeChange = { isDarkTheme = it }
                 )
             }
         }
     }
-
-    private fun createTodoRepository(authRepository: AuthRepositoryImpl): TodoRepositoryImpl {
-
-        val firebaseDatabase =
-            FirebaseDatabase.getInstance().apply {
-                try {
-                    setPersistenceEnabled(true)
-                } catch (e: Exception) {
-                }
-            }
-
-        val alarmScheduler = app.taskvault.worker.AlarmScheduler(applicationContext)
-        return TodoRepositoryImpl(database.todoDao, TodoRemoteDataSource(firebaseDatabase), authRepository, alarmScheduler)
-    }
 }
 
 @Composable
 fun TaskVaultApp(
-    repository: TodoRepositoryImpl,
-    authRepository: AuthRepositoryImpl,
-    profileRepository: ProfileRepositoryImpl,
-    noteRepository: app.taskvault.data.repository.NoteRepositoryImpl,
-    pomodoroHistoryRepository: app.taskvault.data.repository.PomodoroHistoryRepositoryImpl,
-    expenseRepository: app.taskvault.data.repository.ExpenseRepositoryImpl,
     onThemeChange: (Boolean?) -> Unit,
 ) {
     Surface(
@@ -112,77 +71,12 @@ fun TaskVaultApp(
     ) {
         val navController = rememberNavController()
 
-        val viewModel: TodoViewModel =
-            androidx.lifecycle.viewmodel.compose.viewModel(
-                factory =
-                    object : ViewModelProvider.Factory {
-                        @Suppress("UNCHECKED_CAST")
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return TodoViewModel(repository, authRepository) as T
-                        }
-                    },
-            )
-
-        val authViewModel: AuthViewModel =
-            androidx.lifecycle.viewmodel.compose.viewModel(
-                factory =
-                    object : ViewModelProvider.Factory {
-                        @Suppress("UNCHECKED_CAST")
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return AuthViewModel(authRepository) as T
-                        }
-                    },
-            )
-
-        val profileViewModel: ProfileViewModel =
-            androidx.lifecycle.viewmodel.compose.viewModel(
-                factory =
-                    object : ViewModelProvider.Factory {
-                        @Suppress("UNCHECKED_CAST")
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return ProfileViewModel(profileRepository, repository, noteRepository, pomodoroHistoryRepository) as T
-                        }
-                    },
-            )
-
-        val context = androidx.compose.ui.platform.LocalContext.current
-        val pomodoroPreferencesRepository = remember(context) { app.taskvault.data.repository.PomodoroPreferencesRepository(context) }
-
-        val pomodoroViewModel: app.taskvault.ui.pomodoro.PomodoroViewModel =
-            androidx.lifecycle.viewmodel.compose.viewModel(
-                factory =
-                    object : ViewModelProvider.Factory {
-                        @Suppress("UNCHECKED_CAST")
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return app.taskvault.ui.pomodoro.PomodoroViewModel(
-                                pomodoroPreferencesRepository,
-                                pomodoroHistoryRepository
-                            ) as T
-                        }
-                    },
-            )
-
-        val notesListViewModel: app.taskvault.ui.notes.NotesListViewModel =
-            androidx.lifecycle.viewmodel.compose.viewModel(
-                factory =
-                    object : ViewModelProvider.Factory {
-                        @Suppress("UNCHECKED_CAST")
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return app.taskvault.ui.notes.NotesListViewModel(noteRepository) as T
-                        }
-                    },
-            )
-
-        val expenseViewModel: app.taskvault.ui.expense.ExpenseViewModel =
-            androidx.lifecycle.viewmodel.compose.viewModel(
-                factory =
-                    object : ViewModelProvider.Factory {
-                        @Suppress("UNCHECKED_CAST")
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            return app.taskvault.ui.expense.ExpenseViewModel(expenseRepository) as T
-                        }
-                    },
-            )
+        val viewModel: TodoViewModel = hiltViewModel()
+        val authViewModel: AuthViewModel = hiltViewModel()
+        val profileViewModel: ProfileViewModel = hiltViewModel()
+        val pomodoroViewModel: PomodoroViewModel = hiltViewModel()
+        val notesListViewModel: NotesListViewModel = hiltViewModel()
+        val expenseViewModel: ExpenseViewModel = hiltViewModel()
 
         val currentBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = currentBackStackEntry?.destination?.route
@@ -212,105 +106,95 @@ fun TaskVaultApp(
                 startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login",
                 modifier = Modifier.padding(padding)
             ) {
-            composable("login") {
-                LoginScreen(
-                    viewModel = authViewModel,
-                    onNavigateToRegister = { navController.navigate("register") },
-                    onLoginSuccess = {
-                        navController.navigate("todo_list") {
-                            popUpTo("login") { inclusive = true }
-                        }
-                    },
-                )
-            }
-            composable("register") {
-                RegisterScreen(
-                    viewModel = authViewModel,
-                    onNavigateBack = { navController.popBackStack() },
-                    onRegisterSuccess = {
-                        navController.navigate("todo_list") {
-                            popUpTo("login") { inclusive = true }
-                        }
-                    },
-                )
-            }
-            composable("todo_list") {
-                TodoListScreen(
-                    viewModel = viewModel,
-                    profileViewModel = profileViewModel,
-                    onNavigateToAddTodo = { navController.navigate("add_todo") },
-                    onLogout = {
-                        viewModel.logout()
-                        navController.navigate("login") {
-                            popUpTo("todo_list") { inclusive = true }
-                        }
-                    },
-                    onThemeChange = onThemeChange,
-                )
-            }
-            composable("add_todo") {
-                AddTodoScreen(
-                    viewModel = viewModel,
-                    onNavigateBack = { navController.popBackStack() },
-                )
-            }
-            composable("profile") {
-                ProfileScreen(
-                    viewModel = profileViewModel
-                )
-            }
-            composable("pomodoro") {
-                PomodoroScreen(
-                    viewModel = pomodoroViewModel,
-                    onNavigateBack = { navController.popBackStack() },
-                )
-            }
-            composable("expense_tracker") {
-                app.taskvault.ui.expense.ExpenseScreen(
-                    viewModel = expenseViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
-            composable("calendar") {
-                CalendarScreen(
-                    viewModel = viewModel
-                )
-            }
-            composable("tools") {
-                ToolsScreen(
-                    onNavigateToTool = { route -> navController.navigate(route) }
-                )
-            }
-            composable("notes_list") {
-                app.taskvault.ui.notes.NotesListScreen(
-                    viewModel = notesListViewModel,
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToNote = { noteId ->
-                        val id = noteId ?: java.util.UUID.randomUUID().toString()
-                        navController.navigate("note_detail/$id")
-                    }
-                )
-            }
-            composable(
-                route = "note_detail/{noteId}",
-                arguments = listOf(androidx.navigation.navArgument("noteId") { type = androidx.navigation.NavType.StringType })
-            ) { backStackEntry ->
-                val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
-                val noteDetailViewModel: app.taskvault.ui.notes.NoteDetailViewModel =
-                    androidx.lifecycle.viewmodel.compose.viewModel(
-                        factory =
-                            object : ViewModelProvider.Factory {
-                                @Suppress("UNCHECKED_CAST")
-                                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                    return app.taskvault.ui.notes.NoteDetailViewModel(noteRepository, noteId) as T
-                                }
-                            },
+                composable("login") {
+                    LoginScreen(
+                        viewModel = authViewModel,
+                        onNavigateToRegister = { navController.navigate("register") },
+                        onLoginSuccess = {
+                            navController.navigate("todo_list") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
                     )
-                app.taskvault.ui.notes.NoteDetailScreen(
-                    viewModel = noteDetailViewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
+                }
+                composable("register") {
+                    RegisterScreen(
+                        viewModel = authViewModel,
+                        onNavigateBack = { navController.popBackStack() },
+                        onRegisterSuccess = {
+                            navController.navigate("todo_list") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
+                    )
+                }
+                composable("todo_list") {
+                    TodoListScreen(
+                        viewModel = viewModel,
+                        profileViewModel = profileViewModel,
+                        onNavigateToAddTodo = { navController.navigate("add_todo") },
+                        onLogout = {
+                            viewModel.logout()
+                            navController.navigate("login") {
+                                popUpTo("todo_list") { inclusive = true }
+                            }
+                        },
+                        onThemeChange = onThemeChange,
+                    )
+                }
+                composable("add_todo") {
+                    AddTodoScreen(
+                        viewModel = viewModel,
+                        onNavigateBack = { navController.popBackStack() },
+                    )
+                }
+                composable("profile") {
+                    ProfileScreen(
+                        viewModel = profileViewModel
+                    )
+                }
+                composable("pomodoro") {
+                    PomodoroScreen(
+                        viewModel = pomodoroViewModel,
+                        onNavigateBack = { navController.popBackStack() },
+                    )
+                }
+                composable("expense_tracker") {
+                    ExpenseScreen(
+                        viewModel = expenseViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+                composable("calendar") {
+                    CalendarScreen(
+                        viewModel = viewModel
+                    )
+                }
+                composable("tools") {
+                    ToolsScreen(
+                        onNavigateToTool = { route -> navController.navigate(route) }
+                    )
+                }
+                composable("notes_list") {
+                    NotesListScreen(
+                        viewModel = notesListViewModel,
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToNote = { noteId ->
+                            val id = noteId ?: java.util.UUID.randomUUID().toString()
+                            navController.navigate("note_detail/$id")
+                        }
+                    )
+                }
+                composable(
+                    route = "note_detail/{noteId}",
+                    arguments = listOf(androidx.navigation.navArgument("noteId") { type = androidx.navigation.NavType.StringType })
+                ) { _ ->
+                    val noteDetailViewModel: NoteDetailViewModel = hiltViewModel()
+                    NoteDetailScreen(
+                        viewModel = noteDetailViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }
