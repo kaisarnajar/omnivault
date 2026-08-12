@@ -40,4 +40,20 @@ class PomodoroHistoryRepositoryImpl(
         )
         pomodoroDao.insertSession(entity)
     }
+
+    override suspend fun seedSampleData() {
+        val userId = authRepository.getCurrentUserId() ?: return
+        val durations = listOf(25, 50, 15, 30) // Typical pomodoro durations in minutes
+        val currentTime = System.currentTimeMillis()
+
+        for (i in 1..40) {
+            val entity = PomodoroSessionEntity(
+                id = UUID.randomUUID().toString(),
+                userId = userId,
+                durationInMinutes = durations.random(),
+                timestamp = currentTime - (Math.random() * 86400000 * 7).toLong() // Random timestamp in last 7 days
+            )
+            pomodoroDao.insertSession(entity)
+        }
+    }
 }

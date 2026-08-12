@@ -51,4 +51,20 @@ class NoteRepositoryImpl(
         val userId = authRepository.getCurrentUserId() ?: return
         noteDao.deleteNote(id, userId)
     }
+
+    override suspend fun seedSampleData() {
+        val userId = authRepository.getCurrentUserId() ?: return
+        val currentTime = System.currentTimeMillis()
+        
+        for (i in 1..20) {
+            val entity = NoteEntity(
+                id = UUID.randomUUID().toString(),
+                userId = userId,
+                title = "Sample Note $i",
+                content = "This is a randomly generated sample note for testing purposes. It contains some dummy text to fill the description.",
+                lastUpdated = currentTime - (Math.random() * 86400000 * 5).toLong()
+            )
+            noteDao.insertOrUpdate(entity)
+        }
+    }
 }

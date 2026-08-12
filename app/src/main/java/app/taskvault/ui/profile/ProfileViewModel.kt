@@ -10,9 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+import app.taskvault.domain.NoteRepository
+import app.taskvault.domain.PomodoroHistoryRepository
+
 class ProfileViewModel(
     private val profileRepository: ProfileRepository,
     private val todoRepository: TodoRepository,
+    private val noteRepository: NoteRepository,
+    private val pomodoroHistoryRepository: PomodoroHistoryRepository,
 ) : ViewModel() {
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
@@ -66,6 +71,8 @@ class ProfileViewModel(
     fun seedData() {
         viewModelScope.launch {
             todoRepository.seedSampleData()
+            noteRepository.seedSampleData()
+            pomodoroHistoryRepository.seedSampleData()
         }
     }
 
