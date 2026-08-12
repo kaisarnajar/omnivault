@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,6 +45,12 @@ fun ToolsScreen(
             description = "Take down quick notes.",
             icon = Icons.Default.Edit,
             route = "notes_list"
+        ),
+        ToolItem(
+            title = "Expenses",
+            description = "Track your spending.",
+            icon = Icons.Default.Build,
+            route = "expense_tracker"
         )
     )
 

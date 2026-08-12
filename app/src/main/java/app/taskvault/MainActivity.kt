@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity() {
         val repository = createTodoRepository(authRepository)
         val noteRepository = app.taskvault.data.repository.NoteRepositoryImpl(database.noteDao, authRepository)
         val pomodoroHistoryRepository = app.taskvault.data.repository.PomodoroHistoryRepositoryImpl(database.pomodoroDao, authRepository)
+        val expenseRepository = app.taskvault.data.repository.ExpenseRepositoryImpl(database.expenseDao, authRepository)
 
         setContent {
             var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
                     profileRepository = profileRepository,
                     noteRepository = noteRepository,
                     pomodoroHistoryRepository = pomodoroHistoryRepository,
+                    expenseRepository = expenseRepository,
                     onThemeChange = { isDarkTheme = it }
                 )
             }
@@ -101,6 +103,7 @@ fun TaskVaultApp(
     profileRepository: ProfileRepositoryImpl,
     noteRepository: app.taskvault.data.repository.NoteRepositoryImpl,
     pomodoroHistoryRepository: app.taskvault.data.repository.PomodoroHistoryRepositoryImpl,
+    expenseRepository: app.taskvault.data.repository.ExpenseRepositoryImpl,
     onThemeChange: (Boolean?) -> Unit,
 ) {
     Surface(
@@ -166,6 +169,17 @@ fun TaskVaultApp(
                         @Suppress("UNCHECKED_CAST")
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
                             return app.taskvault.ui.notes.NotesListViewModel(noteRepository) as T
+                        }
+                    },
+            )
+
+        val expenseViewModel: app.taskvault.ui.expense.ExpenseViewModel =
+            androidx.lifecycle.viewmodel.compose.viewModel(
+                factory =
+                    object : ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            return app.taskvault.ui.expense.ExpenseViewModel(expenseRepository) as T
                         }
                     },
             )
@@ -248,6 +262,12 @@ fun TaskVaultApp(
             composable("pomodoro") {
                 PomodoroScreen(
                     viewModel = pomodoroViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+            composable("expense_tracker") {
+                app.taskvault.ui.expense.ExpenseScreen(
+                    viewModel = expenseViewModel,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
