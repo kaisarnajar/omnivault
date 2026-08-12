@@ -156,12 +156,30 @@ fun ProfileScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                OutlinedButton(
-                    onClick = { viewModel.seedData() },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Debug: Generate Sample Tasks")
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = { viewModel.seedTasks() },
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Debug: Generate Sample Tasks")
+                    }
+                    
+                    OutlinedButton(
+                        onClick = { viewModel.seedNotes() },
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Debug: Generate Sample Notes")
+                    }
+                    
+                    OutlinedButton(
+                        onClick = { viewModel.seedPomodoro() },
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Debug: Generate Pomodoro History")
+                    }
                 }
             }
         }

@@ -68,10 +68,20 @@ class ProfileViewModel(
         }
     }
 
-    fun seedData() {
+    fun seedTasks() {
         viewModelScope.launch {
             todoRepository.seedSampleData()
+        }
+    }
+
+    fun seedNotes() {
+        viewModelScope.launch {
             noteRepository.seedSampleData()
+        }
+    }
+
+    fun seedPomodoro() {
+        viewModelScope.launch {
             pomodoroHistoryRepository.seedSampleData()
         }
     }
