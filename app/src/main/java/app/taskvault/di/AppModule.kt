@@ -59,4 +59,7 @@ object AppModule {
 
     @Provides
     fun provideExpenseDao(database: TodoDatabase): ExpenseDao = database.expenseDao
+
+    @Provides
+    fun provideSecretDao(database: TodoDatabase): app.taskvault.data.local.SecretDao = database.secretDao
 }

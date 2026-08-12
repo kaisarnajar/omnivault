@@ -4,10 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [TodoEntity::class, NoteEntity::class, PomodoroSessionEntity::class, ExpenseEntity::class], version = 10, exportSchema = false)
+@Database(entities = [TodoEntity::class, NoteEntity::class, PomodoroSessionEntity::class, ExpenseEntity::class, SecretEntity::class], version = 11, exportSchema = false)
 abstract class TodoDatabase : RoomDatabase() {
     abstract val todoDao: TodoDao
     abstract val noteDao: NoteDao
     abstract val pomodoroDao: PomodoroDao
     abstract val expenseDao: ExpenseDao
+    abstract val secretDao: SecretDao
 }

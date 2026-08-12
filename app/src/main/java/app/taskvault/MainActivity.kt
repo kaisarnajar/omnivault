@@ -1,7 +1,7 @@
 package app.taskvault
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,6 +23,9 @@ import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
 import app.taskvault.ui.splash.SplashScreen
+import app.taskvault.ui.vault.VaultViewModel
+import app.taskvault.ui.vault.VaultListScreen
+import app.taskvault.ui.vault.AddEditSecretScreen
 
 import app.taskvault.ui.calendar.CalendarScreen
 import app.taskvault.ui.tools.ToolsScreen
@@ -43,7 +46,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +81,7 @@ fun TaskVaultApp(
         val pomodoroViewModel: PomodoroViewModel = hiltViewModel()
         val notesListViewModel: NotesListViewModel = hiltViewModel()
         val expenseViewModel: ExpenseViewModel = hiltViewModel()
+        val vaultViewModel: VaultViewModel = hiltViewModel()
 
         Scaffold { padding ->
             NavHost(
@@ -188,6 +192,20 @@ fun TaskVaultApp(
                     val noteDetailViewModel: NoteDetailViewModel = hiltViewModel()
                     NoteDetailScreen(
                         viewModel = noteDetailViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable("vault_list") {
+                    VaultListScreen(
+                        viewModel = vaultViewModel,
+                        onNavigateToAddEdit = { navController.navigate("add_edit_secret") },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+                composable("add_edit_secret") {
+                    AddEditSecretScreen(
+                        viewModel = vaultViewModel,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }

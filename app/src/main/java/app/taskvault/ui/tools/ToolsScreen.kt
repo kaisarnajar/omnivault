@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -67,6 +68,12 @@ fun ToolsScreen(
             description = "Track your spending.",
             icon = Icons.Default.Build,
             route = "expense_tracker"
+        ),
+        ToolItem(
+            title = "Vault",
+            description = "Secure your secrets.",
+            icon = Icons.Default.Lock,
+            route = "vault_list"
         )
     )
 
