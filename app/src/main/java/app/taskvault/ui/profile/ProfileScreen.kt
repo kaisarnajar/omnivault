@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +20,10 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel
+    viewModel: ProfileViewModel,
+    onLogout: () -> Unit,
+    onThemeChange: (Boolean?) -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -47,16 +52,18 @@ fun ProfileScreen(
             TopAppBar(
                 title = { Text(if (isEditing) "Edit Profile" else "Profile") },
                 navigationIcon = {
-                    if (isEditing) {
-                        IconButton(onClick = {
+                    IconButton(onClick = {
+                        if (isEditing) {
                             isEditing = false
                             // Reset fields
                             displayName = userProfile?.displayName ?: ""
                             email = userProfile?.email ?: ""
                             viewModel.resetState()
-                        }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancel")
+                        } else {
+                            onNavigateBack()
                         }
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors =
@@ -153,6 +160,46 @@ fun ProfileScreen(
                     onClick = { isEditing = true },
                     modifier = Modifier.fillMaxWidth().height(56.dp)
                 )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    OutlinedButton(
+                        onClick = { onThemeChange(null) }, // System
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.Palette, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Auto")
+                    }
+                    OutlinedButton(
+                        onClick = { onThemeChange(false) }, // Light
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Light")
+                    }
+                    OutlinedButton(
+                        onClick = { onThemeChange(true) }, // Dark
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Dark")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onLogout,
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Logout")
+                }
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 

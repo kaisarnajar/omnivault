@@ -11,6 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,9 +34,22 @@ data class ToolItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolsScreen(
-    onNavigateToTool: (String) -> Unit
+    onNavigateToTool: (String) -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     val tools = listOf(
+        ToolItem(
+            title = "Tasks",
+            description = "Manage your to-do lists.",
+            icon = Icons.Default.CheckCircle,
+            route = "todo_list"
+        ),
+        ToolItem(
+            title = "Calendar",
+            description = "View your schedule.",
+            icon = Icons.Default.DateRange,
+            route = "calendar"
+        ),
         ToolItem(
             title = "Pomodoro",
             description = "Stay focused with a timer.",
@@ -57,10 +73,15 @@ fun ToolsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tools Hub", fontWeight = FontWeight.Bold) },
+                title = { Text("OmniVault", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
-                )
+                ),
+                actions = {
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(imageVector = Icons.Default.Person, contentDescription = "Profile")
+                    }
+                }
             )
         },
         containerColor = MaterialTheme.colorScheme.background

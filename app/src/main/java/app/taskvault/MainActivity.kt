@@ -22,7 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
-import app.taskvault.ui.components.BottomNavBar
+
 import app.taskvault.ui.calendar.CalendarScreen
 import app.taskvault.ui.tools.ToolsScreen
 import app.taskvault.ui.pomodoro.PomodoroScreen
@@ -78,32 +78,10 @@ fun TaskVaultApp(
         val notesListViewModel: NotesListViewModel = hiltViewModel()
         val expenseViewModel: ExpenseViewModel = hiltViewModel()
 
-        val currentBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = currentBackStackEntry?.destination?.route
-
-        val showBottomNav = currentRoute in listOf("todo_list", "calendar", "tools", "profile")
-
-        Scaffold(
-            bottomBar = {
-                if (showBottomNav) {
-                    BottomNavBar(
-                        currentRoute = currentRoute,
-                        onNavigate = { route ->
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-            }
-        ) { padding ->
+        Scaffold { padding ->
             NavHost(
                 navController = navController,
-                startDestination = if (FirebaseAuth.getInstance().currentUser != null) "todo_list" else "login",
+                startDestination = if (FirebaseAuth.getInstance().currentUser != null) "tools" else "login",
                 modifier = Modifier.padding(padding)
             ) {
                 composable("login") {
@@ -111,7 +89,7 @@ fun TaskVaultApp(
                         viewModel = authViewModel,
                         onNavigateToRegister = { navController.navigate("register") },
                         onLoginSuccess = {
-                            navController.navigate("todo_list") {
+                            navController.navigate("tools") {
                                 popUpTo("login") { inclusive = true }
                             }
                         },
@@ -122,7 +100,7 @@ fun TaskVaultApp(
                         viewModel = authViewModel,
                         onNavigateBack = { navController.popBackStack() },
                         onRegisterSuccess = {
-                            navController.navigate("todo_list") {
+                            navController.navigate("tools") {
                                 popUpTo("login") { inclusive = true }
                             }
                         },
@@ -131,15 +109,8 @@ fun TaskVaultApp(
                 composable("todo_list") {
                     TodoListScreen(
                         viewModel = viewModel,
-                        profileViewModel = profileViewModel,
                         onNavigateToAddTodo = { navController.navigate("add_todo") },
-                        onLogout = {
-                            viewModel.logout()
-                            navController.navigate("login") {
-                                popUpTo("todo_list") { inclusive = true }
-                            }
-                        },
-                        onThemeChange = onThemeChange,
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
                 composable("add_todo") {
@@ -150,7 +121,15 @@ fun TaskVaultApp(
                 }
                 composable("profile") {
                     ProfileScreen(
-                        viewModel = profileViewModel
+                        viewModel = profileViewModel,
+                        onLogout = {
+                            viewModel.logout()
+                            navController.navigate("login") {
+                                popUpTo("tools") { inclusive = true }
+                            }
+                        },
+                        onThemeChange = onThemeChange,
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
                 composable("pomodoro") {
@@ -167,12 +146,14 @@ fun TaskVaultApp(
                 }
                 composable("calendar") {
                     CalendarScreen(
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
                 composable("tools") {
                     ToolsScreen(
-                        onNavigateToTool = { route -> navController.navigate(route) }
+                        onNavigateToTool = { route -> navController.navigate(route) },
+                        onNavigateToProfile = { navController.navigate("profile") }
                     )
                 }
                 composable("notes_list") {

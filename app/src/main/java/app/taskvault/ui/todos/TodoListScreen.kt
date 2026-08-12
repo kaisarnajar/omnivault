@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,20 +23,12 @@ import app.taskvault.ui.components.gradientBackground
 @Composable
 fun TodoListScreen(
     viewModel: TodoViewModel,
-    profileViewModel: ProfileViewModel,
     onNavigateToAddTodo: () -> Unit,
-    onLogout: () -> Unit,
-    onThemeChange: (Boolean?) -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
     val todos by viewModel.todos.collectAsState()
-    val userProfile by profileViewModel.userProfile.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf("Today") }
-
-    // Refresh profile on screen entry to get latest
-    LaunchedEffect(Unit) {
-        profileViewModel.loadProfile()
-    }
 
     val filteredTodos = todos.filter { todo ->
         val matchesSearch = todo.title.contains(searchQuery, ignoreCase = true)
@@ -52,12 +45,19 @@ fun TodoListScreen(
         matchesSearch && matchesFilter
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     Scaffold(
         topBar = {
-            DashboardTopAppBar(
-                userProfile = userProfile,
-                onThemeChange = onThemeChange,
-                onLogout = onLogout,
+            TopAppBar(
+                title = { Text("Tasks", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         },
         floatingActionButton = {
