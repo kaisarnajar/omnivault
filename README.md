@@ -1,20 +1,29 @@
-# TaskVault
+# OmniVault (formerly TaskVault)
 
-TaskVault is an offline-first Android application designed for managing TODOs and notes efficiently. It guarantees that the user can interact with their tasks instantly regardless of network conditions.
+OmniVault is an offline-first Android application designed to be your ultimate all-in-one productivity and security hub. It features a modern, animated interface powered by Jetpack Compose and guarantees that you can interact with your tools instantly regardless of network conditions.
 
 ## Features
 
-- **Offline-First Architecture**: View, add, edit, and delete tasks even without an internet connection.
-- **Real-time Syncing**: Automatically synchronizes your tasks with Firebase when the network is available.
-- **Modern UI**: Built entirely using Jetpack Compose for a responsive, modern interface.
-- **MVVM Architecture**: Follows the Model-View-ViewModel pattern for separation of concerns and maintainability.
+- **Tools Hub**: A centralized, grid-based dashboard giving you access to all your utilities.
+- **Tasks**: Manage your to-do lists efficiently. View, add, edit, and delete tasks.
+- **Calendar**: View your schedule and organize your events.
+- **Pomodoro Timer**: Stay focused and track your productivity with an integrated Pomodoro timer and history logs.
+- **Notes**: Take down quick thoughts and detailed notes with ease.
+- **Expense Tracker**: Keep a close eye on your spending and monitor your financial health.
+- **Secret Vault with Biometric Security**: Securely store sensitive information, passwords, and secrets behind your device's biometric authentication (fingerprint/face unlock).
+- **Authentication**: Firebase Authentication for user accounts and secure profile management.
+- **Offline-First Architecture**: Use the app completely offline with local storage (Room), syncing seamlessly to Firebase Realtime Database.
+- **Modern UI**: Built entirely using Jetpack Compose with glassmorphism effects, smooth animations, and theming capabilities.
 
 ## Tech Stack
 
 - **Language**: [Kotlin](https://kotlinlang.org/)
 - **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose)
-- **Local Database (SSOT)**: [Room](https://developer.android.com/training/data-storage/room)
+- **Dependency Injection**: [Dagger Hilt](https://dagger.dev/hilt/)
+- **Local Database**: [Room](https://developer.android.com/training/data-storage/room)
 - **Remote Database**: [Firebase Realtime Database](https://firebase.google.com/products/realtime-database)
+- **Authentication**: [Firebase Auth](https://firebase.google.com/docs/auth)
+- **Security**: [AndroidX Biometric](https://developer.android.com/training/sign-in/biometric-auth)
 - **Asynchronous Programming**: [Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html)
 - **Navigation**: Compose Navigation
 
@@ -37,7 +46,7 @@ TaskVault is an offline-first Android application designed for managing TODOs an
    - Add an Android app to the Firebase project with the package name `app.taskvault`.
    - Download the generated `google-services.json` file.
    - Place `google-services.json` inside the `app/` directory of the project.
-   - Set up the **Firebase Realtime Database** in test mode (or configure appropriate security rules).
+   - Set up **Firebase Authentication** (Email/Password) and the **Firebase Realtime Database**.
 
 4. **Run the application:**
    - Select an emulator or physical device.
