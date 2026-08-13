@@ -72,15 +72,6 @@ fun GlassCard(
     Box(
         modifier = modifier
             .clip(shape)
-            .then(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Modifier.graphicsLayer {
-                        renderEffect = android.graphics.RenderEffect
-                            .createBlurEffect(20f, 20f, android.graphics.Shader.TileMode.MIRROR)
-                            .asComposeRenderEffect()
-                    }
-                } else Modifier
-            )
             .background(fill)
             .border(1.dp, borderBrush, shape),
         content = content
