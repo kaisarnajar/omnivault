@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -81,7 +82,7 @@ fun ToolsScreen(
         ToolItem(
             title = "QR Scanner",
             description = "Scan Codes",
-            icon = androidx.compose.material.icons.Icons.Default.QrCodeScanner,
+            icon = Icons.Default.QrCodeScanner,
             route = "qr_scanner"
         )
     )
