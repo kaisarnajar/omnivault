@@ -24,12 +24,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.theme.VaultAccent
 
 data class ToolItem(
     val title: String,
     val description: String,
+    val details: String,
     val icon: ImageVector,
     val route: String,
     val isVault: Boolean = false
@@ -44,37 +46,43 @@ fun ToolsScreen(
     val tools = listOf(
         ToolItem(
             title = "Tasks",
-            description = "12 pending",
+            description = "Manage your to-dos",
+            details = "Organize tasks with Eisenhower matrix and track deadlines.",
             icon = Icons.Default.CheckCircle,
             route = "todo_list"
         ),
         ToolItem(
             title = "Calendar",
-            description = "Next: Sync meeting",
+            description = "Schedule events",
+            details = "View upcoming events and organize your daily schedule.",
             icon = Icons.Default.DateRange,
             route = "calendar"
         ),
         ToolItem(
             title = "Pomodoro",
             description = "Focus mode",
+            details = "Boost productivity with timed focus sessions and breaks.",
             icon = Icons.Default.Timer,
             route = "pomodoro"
         ),
         ToolItem(
             title = "Notes",
             description = "Quick thoughts",
+            details = "Jot down ideas, meeting minutes, and personal reflections.",
             icon = Icons.Default.Edit,
             route = "notes_list"
         ),
         ToolItem(
             title = "Expenses",
-            description = "$240 this week",
+            description = "Track spending",
+            details = "Monitor your daily expenses and categorize your financial outflow.",
             icon = Icons.Default.Build,
             route = "expense_tracker"
         ),
         ToolItem(
             title = "Secret Vault",
             description = "Encrypted",
+            details = "Securely store sensitive passwords, API keys, and private data.",
             icon = Icons.Default.Lock,
             route = "vault_list",
             isVault = true
@@ -82,6 +90,7 @@ fun ToolsScreen(
         ToolItem(
             title = "QR Scanner",
             description = "Scan Codes",
+            details = "Instantly scan and read QR codes and barcodes.",
             icon = Icons.Default.QrCodeScanner,
             route = "qr_scanner"
         )
@@ -172,11 +181,20 @@ fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = tool.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = tool.details,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    maxLines = 3,
+                    lineHeight = 14.sp
                 )
             }
         }
