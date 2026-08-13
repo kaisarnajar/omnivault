@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -138,6 +139,14 @@ fun ToolsScreen(
             icon = Icons.Default.Bookmark,
             route = "bookmarks",
             accentColor = BookmarkAccent
+        ),
+        ToolItem(
+            title = "Fitness Tracker",
+            description = "Workouts & Sports",
+            details = "Log workouts with target muscles, running distance, and sports.",
+            icon = Icons.Default.FitnessCenter,
+            route = "fitness",
+            accentColor = FitnessAccent
         )
     )
 

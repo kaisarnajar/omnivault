@@ -86,3 +86,4 @@ val QRAccent = Color(0xFF8B5CF6) // Violet
 val LedgerAccent = Color(0xFF0891B2) // Cyan/Teal
 val MoodAccent = Color(0xFFEC4899) // Pink / Magenta accent
 val BookmarkAccent = Color(0xFF3B82F6) // Royal Blue accent
+val FitnessAccent = Color(0xFFE11D48) // Vibrant Crimson Red accent

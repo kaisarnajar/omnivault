@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
@@ -320,7 +321,8 @@ fun DebugToolsDialog(
         DebugSeedItem("Secret Vault", Icons.Default.Lock, VaultAccent) { viewModel.seedSecrets() },
         DebugSeedItem("Credit/Debit", Icons.Default.AccountBalanceWallet, LedgerAccent) { viewModel.seedLedger() },
         DebugSeedItem("Mood Journal", Icons.Default.Face, MoodAccent) { viewModel.seedMood() },
-        DebugSeedItem("Bookmarks", Icons.Default.Bookmark, BookmarkAccent) { viewModel.seedBookmarks() }
+        DebugSeedItem("Bookmarks", Icons.Default.Bookmark, BookmarkAccent) { viewModel.seedBookmarks() },
+        DebugSeedItem("Fitness Tracker", Icons.Default.FitnessCenter, FitnessAccent) { viewModel.seedFitness() }
     )
 
     AlertDialog(

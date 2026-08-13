@@ -83,4 +83,10 @@ abstract class RepositoryModule {
     abstract fun bindBookmarkRepository(
         bookmarkRepositoryImpl: app.taskvault.data.repository.BookmarkRepositoryImpl
     ): app.taskvault.domain.BookmarkRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFitnessRepository(
+        fitnessRepositoryImpl: app.taskvault.data.repository.FitnessRepositoryImpl
+    ): app.taskvault.domain.FitnessRepository
 }

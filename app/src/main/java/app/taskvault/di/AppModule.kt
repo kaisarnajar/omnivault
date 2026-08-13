@@ -71,4 +71,7 @@ object AppModule {
 
     @Provides
     fun provideBookmarkDao(database: TodoDatabase): app.taskvault.data.local.BookmarkDao = database.bookmarkDao
+
+    @Provides
+    fun provideFitnessDao(database: TodoDatabase): app.taskvault.data.local.FitnessDao = database.fitnessDao
 }
