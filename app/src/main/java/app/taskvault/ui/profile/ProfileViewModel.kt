@@ -72,34 +72,24 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun seedTasks() {
-        viewModelScope.launch {
-            todoRepository.seedSampleData()
-        }
+    suspend fun seedTasks() {
+        todoRepository.seedSampleData()
     }
 
-    fun seedNotes() {
-        viewModelScope.launch {
-            noteRepository.seedSampleData()
-        }
+    suspend fun seedNotes() {
+        noteRepository.seedSampleData()
     }
 
-    fun seedPomodoro() {
-        viewModelScope.launch {
-            pomodoroHistoryRepository.seedSampleData()
-        }
+    suspend fun seedPomodoro() {
+        pomodoroHistoryRepository.seedSampleData()
     }
 
-    fun seedExpenses() {
-        viewModelScope.launch {
-            expenseRepository.seedSampleData()
-        }
+    suspend fun seedExpenses() {
+        expenseRepository.seedSampleData()
     }
 
-    fun seedSecrets() {
-        viewModelScope.launch {
-            secretRepository.seedSampleData()
-        }
+    suspend fun seedSecrets() {
+        secretRepository.seedSampleData()
     }
 
     fun resetState() {

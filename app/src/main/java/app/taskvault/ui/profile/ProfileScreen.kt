@@ -24,7 +24,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import app.taskvault.ui.components.OmniVaultBackground
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +43,9 @@ fun ProfileScreen(
     var isEditing by remember { mutableStateOf(false) }
     var displayName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     // Initialize fields when profile is loaded
     LaunchedEffect(userProfile) {
@@ -227,7 +233,13 @@ fun ProfileScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             OutlinedButton(
-                                onClick = { viewModel.seedTasks() },
+                                onClick = {
+                                    scope.launch {
+                                        Toast.makeText(context, "Started pushing tasks...", Toast.LENGTH_SHORT).show()
+                                        viewModel.seedTasks()
+                                        Toast.makeText(context, "Tasks push completed!", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
                                 modifier = Modifier.weight(1f).height(56.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
@@ -240,7 +252,13 @@ fun ProfileScreen(
                             }
 
                             OutlinedButton(
-                                onClick = { viewModel.seedNotes() },
+                                onClick = {
+                                    scope.launch {
+                                        Toast.makeText(context, "Started pushing notes...", Toast.LENGTH_SHORT).show()
+                                        viewModel.seedNotes()
+                                        Toast.makeText(context, "Notes push completed!", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
                                 modifier = Modifier.weight(1f).height(56.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
@@ -255,7 +273,13 @@ fun ProfileScreen(
 
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             OutlinedButton(
-                                onClick = { viewModel.seedPomodoro() },
+                                onClick = {
+                                    scope.launch {
+                                        Toast.makeText(context, "Started pushing pomodoro history...", Toast.LENGTH_SHORT).show()
+                                        viewModel.seedPomodoro()
+                                        Toast.makeText(context, "Pomodoro push completed!", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
                                 modifier = Modifier.weight(1f).height(56.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
@@ -268,7 +292,13 @@ fun ProfileScreen(
                             }
 
                             OutlinedButton(
-                                onClick = { viewModel.seedExpenses() },
+                                onClick = {
+                                    scope.launch {
+                                        Toast.makeText(context, "Started pushing expenses...", Toast.LENGTH_SHORT).show()
+                                        viewModel.seedExpenses()
+                                        Toast.makeText(context, "Expenses push completed!", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
                                 modifier = Modifier.weight(1f).height(56.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
@@ -283,7 +313,13 @@ fun ProfileScreen(
 
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             OutlinedButton(
-                                onClick = { viewModel.seedSecrets() },
+                                onClick = {
+                                    scope.launch {
+                                        Toast.makeText(context, "Started pushing secrets...", Toast.LENGTH_SHORT).show()
+                                        viewModel.seedSecrets()
+                                        Toast.makeText(context, "Secrets push completed!", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
                                 modifier = Modifier.weight(1f).height(56.dp),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
