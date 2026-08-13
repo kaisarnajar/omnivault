@@ -1,33 +1,86 @@
-# OmniVault (formerly TaskVault)
+# 🔐 OmniVault
 
-OmniVault is an offline-first Android application designed to be your ultimate all-in-one productivity and security hub. It features a modern, animated interface powered by Jetpack Compose and guarantees that you can interact with your tools instantly regardless of network conditions.
+> **An all-in-one, offline-first Android productivity & security hub — built with Jetpack Compose, Material 3, and Kotlin.**
 
-## Features
+OmniVault combines 7 essential tools into a single, beautifully designed app so you can manage tasks, track expenses, take notes, stay focused, and secure your secrets — all without switching between apps.
 
-- **Tools Hub**: A centralized, grid-based dashboard giving you access to all your utilities.
-- **Tasks**: Manage your to-do lists efficiently. View, add, edit, and delete tasks.
-- **Calendar**: View your schedule and organize your events.
-- **Pomodoro Timer**: Stay focused and track your productivity with an integrated Pomodoro timer and history logs.
-- **Notes**: Take down quick thoughts and detailed notes with ease.
-- **Expense Tracker**: Keep a close eye on your spending and monitor your financial health.
-- **Secret Vault with Biometric Security**: Securely store sensitive information, passwords, and secrets behind your device's biometric authentication (fingerprint/face unlock).
-- **Authentication**: Firebase Authentication for user accounts and secure profile management.
-- **Offline-First Architecture**: Use the app completely offline with local storage (Room), syncing seamlessly to Firebase Realtime Database.
-- **Modern UI**: Built entirely using Jetpack Compose with glassmorphism effects, smooth animations, and theming capabilities.
+---
 
-## Tech Stack
+## ✨ Features
 
-- **Language**: [Kotlin](https://kotlinlang.org/)
-- **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose)
-- **Dependency Injection**: [Dagger Hilt](https://dagger.dev/hilt/)
-- **Local Database**: [Room](https://developer.android.com/training/data-storage/room)
-- **Remote Database**: [Firebase Realtime Database](https://firebase.google.com/products/realtime-database)
-- **Authentication**: [Firebase Auth](https://firebase.google.com/docs/auth)
-- **Security**: [AndroidX Biometric](https://developer.android.com/training/sign-in/biometric-auth)
-- **Asynchronous Programming**: [Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html)
-- **Navigation**: Compose Navigation
+| Feature | Description |
+|---|---|
+| ✅ **Tasks** | Manage to-dos with Eisenhower priority matrix, deadlines, and search |
+| 📅 **Calendar** | View and organize your upcoming schedule at a glance |
+| 🍅 **Pomodoro Timer** | Stay focused with timed sessions, breaks, ambient sounds, and session history |
+| 📝 **Notes** | Jot down ideas, meeting minutes, and personal reflections |
+| 💸 **Expense Tracker** | Monitor daily spending and categorize your financial outflow |
+| 🔒 **Secret Vault** | Store passwords, API keys, and sensitive data behind biometric authentication |
+| 📷 **QR Scanner** | Instantly scan and read QR codes and barcodes |
 
-## Setup Instructions
+### 🏠 Home Screen Widgets
+All major features come with **Jetpack Glance home screen widgets** so you can view your tasks, notes, focus time, and expenses right from your Android home screen.
+
+### 🔧 Debug Tools
+Built-in debug tools to generate sample data for every feature — useful for development and testing.
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Language** | [Kotlin](https://kotlinlang.org/) |
+| **UI Framework** | [Jetpack Compose](https://developer.android.com/jetpack/compose) + Material 3 |
+| **Widgets** | [Jetpack Glance](https://developer.android.com/jetpack/compose/glance) |
+| **Dependency Injection** | [Dagger Hilt](https://dagger.dev/hilt/) |
+| **Local Database** | [Room](https://developer.android.com/training/data-storage/room) |
+| **Remote Database** | [Firebase Realtime Database](https://firebase.google.com/products/realtime-database) |
+| **Authentication** | [Firebase Auth](https://firebase.google.com/docs/auth) (Email/Password + Google Sign-In) |
+| **Biometric Security** | [AndroidX Biometric](https://developer.android.com/training/sign-in/biometric-auth) |
+| **Async** | [Kotlin Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html) |
+| **Navigation** | Compose Navigation |
+
+---
+
+## 🏗 Architecture
+
+```
+app/
+├── data/
+│   ├── local/          # Room entities, DAOs, and database
+│   ├── remote/         # Firebase remote data sources
+│   └── repository/     # Repository implementations
+├── di/                 # Hilt dependency injection modules
+├── domain/             # Repository interfaces and domain models
+├── ui/
+│   ├── auth/           # Login & Registration screens
+│   ├── calendar/       # Calendar screen
+│   ├── components/     # Shared UI components (GlassCard, etc.)
+│   ├── expense/        # Expense tracker screen & ViewModel
+│   ├── notes/          # Notes list & detail screens
+│   ├── pomodoro/       # Pomodoro timer screen & ViewModel
+│   ├── profile/        # User profile screen
+│   ├── scanner/        # QR code scanner
+│   ├── theme/          # Colors, typography, and theming
+│   ├── todos/          # Task list & add task screens
+│   ├── tools/          # Home dashboard (Tools Hub)
+│   └── vault/          # Secret vault screens
+├── widget/             # Jetpack Glance home screen widgets
+├── worker/             # Alarm scheduler & receivers
+└── MainActivity.kt
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Android Studio Hedgehog or later
+- JDK 17+
+- An Android device or emulator (API 26+)
+
+### Setup
 
 1. **Clone the repository:**
    ```bash
@@ -35,19 +88,38 @@ OmniVault is an offline-first Android application designed to be your ultimate a
    cd taskvault
    ```
 
-2. **Open in Android Studio:**
-   - Launch Android Studio and select "Open an existing project".
-   - Navigate to the cloned `taskvault` directory.
-   - Let Android Studio download dependencies and perform the initial Gradle sync.
+2. **Configure Firebase:**
+   - Go to the [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project (or use an existing one)
+   - Add an Android app with package name `app.taskvault`
+   - Download `google-services.json` and place it in the `app/` directory
+   - Enable **Firebase Authentication** (Email/Password) and the **Realtime Database**
 
-3. **Configure Firebase:**
-   - Go to the [Firebase Console](https://console.firebase.google.com/).
-   - Create a new project or select an existing one.
-   - Add an Android app to the Firebase project with the package name `app.taskvault`.
-   - Download the generated `google-services.json` file.
-   - Place `google-services.json` inside the `app/` directory of the project.
-   - Set up **Firebase Authentication** (Email/Password) and the **Firebase Realtime Database**.
+3. **Open in Android Studio:**
+   - Open the project and let Gradle sync complete
 
-4. **Run the application:**
-   - Select an emulator or physical device.
-   - Click the "Run" button in Android Studio.
+4. **Run the app:**
+   - Select your target device/emulator and click ▶️ Run
+
+---
+
+## 📊 Project Stats
+
+| Metric | Value |
+|---|---|
+| Kotlin source files | 82 |
+| Lines of Kotlin code | ~7,000 |
+| Features | 7 |
+| Home screen widgets | 5 |
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+<p align="center">
+  Built with ❤️ using Kotlin & Jetpack Compose
+</p>
