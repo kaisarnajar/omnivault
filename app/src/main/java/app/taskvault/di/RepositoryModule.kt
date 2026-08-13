@@ -71,4 +71,10 @@ abstract class RepositoryModule {
     abstract fun bindLedgerRepository(
         ledgerRepositoryImpl: app.taskvault.data.repository.LedgerRepositoryImpl
     ): app.taskvault.domain.LedgerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMoodRepository(
+        moodRepositoryImpl: app.taskvault.data.repository.MoodRepositoryImpl
+    ): app.taskvault.domain.MoodRepository
 }

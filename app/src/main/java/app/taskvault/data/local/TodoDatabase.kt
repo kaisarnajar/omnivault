@@ -11,9 +11,10 @@ import androidx.room.RoomDatabase
         ExpenseEntity::class,
         SecretEntity::class,
         LedgerPersonEntity::class,
-        LedgerTransactionEntity::class
+        LedgerTransactionEntity::class,
+        MoodEntryEntity::class
     ],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 abstract class TodoDatabase : RoomDatabase() {
@@ -23,4 +24,5 @@ abstract class TodoDatabase : RoomDatabase() {
     abstract val expenseDao: ExpenseDao
     abstract val secretDao: SecretDao
     abstract val ledgerDao: LedgerDao
+    abstract val moodDao: MoodDao
 }

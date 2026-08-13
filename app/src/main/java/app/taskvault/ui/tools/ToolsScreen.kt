@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -120,6 +121,14 @@ fun ToolsScreen(
             icon = Icons.Default.AccountBalanceWallet,
             route = "ledger_list",
             accentColor = LedgerAccent
+        ),
+        ToolItem(
+            title = "Mood Journal",
+            description = "Daily Reflections",
+            details = "Track your daily moods with emojis, notes, and timeline logs.",
+            icon = Icons.Default.Face,
+            route = "mood_journal",
+            accentColor = MoodAccent
         )
     )
 

@@ -65,4 +65,7 @@ object AppModule {
 
     @Provides
     fun provideLedgerDao(database: TodoDatabase): app.taskvault.data.local.LedgerDao = database.ledgerDao
+
+    @Provides
+    fun provideMoodDao(database: TodoDatabase): app.taskvault.data.local.MoodDao = database.moodDao
 }

@@ -84,3 +84,4 @@ val NotesAccent = Color(0xFF10B981) // Emerald
 val ExpensesAccent = Color(0xFFF43F5E) // Rose
 val QRAccent = Color(0xFF8B5CF6) // Violet
 val LedgerAccent = Color(0xFF0891B2) // Cyan/Teal
+val MoodAccent = Color(0xFFEC4899) // Pink / Magenta accent
