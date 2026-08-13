@@ -1,8 +1,8 @@
 # 🔐 OmniVault
 
-> **An all-in-one, offline-first Android productivity & security hub — built with Jetpack Compose, Material 3, and Kotlin.**
+> **An all-in-one, offline-first Android productivity, security & utility hub — built with Jetpack Compose, Material 3, and Kotlin.**
 
-OmniVault combines 7 essential tools into a single, beautifully designed app so you can manage tasks, track expenses, take notes, stay focused, and secure your secrets — all without switching between apps.
+OmniVault combines 10 essential tools into a single, beautifully designed app so you can manage tasks, track expenses, log workouts, save web bookmarks, track debts, log moods, stay focused, and secure your secrets — all in one place.
 
 ---
 
@@ -17,12 +17,16 @@ OmniVault combines 7 essential tools into a single, beautifully designed app so 
 | 💸 **Expense Tracker** | Monitor daily spending and categorize your financial outflow |
 | 🔒 **Secret Vault** | Store passwords, API keys, and sensitive data behind biometric authentication |
 | 📷 **QR Scanner** | Instantly scan and read QR codes and barcodes |
+| 💳 **Credit / Debit Ledger** | Track who owes you and who you owe with transaction logs and net balances |
+| 😄 **Mood Journal** | Log daily moods with emojis, reflections, and a chronological history timeline |
+| 🔖 **Bookmarks** | Save and categorize URLs, articles, and web content for later reading |
+| 🏋️ **Fitness Tracker** | Track gym workouts (with target muscles), running distance/duration, and sports |
 
 ### 🏠 Home Screen Widgets
-All major features come with **Jetpack Glance home screen widgets** so you can view your tasks, notes, focus time, and expenses right from your Android home screen.
+Key features come with **Jetpack Glance home screen widgets** so you can view your tasks, notes, focus time, expenses, and vault secrets right from your Android home screen.
 
-### 🔧 Debug Tools
-Built-in debug tools to generate sample data for every feature — useful for development and testing.
+### 🔧 Dedicated Debug Tools
+Includes a dedicated, scrollable **Debug Tools** modal dialog accessible from Profile settings to inject test sample data for all 9 data-backed features with instant toast feedback.
 
 ---
 
@@ -34,11 +38,11 @@ Built-in debug tools to generate sample data for every feature — useful for de
 | **UI Framework** | [Jetpack Compose](https://developer.android.com/jetpack/compose) + Material 3 |
 | **Widgets** | [Jetpack Glance](https://developer.android.com/jetpack/compose/glance) |
 | **Dependency Injection** | [Dagger Hilt](https://dagger.dev/hilt/) |
-| **Local Database** | [Room](https://developer.android.com/training/data-storage/room) |
+| **Local Database** | [Room Database](https://developer.android.com/training/data-storage/room) |
 | **Remote Database** | [Firebase Realtime Database](https://firebase.google.com/products/realtime-database) |
 | **Authentication** | [Firebase Auth](https://firebase.google.com/docs/auth) (Email/Password + Google Sign-In) |
 | **Biometric Security** | [AndroidX Biometric](https://developer.android.com/training/sign-in/biometric-auth) |
-| **Async** | [Kotlin Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html) |
+| **Async & State** | [Kotlin Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html) |
 | **Navigation** | Compose Navigation |
 
 ---
@@ -48,23 +52,27 @@ Built-in debug tools to generate sample data for every feature — useful for de
 ```
 app/
 ├── data/
-│   ├── local/          # Room entities, DAOs, and database
+│   ├── local/          # Room entities, DAOs, and database (v15)
 │   ├── remote/         # Firebase remote data sources
 │   └── repository/     # Repository implementations
 ├── di/                 # Hilt dependency injection modules
 ├── domain/             # Repository interfaces and domain models
 ├── ui/
 │   ├── auth/           # Login & Registration screens
+│   ├── bookmark/       # Bookmarks screen & ViewModel
 │   ├── calendar/       # Calendar screen
-│   ├── components/     # Shared UI components (GlassCard, etc.)
+│   ├── components/     # Shared UI components (GlassCard, OmniVaultBackground, etc.)
 │   ├── expense/        # Expense tracker screen & ViewModel
+│   ├── fitness/        # Fitness tracker screen & ViewModel
+│   ├── ledger/         # Credit/Debit ledger screens & ViewModel
+│   ├── mood/           # Mood journal screen & ViewModel
 │   ├── notes/          # Notes list & detail screens
 │   ├── pomodoro/       # Pomodoro timer screen & ViewModel
-│   ├── profile/        # User profile screen
+│   ├── profile/        # User profile & Debug Tools modal
 │   ├── scanner/        # QR code scanner
-│   ├── theme/          # Colors, typography, and theming
+│   ├── theme/          # Curated color palette, typography, and theming
 │   ├── todos/          # Task list & add task screens
-│   ├── tools/          # Home dashboard (Tools Hub)
+│   ├── tools/          # Central Tools Dashboard Hub
 │   └── vault/          # Secret vault screens
 ├── widget/             # Jetpack Glance home screen widgets
 ├── worker/             # Alarm scheduler & receivers
@@ -107,9 +115,9 @@ app/
 
 | Metric | Value |
 |---|---|
-| Kotlin source files | 82 |
-| Lines of Kotlin code | ~7,000 |
-| Features | 7 |
+| Kotlin source files | ~100 |
+| Lines of Kotlin code | ~10,000+ |
+| Built-in Tools | 10 |
 | Home screen widgets | 5 |
 
 ---
