@@ -215,45 +215,54 @@ fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
-                // Icon circle with accent tint
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .background(tool.accentColor.copy(alpha = 0.12f)),
-                    contentAlignment = Alignment.Center
+                // Top section: Icon + Title/Description in a Row
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        imageVector = tool.icon,
-                        contentDescription = tool.title,
-                        tint = tool.accentColor,
-                        modifier = Modifier.size(26.dp)
-                    )
+                    // Icon circle with accent tint
+                    Box(
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(CircleShape)
+                            .background(tool.accentColor.copy(alpha = 0.12f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = tool.icon,
+                            contentDescription = tool.title,
+                            tint = tool.accentColor,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column {
+                        Text(
+                            text = tool.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = tool.description,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = tool.accentColor
+                        )
+                    }
                 }
 
-                Column {
-                    Text(
-                        text = tool.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = tool.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = tool.accentColor
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = tool.details,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
-                        maxLines = 3,
-                        lineHeight = 14.sp
-                    )
-                }
+                // Bottom section: Details text
+                Text(
+                    text = tool.details,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    maxLines = 3,
+                    lineHeight = 16.sp
+                )
             }
         }
     }
