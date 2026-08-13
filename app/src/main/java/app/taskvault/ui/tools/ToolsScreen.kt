@@ -22,14 +22,17 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Bookmark
-import app.taskvault.ui.theme.SleepAccent
+import app.taskvault.ui.components.CategoryBottomBar
+import app.taskvault.ui.components.ToolCategory
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +54,7 @@ data class ToolItem(
     val icon: ImageVector,
     val route: String,
     val accentColor: Color,
+    val category: ToolCategory,
     val isVault: Boolean = false
 )
 
@@ -60,105 +64,133 @@ fun ToolsScreen(
     onNavigateToTool: (String) -> Unit,
     onNavigateToProfile: () -> Unit
 ) {
-    val tools = listOf(
-        ToolItem(
-            title = "Tasks",
-            description = "Manage your to-dos",
-            details = "Organize tasks with Eisenhower matrix and track deadlines.",
-            icon = Icons.Default.CheckCircle,
-            route = "todo_list",
-            accentColor = TasksAccent
-        ),
-        ToolItem(
-            title = "Calendar",
-            description = "Schedule events",
-            details = "View upcoming events and organize your daily schedule.",
-            icon = Icons.Default.DateRange,
-            route = "calendar",
-            accentColor = CalendarAccent
-        ),
-        ToolItem(
-            title = "Pomodoro",
-            description = "Focus mode",
-            details = "Boost productivity with timed focus sessions and breaks.",
-            icon = Icons.Default.Timer,
-            route = "pomodoro",
-            accentColor = PomodoroAccent
-        ),
-        ToolItem(
-            title = "Notes",
-            description = "Quick thoughts",
-            details = "Jot down ideas, meeting minutes, and personal reflections.",
-            icon = Icons.Default.Edit,
-            route = "notes_list",
-            accentColor = NotesAccent
-        ),
-        ToolItem(
-            title = "Expenses",
-            description = "Track spending",
-            details = "Monitor your daily expenses and categorize your financial outflow.",
-            icon = Icons.Default.Build,
-            route = "expense_tracker",
-            accentColor = ExpensesAccent
-        ),
-        ToolItem(
-            title = "Secret Vault",
-            description = "Encrypted",
-            details = "Securely store sensitive passwords, API keys, and private data.",
-            icon = Icons.Default.Lock,
-            route = "vault_list",
-            accentColor = VaultAccent,
-            isVault = true
-        ),
-        ToolItem(
-            title = "QR Scanner",
-            description = "Scan Codes",
-            details = "Instantly scan and read QR codes and barcodes.",
-            icon = Icons.Default.QrCodeScanner,
-            route = "qr_scanner",
-            accentColor = QRAccent
-        ),
-        ToolItem(
-            title = "Ledger",
-            description = "Credit & Debit",
-            details = "Track who owes you and who you owe with transaction history.",
-            icon = Icons.Default.AccountBalanceWallet,
-            route = "ledger_list",
-            accentColor = LedgerAccent
-        ),
-        ToolItem(
-            title = "Mood Journal",
-            description = "Daily Reflections",
-            details = "Track your daily moods with emojis, notes, and timeline logs.",
-            icon = Icons.Default.Face,
-            route = "mood_journal",
-            accentColor = MoodAccent
-        ),
-        ToolItem(
-            title = "Bookmarks",
-            description = "Save & Categorize",
-            details = "Save web links, articles, and URLs to read or reference later.",
-            icon = Icons.Default.Bookmark,
-            route = "bookmarks",
-            accentColor = BookmarkAccent
-        ),
-        ToolItem(
-            title = "Fitness Tracker",
-            description = "Workouts & Sports",
-            details = "Log workouts with target muscles, running distance, and sports.",
-            icon = Icons.Default.FitnessCenter,
-            route = "fitness",
-            accentColor = FitnessAccent
-        ),
-        ToolItem(
-            title = "Sleep Log",
-            description = "Bedtime & Quality",
-            details = "Track sleep schedules, nightly duration, and sleep quality ratings.",
-            icon = Icons.Default.Bedtime,
-            route = "sleep",
-            accentColor = SleepAccent
+    var selectedCategory by remember { mutableStateOf(ToolCategory.ALL) }
+
+    val tools = remember {
+        listOf(
+            ToolItem(
+                title = "Tasks",
+                description = "Manage your to-dos",
+                details = "Organize tasks with Eisenhower matrix and track deadlines.",
+                icon = Icons.Default.CheckCircle,
+                route = "todo_list",
+                accentColor = TasksAccent,
+                category = ToolCategory.PRODUCTIVITY
+            ),
+            ToolItem(
+                title = "Calendar",
+                description = "Schedule events",
+                details = "View upcoming events and organize your daily schedule.",
+                icon = Icons.Default.DateRange,
+                route = "calendar",
+                accentColor = CalendarAccent,
+                category = ToolCategory.PRODUCTIVITY
+            ),
+            ToolItem(
+                title = "Pomodoro",
+                description = "Focus mode",
+                details = "Boost productivity with timed focus sessions and breaks.",
+                icon = Icons.Default.Timer,
+                route = "pomodoro",
+                accentColor = PomodoroAccent,
+                category = ToolCategory.PRODUCTIVITY
+            ),
+            ToolItem(
+                title = "Notes",
+                description = "Quick thoughts",
+                details = "Jot down ideas, meeting minutes, and personal reflections.",
+                icon = Icons.Default.Edit,
+                route = "notes_list",
+                accentColor = NotesAccent,
+                category = ToolCategory.PRODUCTIVITY
+            ),
+            ToolItem(
+                title = "Expenses",
+                description = "Track spending",
+                details = "Monitor your daily expenses and categorize your financial outflow.",
+                icon = Icons.Default.Build,
+                route = "expense_tracker",
+                accentColor = ExpensesAccent,
+                category = ToolCategory.FINANCE
+            ),
+            ToolItem(
+                title = "Secret Vault",
+                description = "Encrypted",
+                details = "Securely store sensitive passwords, API keys, and private data.",
+                icon = Icons.Default.Lock,
+                route = "vault_list",
+                accentColor = VaultAccent,
+                category = ToolCategory.FINANCE,
+                isVault = true
+            ),
+            ToolItem(
+                title = "QR Scanner",
+                description = "Scan Codes",
+                details = "Instantly scan and read QR codes and barcodes.",
+                icon = Icons.Default.QrCodeScanner,
+                route = "qr_scanner",
+                accentColor = QRAccent,
+                category = ToolCategory.UTILITIES
+            ),
+            ToolItem(
+                title = "Ledger",
+                description = "Credit & Debit",
+                details = "Track who owes you and who you owe with transaction history.",
+                icon = Icons.Default.AccountBalanceWallet,
+                route = "ledger_list",
+                accentColor = LedgerAccent,
+                category = ToolCategory.FINANCE
+            ),
+            ToolItem(
+                title = "Mood Journal",
+                description = "Daily Reflections",
+                details = "Track your daily moods with emojis, notes, and timeline logs.",
+                icon = Icons.Default.Face,
+                route = "mood_journal",
+                accentColor = MoodAccent,
+                category = ToolCategory.HEALTH
+            ),
+            ToolItem(
+                title = "Bookmarks",
+                description = "Save & Categorize",
+                details = "Save web links, articles, and URLs to read or reference later.",
+                icon = Icons.Default.Bookmark,
+                route = "bookmarks",
+                accentColor = BookmarkAccent,
+                category = ToolCategory.UTILITIES
+            ),
+            ToolItem(
+                title = "Fitness Tracker",
+                description = "Workouts & Sports",
+                details = "Log workouts with target muscles, running distance, and sports.",
+                icon = Icons.Default.FitnessCenter,
+                route = "fitness",
+                accentColor = FitnessAccent,
+                category = ToolCategory.HEALTH
+            ),
+            ToolItem(
+                title = "Sleep Log",
+                description = "Bedtime & Quality",
+                details = "Track sleep schedules, nightly duration, and sleep quality ratings.",
+                icon = Icons.Default.Bedtime,
+                route = "sleep",
+                accentColor = SleepAccent,
+                category = ToolCategory.HEALTH
+            )
         )
-    )
+    }
+
+    val filteredTools = remember(tools, selectedCategory) {
+        if (selectedCategory == ToolCategory.ALL) tools
+        else tools.filter { it.category == selectedCategory }
+    }
+
+    val categoryCounts = remember(tools) {
+        ToolCategory.values().associateWith { cat ->
+            if (cat == ToolCategory.ALL) tools.size
+            else tools.count { it.category == cat }
+        }
+    }
 
     OmniVaultBackground {
         Scaffold(
@@ -183,6 +215,13 @@ fun ToolsScreen(
                     }
                 )
             },
+            bottomBar = {
+                CategoryBottomBar(
+                    selectedCategory = selectedCategory,
+                    onCategorySelected = { selectedCategory = it },
+                    categoryCounts = categoryCounts
+                )
+            },
             containerColor = Color.Transparent
         ) { padding ->
             LazyVerticalGrid(
@@ -195,8 +234,8 @@ fun ToolsScreen(
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                items(tools.size) { index ->
-                    val tool = tools[index]
+                items(filteredTools.size) { index ->
+                    val tool = filteredTools[index]
                     ToolCard(tool = tool, onClick = { onNavigateToTool(tool.route) })
                 }
             }
