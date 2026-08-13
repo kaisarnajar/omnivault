@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.taskvault.R
 import app.taskvault.domain.PomodoroMode
 import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.gradientBackground
