@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -31,10 +32,10 @@ enum class ToolCategory(
     val icon: ImageVector
 ) {
     ALL("All", Icons.Default.GridView),
-    PRODUCTIVITY("Productivity", Icons.Default.FlashOn),
+    PRODUCTIVITY("Work", Icons.Default.FlashOn),
     FINANCE("Finance", Icons.Default.Shield),
     HEALTH("Health", Icons.Default.Favorite),
-    UTILITIES("Utilities", Icons.Default.Build)
+    UTILITIES("Tools", Icons.Default.Build)
 }
 
 @Composable
@@ -47,18 +48,19 @@ fun CategoryBottomBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         GlassCard(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(28.dp)
+            shape = RoundedCornerShape(26.dp)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
+                    .height(64.dp)
+                    .padding(horizontal = 4.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ToolCategory.values().forEach { category ->
@@ -78,38 +80,54 @@ fun CategoryBottomBar(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(20.dp))
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(18.dp))
                             .background(activeBgColor)
                             .pressScale(interactionSource = interactionSource)
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null
-                            ) { onCategorySelected(category) }
-                            .padding(vertical = 8.dp),
+                            ) { onCategorySelected(category) },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Box(contentAlignment = Alignment.TopEnd) {
+                            BadgedBox(
+                                badge = {
+                                    if (count > 0) {
+                                        Badge(
+                                            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
+                                            contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSecondaryContainer
+                                        ) {
+                                            Text(
+                                                text = "$count",
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+                            ) {
                                 Icon(
                                     imageVector = category.icon,
                                     contentDescription = category.displayName,
                                     tint = activeContentColor,
-                                    modifier = Modifier.size(22.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.height(2.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = "${category.displayName}${if (count > 0) " ($count)" else ""}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = activeContentColor,
-                                    fontSize = 11.sp
-                                )
-                            }
+                            Text(
+                                text = category.displayName,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = activeContentColor,
+                                fontSize = 11.sp,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }
