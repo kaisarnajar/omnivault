@@ -14,8 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.taskvault.ui.components.OmniVaultBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,185 +49,187 @@ fun ProfileScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(if (isEditing) "Edit Profile" else "Profile") },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        if (isEditing) {
-                            isEditing = false
-                            // Reset fields
-                            displayName = userProfile?.displayName ?: ""
-                            email = userProfile?.email ?: ""
-                            viewModel.resetState()
-                        } else {
-                            onNavigateBack()
+    OmniVaultBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(if (isEditing) "Edit Profile" else "Profile") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            if (isEditing) {
+                                isEditing = false
+                                // Reset fields
+                                displayName = userProfile?.displayName ?: ""
+                                email = userProfile?.email ?: ""
+                                viewModel.resetState()
+                            } else {
+                                onNavigateBack()
+                            }
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors =
-                TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    },
+                    colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
                 )
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            Box(
+            }
+        ) { paddingValues ->
+            Column(
                 modifier =
                 Modifier
-                    .size(120.dp)
-                    .clip(androidx.compose.foundation.shape.CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            if (isEditing) {
-                OutlinedTextField(
-                    value = displayName,
-                    onValueChange = { displayName = it },
-                    label = { Text("Display Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true
-                )
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true
-                )
-            } else {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                Box(
+                    modifier =
+                    Modifier
+                        .size(120.dp)
+                        .clip(androidx.compose.foundation.shape.CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = userProfile?.displayName ?: "No Name",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = userProfile?.email ?: "No Email",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-            }
 
-            if (uiState is ProfileUiState.Error) {
-                Text(
-                    text = (uiState as ProfileUiState.Error).message,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
+                if (isEditing) {
+                    OutlinedTextField(
+                        value = displayName,
+                        onValueChange = { displayName = it },
+                        label = { Text("Display Name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true
+                    )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            if (isEditing) {
-                app.taskvault.ui.components.GradientButton(
-                    text = "Save Profile",
-                    onClick = { viewModel.updateProfile(displayName, email) },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    enabled = uiState !is ProfileUiState.Loading && displayName.isNotBlank() && email.isNotBlank(),
-                    isLoading = uiState is ProfileUiState.Loading
-                )
-            } else {
-                app.taskvault.ui.components.GradientButton(
-                    text = "Edit Profile",
-                    onClick = { isEditing = true },
-                    modifier = Modifier.fillMaxWidth().height(56.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OutlinedButton(
-                        onClick = { onThemeChange(null) }, // System
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true
+                    )
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.Palette, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text("Auto")
-                    }
-                    OutlinedButton(
-                        onClick = { onThemeChange(false) }, // Light
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Light")
-                    }
-                    OutlinedButton(
-                        onClick = { onThemeChange(true) }, // Dark
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Dark")
+                        Text(
+                            text = userProfile?.displayName ?: "No Name",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = userProfile?.email ?: "No Email",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = onLogout,
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Logout")
+                if (uiState is ProfileUiState.Error) {
+                    Text(
+                        text = (uiState as ProfileUiState.Error).message,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(
-                        onClick = { viewModel.seedTasks() },
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Debug: Generate Sample Tasks")
+                if (isEditing) {
+                    app.taskvault.ui.components.GradientButton(
+                        text = "Save Profile",
+                        onClick = { viewModel.updateProfile(displayName, email) },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        enabled = uiState !is ProfileUiState.Loading && displayName.isNotBlank() && email.isNotBlank(),
+                        isLoading = uiState is ProfileUiState.Loading
+                    )
+                } else {
+                    app.taskvault.ui.components.GradientButton(
+                        text = "Edit Profile",
+                        onClick = { isEditing = true },
+                        modifier = Modifier.fillMaxWidth().height(56.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        OutlinedButton(
+                            onClick = { onThemeChange(null) }, // System
+                            modifier = Modifier.weight(1f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(Icons.Default.Palette, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Auto")
+                        }
+                        OutlinedButton(
+                            onClick = { onThemeChange(false) }, // Light
+                            modifier = Modifier.weight(1f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("Light")
+                        }
+                        OutlinedButton(
+                            onClick = { onThemeChange(true) }, // Dark
+                            modifier = Modifier.weight(1f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("Dark")
+                        }
                     }
 
-                    OutlinedButton(
-                        onClick = { viewModel.seedNotes() },
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = onLogout,
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Text("Debug: Generate Sample Notes")
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Logout")
                     }
 
-                    OutlinedButton(
-                        onClick = { viewModel.seedPomodoro() },
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Debug: Generate Pomodoro History")
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(
+                            onClick = { viewModel.seedTasks() },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("Debug: Generate Sample Tasks")
+                        }
+
+                        OutlinedButton(
+                            onClick = { viewModel.seedNotes() },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("Debug: Generate Sample Notes")
+                        }
+
+                        OutlinedButton(
+                            onClick = { viewModel.seedPomodoro() },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("Debug: Generate Pomodoro History")
+                        }
                     }
                 }
             }

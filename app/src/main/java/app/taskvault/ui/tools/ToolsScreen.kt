@@ -19,16 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import app.taskvault.ui.theme.BackgroundGradientEnd
-import app.taskvault.ui.theme.BackgroundGradientStart
+import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.theme.VaultAccent
-import app.taskvault.ui.theme.GlassFillDark
-import app.taskvault.ui.theme.GlassBorderDark
 
 data class ToolItem(
     val title: String,
@@ -84,23 +80,15 @@ fun ToolsScreen(
         )
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(BackgroundGradientStart, BackgroundGradientEnd)
-                )
-            )
-    ) {
+    OmniVaultBackground {
         Scaffold(
             topBar = {
                 TopAppBar(
                     title = { Text("OmniVault", fontWeight = FontWeight.Bold) },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Transparent,
-                        titleContentColor = Color.White,
-                        actionIconContentColor = Color.White
+                        titleContentColor = MaterialTheme.colorScheme.onSurface,
+                        actionIconContentColor = MaterialTheme.colorScheme.onSurface
                     ),
                     actions = {
                         IconButton(onClick = onNavigateToProfile) {
@@ -131,8 +119,8 @@ fun ToolsScreen(
 
 @Composable
 fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
-    val customFill = if (tool.isVault) VaultAccent.copy(alpha = 0.15f) else GlassFillDark
-    val customBorder = if (tool.isVault) VaultAccent.copy(alpha = 0.5f) else GlassBorderDark
+    val customFill = if (tool.isVault) VaultAccent.copy(alpha = 0.15f) else null
+    val customBorder = if (tool.isVault) VaultAccent.copy(alpha = 0.5f) else null
 
     app.taskvault.ui.components.GlassCard(
         modifier = Modifier
@@ -165,7 +153,7 @@ fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
                 Icon(
                     imageVector = tool.icon,
                     contentDescription = tool.title,
-                    tint = if (tool.isVault) VaultAccent else Color.White,
+                    tint = if (tool.isVault) VaultAccent else MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -175,13 +163,13 @@ fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
                     text = tool.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = tool.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
         }

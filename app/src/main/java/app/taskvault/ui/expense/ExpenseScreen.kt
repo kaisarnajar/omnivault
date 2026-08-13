@@ -21,11 +21,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.taskvault.data.local.ExpenseEntity
 import app.taskvault.ui.components.GlassCard
+import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.gradientBackground
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -43,102 +45,103 @@ fun ExpenseScreen(
 
     var showAddDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Expense Tracker", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+    OmniVaultBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Expense Tracker", fontWeight = FontWeight.Bold) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
                 )
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showAddDialog = true },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Expense")
-            }
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            // Header Card
-            Box(
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { showAddDialog = true },
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Expense", tint = Color.White)
+                }
+            },
+            containerColor = Color.Transparent
+        ) { padding ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .gradientBackground()
+                    .fillMaxSize()
+                    .padding(padding)
             ) {
-                Column(
+                // Header Card
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .gradientBackground()
                 ) {
-                    Text(
-                        text = "Total Spent This Month",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = NumberFormat.getCurrencyInstance().format(totalThisMonth),
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = androidx.compose.ui.graphics.Color.White
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Expenses List
-            if (expenses.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "No expenses recorded.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(expenses, key = { it.id }) { expense ->
-                        ExpenseItem(
-                            expense = expense,
-                            onDelete = { viewModel.deleteExpense(expense.id) }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Total Spent This Month",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f)
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = NumberFormat.getCurrencyInstance().format(totalThisMonth),
+                            style = MaterialTheme.typography.displayMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Expenses List
+                if (expenses.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "No expenses recorded.",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(expenses, key = { it.id }) { expense ->
+                            ExpenseItem(
+                                expense = expense,
+                                onDelete = { viewModel.deleteExpense(expense.id) }
+                            )
+                        }
                     }
                 }
             }
         }
-    }
 
-    if (showAddDialog) {
-        AddExpenseDialog(
-            onDismiss = { showAddDialog = false },
-            onSave = { amount, category, description ->
-                viewModel.addExpense(amount, category, description)
-                showAddDialog = false
-            }
-        )
+        if (showAddDialog) {
+            AddExpenseDialog(
+                onDismiss = { showAddDialog = false },
+                onSave = { amount, category, description ->
+                    viewModel.addExpense(amount, category, description)
+                    showAddDialog = false
+                }
+            )
+        }
     }
 }
 

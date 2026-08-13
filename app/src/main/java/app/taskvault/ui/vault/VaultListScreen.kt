@@ -15,11 +15,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import app.taskvault.data.local.SecretEntity
+import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.util.BiometricHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,66 +57,67 @@ fun VaultListScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Secret Vault", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-        },
-        floatingActionButton = {
-            if (isAuthenticated) {
-                FloatingActionButton(
-                    onClick = {
-                        viewModel.selectSecretForEdit(null)
-                        onNavigateToAddEdit()
+    OmniVaultBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Secret Vault", fontWeight = FontWeight.Bold) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
                     },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Secret")
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
+                )
+            },
+            floatingActionButton = {
+                if (isAuthenticated) {
+                    FloatingActionButton(
+                        onClick = {
+                            viewModel.selectSecretForEdit(null)
+                            onNavigateToAddEdit()
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Secret", tint = Color.White)
+                    }
                 }
-            }
-        }
-    ) { padding ->
-        if (isAuthenticated) {
-            if (secrets.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                    Text("No secrets stored.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            },
+            containerColor = Color.Transparent
+        ) { padding ->
+            if (isAuthenticated) {
+                if (secrets.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                        Text("No secrets stored.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(secrets) { secret ->
+                            SecretItemCard(
+                                secret = secret,
+                                onClick = {
+                                    viewModel.selectSecretForEdit(secret)
+                                    onNavigateToAddEdit()
+                                },
+                                onDelete = {
+                                    viewModel.deleteSecret(secret)
+                                }
+                            )
+                        }
+                    }
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(secrets) { secret ->
-                        SecretItemCard(
-                            secret = secret,
-                            onClick = {
-                                viewModel.selectSecretForEdit(secret)
-                                onNavigateToAddEdit()
-                            },
-                            onDelete = {
-                                viewModel.deleteSecret(secret)
-                            }
-                        )
-                    }
+                Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                    Text("Authenticating...")
                 }
-            }
-        } else {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text("Authenticating...")
             }
         }
     }

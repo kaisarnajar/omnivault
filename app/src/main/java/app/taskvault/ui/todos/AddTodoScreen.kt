@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import app.taskvault.ui.components.AddTodoTopAppBar
 import app.taskvault.ui.components.DateTimeSelectors
 import app.taskvault.ui.components.EisenhowerSelector
+import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.PrioritySelector
 
 @Composable
@@ -63,181 +64,183 @@ fun AddTodoScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            AddTodoTopAppBar(
-                isEditing = selectedTodo != null,
-                onNavigateBack = onNavigateBack
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = {
-            Box(
-                modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(20.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = {
-                        if (title.isNotBlank()) {
-                            val computedRemindMe = dueDate?.minus(30 * 60 * 1000L)
-                            val finalCategory = if (category.isBlank()) "General" else category.trim()
+    OmniVaultBackground {
+        Scaffold(
+            topBar = {
+                AddTodoTopAppBar(
+                    isEditing = selectedTodo != null,
+                    onNavigateBack = onNavigateBack
+                )
+            },
+            containerColor = Color.Transparent,
+            bottomBar = {
+                Box(
+                    modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Color.Transparent)
+                        .padding(20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(
+                        onClick = {
+                            if (title.isNotBlank()) {
+                                val computedRemindMe = dueDate?.minus(30 * 60 * 1000L)
+                                val finalCategory = if (category.isBlank()) "General" else category.trim()
 
-                            if (selectedTodo != null) {
-                                viewModel.updateTodoDetail(selectedTodo!!.id, title, description, dueDate, computedRemindMe, priority, finalCategory, eisenhowerTag)
-                            } else {
-                                viewModel.addTodo(title, description, dueDate, computedRemindMe, priority, finalCategory, eisenhowerTag)
+                                if (selectedTodo != null) {
+                                    viewModel.updateTodoDetail(selectedTodo!!.id, title, description, dueDate, computedRemindMe, priority, finalCategory, eisenhowerTag)
+                                } else {
+                                    viewModel.addTodo(title, description, dueDate, computedRemindMe, priority, finalCategory, eisenhowerTag)
+                                }
+                                onNavigateBack()
                             }
-                            onNavigateBack()
-                        }
-                    },
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    enabled = title.isNotBlank(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Icon(Icons.Default.AddTask, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        if (selectedTodo != null) "Save Changes" else "Create Task",
-                        style = MaterialTheme.typography.headlineMedium.copy(fontSize = 18.sp)
-                    )
-                }
-            }
-        }
-    ) { padding ->
-        Column(
-            modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 20.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Task Title Input
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = "TASK TITLE",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    placeholder = { Text("What needs to be done?", color = MaterialTheme.colorScheme.outlineVariant) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    textStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, fontSize = 24.sp),
-                    colors =
-                    TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    singleLine = true
-                )
-            }
-
-            // Description Input
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = "DESCRIPTION",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    placeholder = { Text("Add more details about this task...", color = MaterialTheme.colorScheme.outlineVariant) },
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    colors =
-                    TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    maxLines = 4
-                )
-            }
-
-            DateTimeSelectors(
-                dueDate = dueDate,
-                onDueDateChange = { dueDate = it }
-            )
-
-            PrioritySelector(
-                selectedPriority = priority,
-                onPrioritySelect = { priority = it }
-            )
-
-            // Category Input
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = "CATEGORY",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    placeholder = { Text("e.g., Work, Personal, Fitness", color = MaterialTheme.colorScheme.outlineVariant) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    colors =
-                    TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    singleLine = true
-                )
-
-                // Quick Category Suggestions
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.horizontalScroll(rememberScrollState())
-                ) {
-                    val suggestions = listOf("Work", "Personal", "Health", "Study", "Shopping", "Finance", "Other")
-                    suggestions.forEach { suggestion ->
-                        AssistChip(
-                            onClick = { category = suggestion },
-                            label = { Text(suggestion) }
+                        },
+                        modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        enabled = title.isNotBlank(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Icon(Icons.Default.AddTask, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            if (selectedTodo != null) "Save Changes" else "Create Task",
+                            style = MaterialTheme.typography.headlineMedium.copy(fontSize = 18.sp)
                         )
                     }
                 }
             }
+        ) { padding ->
+            Column(
+                modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            EisenhowerSelector(
-                selectedTag = eisenhowerTag,
-                onTagSelect = { eisenhowerTag = it }
-            )
+                // Task Title Input
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "TASK TITLE",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        placeholder = { Text("What needs to be done?", color = MaterialTheme.colorScheme.outlineVariant) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        textStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, fontSize = 24.sp),
+                        colors =
+                        TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        singleLine = true
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(32.dp))
+                // Description Input
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "DESCRIPTION",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        placeholder = { Text("Add more details about this task...", color = MaterialTheme.colorScheme.outlineVariant) },
+                        modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        colors =
+                        TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        maxLines = 4
+                    )
+                }
+
+                DateTimeSelectors(
+                    dueDate = dueDate,
+                    onDueDateChange = { dueDate = it }
+                )
+
+                PrioritySelector(
+                    selectedPriority = priority,
+                    onPrioritySelect = { priority = it }
+                )
+
+                // Category Input
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "CATEGORY",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = category,
+                        onValueChange = { category = it },
+                        placeholder = { Text("e.g., Work, Personal, Fitness", color = MaterialTheme.colorScheme.outlineVariant) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        colors =
+                        TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        singleLine = true
+                    )
+
+                    // Quick Category Suggestions
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.horizontalScroll(rememberScrollState())
+                    ) {
+                        val suggestions = listOf("Work", "Personal", "Health", "Study", "Shopping", "Finance", "Other")
+                        suggestions.forEach { suggestion ->
+                            AssistChip(
+                                onClick = { category = suggestion },
+                                label = { Text(suggestion) }
+                            )
+                        }
+                    }
+                }
+
+                EisenhowerSelector(
+                    selectedTag = eisenhowerTag,
+                    onTagSelect = { eisenhowerTag = it }
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
     }
 }

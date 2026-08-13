@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.TodoItemCard
 import app.taskvault.ui.todos.TodoViewModel
 import java.util.Calendar
@@ -38,163 +39,165 @@ fun CalendarScreen(
         todo.dueDate != null && isSameDay(todo.dueDate, selectedDate.timeInMillis)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Calendar", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+    OmniVaultBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Calendar", fontWeight = FontWeight.Bold) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
                 )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 20.dp)
-        ) {
-            // Calendar Header
-            Row(
+            },
+            containerColor = Color.Transparent
+        ) { padding ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 20.dp)
             ) {
-                Text(
-                    text = "${currentMonth.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())} ${currentMonth.get(Calendar.YEAR)}",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Row {
-                    TextButton(onClick = {
-                        val prev = currentMonth.clone() as Calendar
-                        prev.add(Calendar.MONTH, -1)
-                        currentMonth = prev
-                    }) {
-                        Text("<")
-                    }
-                    TextButton(onClick = {
-                        val next = currentMonth.clone() as Calendar
-                        next.add(Calendar.MONTH, 1)
-                        currentMonth = next
-                    }) {
-                        Text(">")
-                    }
-                }
-            }
-
-            app.taskvault.ui.components.GlassCard(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                    // Days of week header
-                    val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                        daysOfWeek.forEach { day ->
-                            Text(
-                                text = day,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                // Calendar Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${currentMonth.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())} ${currentMonth.get(Calendar.YEAR)}",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row {
+                        TextButton(onClick = {
+                            val prev = currentMonth.clone() as Calendar
+                            prev.add(Calendar.MONTH, -1)
+                            currentMonth = prev
+                        }) {
+                            Text("<")
+                        }
+                        TextButton(onClick = {
+                            val next = currentMonth.clone() as Calendar
+                            next.add(Calendar.MONTH, 1)
+                            currentMonth = next
+                        }) {
+                            Text(">")
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                app.taskvault.ui.components.GlassCard(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        // Days of week header
+                        val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                            daysOfWeek.forEach { day ->
+                                Text(
+                                    text = day,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
 
-                    // Calendar Grid
-                    val daysInMonth = currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
-                    val firstDayOfMonth = currentMonth.clone() as Calendar
-                    firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1)
-                    val startDayOfWeek = firstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1 // 0-indexed (Sunday = 0)
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    val totalCells = startDayOfWeek + daysInMonth
-                    val rows = Math.ceil(totalCells / 7.0).toInt()
+                        // Calendar Grid
+                        val daysInMonth = currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+                        val firstDayOfMonth = currentMonth.clone() as Calendar
+                        firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1)
+                        val startDayOfWeek = firstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1 // 0-indexed (Sunday = 0)
 
-                    for (i in 0 until rows) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-                            for (j in 0..6) {
-                                val cellIndex = i * 7 + j
-                                val dayNumber = cellIndex - startDayOfWeek + 1
+                        val totalCells = startDayOfWeek + daysInMonth
+                        val rows = Math.ceil(totalCells / 7.0).toInt()
 
-                                if (dayNumber in 1..daysInMonth) {
-                                    val cellDate = currentMonth.clone() as Calendar
-                                    cellDate.set(Calendar.DAY_OF_MONTH, dayNumber)
+                        for (i in 0 until rows) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                for (j in 0..6) {
+                                    val cellIndex = i * 7 + j
+                                    val dayNumber = cellIndex - startDayOfWeek + 1
 
-                                    val isSelected = isSameDay(selectedDate.timeInMillis, cellDate.timeInMillis)
-                                    val hasTasks = todos.any { it.dueDate != null && isSameDay(it.dueDate, cellDate.timeInMillis) }
+                                    if (dayNumber in 1..daysInMonth) {
+                                        val cellDate = currentMonth.clone() as Calendar
+                                        cellDate.set(Calendar.DAY_OF_MONTH, dayNumber)
 
-                                    Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                            .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
-                                            .clickable { selectedDate = cellDate },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                            Text(
-                                                text = dayNumber.toString(),
-                                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-                                            if (hasTasks) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(4.dp)
-                                                        .clip(CircleShape)
-                                                        .background(if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+                                        val isSelected = isSameDay(selectedDate.timeInMillis, cellDate.timeInMillis)
+                                        val hasTasks = todos.any { it.dueDate != null && isSameDay(it.dueDate, cellDate.timeInMillis) }
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(CircleShape)
+                                                .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                                .clickable { selectedDate = cellDate },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                Text(
+                                                    text = dayNumber.toString(),
+                                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                                    style = MaterialTheme.typography.bodyMedium
                                                 )
+                                                if (hasTasks) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(4.dp)
+                                                            .clip(CircleShape)
+                                                            .background(if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary)
+                                                    )
+                                                }
                                             }
                                         }
+                                    } else {
+                                        Spacer(modifier = Modifier.size(40.dp))
                                     }
-                                } else {
-                                    Spacer(modifier = Modifier.size(40.dp))
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // Tasks for selected day
-            Text(
-                text = "Tasks for ${selectedDate.get(Calendar.DAY_OF_MONTH)} ${selectedDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+                // Tasks for selected day
+                Text(
+                    text = "Tasks for ${selectedDate.get(Calendar.DAY_OF_MONTH)} ${selectedDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
 
-            if (tasksForSelectedDate.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No tasks for this day.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            } else {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(tasksForSelectedDate, key = { it.id }) { todo ->
-                        TodoItemCard(
-                            todo = todo,
-                            onToggleCompletion = { viewModel.toggleTodoCompletion(todo) },
-                            onEdit = { /* Can't edit from calendar easily without nav */ },
-                            onDelete = { viewModel.deleteTodo(todo.id) }
-                        )
+                if (tasksForSelectedDate.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No tasks for this day.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(tasksForSelectedDate, key = { it.id }) { todo ->
+                            TodoItemCard(
+                                todo = todo,
+                                onToggleCompletion = { viewModel.toggleTodoCompletion(todo) },
+                                onEdit = { /* Can't edit from calendar easily without nav */ },
+                                onDelete = { viewModel.deleteTodo(todo.id) }
+                            )
+                        }
                     }
                 }
             }

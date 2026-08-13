@@ -65,8 +65,11 @@ val GradientEnd = Color(0xFFA855F7) // Violet
 val BackgroundGradientStart = Color(0xFF0B1326) // Deep Blue
 val BackgroundGradientEnd = Color(0xFF1E1B4B) // Deep Purple
 
-val GlassBorderLight = Color(0x33000000)
-val GlassFillLight = Color(0x99FFFFFF)
+val LightBackgroundGradientStart = Color(0xFFE0E7FF) // Indigo 100
+val LightBackgroundGradientEnd = Color(0xFFF3E8FF) // Purple 100
+
+val GlassBorderLight = Color(0x40FFFFFF) // 25% white
+val GlassFillLight = Color(0x66FFFFFF) // 40% white
 
 val GlassBorderDark = Color(0x1AFFFFFF) // 10% White
 val GlassFillDark = Color(0x0AFFFFFF) // 4% White

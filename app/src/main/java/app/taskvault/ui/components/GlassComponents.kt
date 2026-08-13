@@ -93,3 +93,18 @@ fun GradientButton(
         }
     }
 }
+
+@Composable
+fun OmniVaultBackground(content: @Composable () -> Unit) {
+    val isDark = isSystemInDarkTheme()
+    val gradientStart = if (isDark) app.taskvault.ui.theme.BackgroundGradientStart else app.taskvault.ui.theme.LightBackgroundGradientStart
+    val gradientEnd = if (isDark) app.taskvault.ui.theme.BackgroundGradientEnd else app.taskvault.ui.theme.LightBackgroundGradientEnd
+
+    Box(
+        modifier = Modifier
+            .androidx.compose.foundation.layout.fillMaxSize()
+            .background(Brush.verticalGradient(colors = listOf(gradientStart, gradientEnd)))
+    ) {
+        content()
+    }
+}

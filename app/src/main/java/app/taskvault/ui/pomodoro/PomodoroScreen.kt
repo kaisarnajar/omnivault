@@ -37,8 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.taskvault.R
 import app.taskvault.domain.PomodoroMode
+import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.gradientBackground
 import java.util.Locale
 
@@ -111,158 +111,160 @@ fun PomodoroScreen(
     val seconds = timeRemaining % 60
     val timeString = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Focus Time", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHistoryDialog = true }) {
-                        Icon(Icons.Default.History, contentDescription = "History")
-                    }
-                    IconButton(onClick = { showSettingsDialog = true }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+    OmniVaultBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Focus Time", fontWeight = FontWeight.Bold) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { showHistoryDialog = true }) {
+                            Icon(Icons.Default.History, contentDescription = "History")
+                        }
+                        IconButton(onClick = { showSettingsDialog = true }) {
+                            Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
                 )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            // Mode Selector
-            Row(
+            },
+            containerColor = Color.Transparent
+        ) { padding ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
-                PomodoroMode.values().forEach { mode ->
-                    val isSelected = currentMode == mode
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = { viewModel.setMode(mode) },
-                        label = { Text(mode.displayName) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            // Circular Timer
-            Box(
-                modifier = Modifier
-                    .size(280.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
-                val primaryColor = MaterialTheme.colorScheme.primary
-
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    drawArc(
-                        color = backgroundColor,
-                        startAngle = 0f,
-                        sweepAngle = 360f,
-                        useCenter = false,
-                        style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
-                    )
-                    drawArc(
-                        color = primaryColor,
-                        startAngle = -90f,
-                        sweepAngle = 360f * progress,
-                        useCenter = false,
-                        style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
-                    )
-                }
-
-                Text(
-                    text = timeString,
-                    style = MaterialTheme.typography.displayLarge.copy(
-                        fontSize = 64.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Ambient Sound Selector
-            Text(
-                text = "AMBIENT SOUND",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
-            ) {
-                val sounds = listOf("None", "White Noise", "Rain", "Cafe")
-                sounds.forEach { sound ->
-                    FilterChip(
-                        selected = selectedSound == sound,
-                        onClick = { selectedSound = sound },
-                        label = { Text(sound) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Controls
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { viewModel.resetTimer() },
+                // Mode Selector
+                Row(
                     modifier = Modifier
-                        .size(56.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Reset",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    PomodoroMode.values().forEach { mode ->
+                        val isSelected = currentMode == mode
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { viewModel.setMode(mode) },
+                            label = { Text(mode.displayName) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        )
+                    }
                 }
 
+                Spacer(modifier = Modifier.height(48.dp))
+
+                // Circular Timer
                 Box(
                     modifier = Modifier
-                        .size(80.dp)
-                        .gradientBackground(CircleShape)
-                        .clickable { viewModel.toggleTimer() },
+                        .size(280.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
-                        modifier = Modifier.size(40.dp),
-                        tint = androidx.compose.ui.graphics.Color.White
+                    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+                    val primaryColor = MaterialTheme.colorScheme.primary
+
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        drawArc(
+                            color = backgroundColor,
+                            startAngle = 0f,
+                            sweepAngle = 360f,
+                            useCenter = false,
+                            style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
+                        )
+                        drawArc(
+                            color = primaryColor,
+                            startAngle = -90f,
+                            sweepAngle = 360f * progress,
+                            useCenter = false,
+                            style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
+                        )
+                    }
+
+                    Text(
+                        text = timeString,
+                        style = MaterialTheme.typography.displayLarge.copy(
+                            fontSize = 64.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground
                     )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Ambient Sound Selector
+                Text(
+                    text = "AMBIENT SOUND",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
+                ) {
+                    val sounds = listOf("None", "White Noise", "Rain", "Cafe")
+                    sounds.forEach { sound ->
+                        FilterChip(
+                            selected = selectedSound == sound,
+                            onClick = { selectedSound = sound },
+                            label = { Text(sound) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Controls
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { viewModel.resetTimer() },
+                        modifier = Modifier
+                            .size(56.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    ) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = "Reset",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .gradientBackground(CircleShape)
+                            .clickable { viewModel.toggleTimer() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = if (isPlaying) "Pause" else "Play",
+                            modifier = Modifier.size(40.dp),
+                            tint = androidx.compose.ui.graphics.Color.White
+                        )
+                    }
                 }
             }
         }
