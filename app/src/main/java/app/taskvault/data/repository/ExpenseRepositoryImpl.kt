@@ -50,4 +50,13 @@ class ExpenseRepositoryImpl @Inject constructor(
         val userId = authRepository.getCurrentUserId() ?: return
         expenseDao.deleteExpense(id, userId)
     }
+
+    override suspend fun seedSampleData() {
+        val categories = listOf("Food", "Transport", "Entertainment", "Shopping", "Bills")
+        for (i in 1..5) {
+            val amount = (10..100).random().toDouble()
+            val category = categories.random()
+            addExpense(amount, category, "Sample expense $i")
+        }
+    }
 }

@@ -19,7 +19,9 @@ class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val todoRepository: TodoRepository,
     private val noteRepository: NoteRepository,
-    private val pomodoroHistoryRepository: PomodoroHistoryRepository
+    private val pomodoroHistoryRepository: PomodoroHistoryRepository,
+    private val expenseRepository: app.taskvault.domain.ExpenseRepository,
+    private val secretRepository: app.taskvault.data.repository.SecretRepository
 ) : ViewModel() {
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
@@ -85,6 +87,18 @@ class ProfileViewModel @Inject constructor(
     fun seedPomodoro() {
         viewModelScope.launch {
             pomodoroHistoryRepository.seedSampleData()
+        }
+    }
+
+    fun seedExpenses() {
+        viewModelScope.launch {
+            expenseRepository.seedSampleData()
+        }
+    }
+
+    fun seedSecrets() {
+        viewModelScope.launch {
+            secretRepository.seedSampleData()
         }
     }
 

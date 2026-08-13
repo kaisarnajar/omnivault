@@ -7,4 +7,5 @@ interface ExpenseRepository {
     fun getExpenses(): Flow<List<ExpenseEntity>>
     suspend fun addExpense(amount: Double, category: String, description: String)
     suspend fun deleteExpense(id: String)
+    suspend fun seedSampleData()
 }

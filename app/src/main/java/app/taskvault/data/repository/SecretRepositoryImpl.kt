@@ -24,4 +24,17 @@ class SecretRepositoryImpl @Inject constructor(
     override suspend fun deleteSecret(secret: SecretEntity) {
         secretDao.deleteSecret(secret)
     }
+
+    override suspend fun seedSampleData() {
+        for (i in 1..5) {
+            val secret = SecretEntity(
+                title = "Sample Secret $i",
+                username = "user$i",
+                secretValue = "P@ssw0rd$i",
+                notes = "Sample notes for secret $i",
+                timestamp = System.currentTimeMillis()
+            )
+            insertSecret(secret)
+        }
+    }
 }

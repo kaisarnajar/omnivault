@@ -8,4 +8,5 @@ interface SecretRepository {
     suspend fun insertSecret(secret: SecretEntity)
     suspend fun updateSecret(secret: SecretEntity)
     suspend fun deleteSecret(secret: SecretEntity)
+    suspend fun seedSampleData()
 }
