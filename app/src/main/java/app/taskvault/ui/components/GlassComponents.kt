@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -102,7 +103,7 @@ fun OmniVaultBackground(content: @Composable () -> Unit) {
 
     Box(
         modifier = Modifier
-            .androidx.compose.foundation.layout.fillMaxSize()
+            .fillMaxSize()
             .background(Brush.verticalGradient(colors = listOf(gradientStart, gradientEnd)))
     ) {
         content()
