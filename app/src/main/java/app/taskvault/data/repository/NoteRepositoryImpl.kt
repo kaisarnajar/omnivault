@@ -5,14 +5,11 @@ import app.taskvault.data.local.NoteEntity
 import app.taskvault.domain.AuthRepository
 import app.taskvault.domain.AuthState
 import app.taskvault.domain.NoteRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import java.util.UUID
-
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-
-
 import javax.inject.Inject
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -61,7 +58,7 @@ class NoteRepositoryImpl @Inject constructor(
     override suspend fun seedSampleData() {
         val userId = authRepository.getCurrentUserId() ?: return
         val currentTime = System.currentTimeMillis()
-        
+
         for (i in 1..20) {
             val entity = NoteEntity(
                 id = UUID.randomUUID().toString(),

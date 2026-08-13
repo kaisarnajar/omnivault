@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -67,35 +67,35 @@ fun ProfileScreen(
                     }
                 },
                 colors =
-                    TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                    ),
+                TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
-        },
+        }
     ) { paddingValues ->
         Column(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(24.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Box(
                 modifier =
-                    Modifier
-                        .size(120.dp)
-                        .clip(androidx.compose.foundation.shape.CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape),
-                contentAlignment = Alignment.Center,
+                Modifier
+                    .size(120.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(2.dp, MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = androidx.compose.material.icons.Icons.Default.Person,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -106,7 +106,7 @@ fun ProfileScreen(
                     label = { Text("Display Name") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
+                    singleLine = true
                 )
 
                 OutlinedTextField(
@@ -115,22 +115,22 @@ fun ProfileScreen(
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
+                    singleLine = true
                 )
             } else {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
                         text = userProfile?.displayName ?: "No Name",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = userProfile?.email ?: "No Email",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -140,7 +140,7 @@ fun ProfileScreen(
                     text = (uiState as ProfileUiState.Error).message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
@@ -160,9 +160,9 @@ fun ProfileScreen(
                     onClick = { isEditing = true },
                     modifier = Modifier.fillMaxWidth().height(56.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     OutlinedButton(
                         onClick = { onThemeChange(null) }, // System
@@ -200,9 +200,9 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Logout")
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                         onClick = { viewModel.seedTasks() },
@@ -211,7 +211,7 @@ fun ProfileScreen(
                     ) {
                         Text("Debug: Generate Sample Tasks")
                     }
-                    
+
                     OutlinedButton(
                         onClick = { viewModel.seedNotes() },
                         modifier = Modifier.fillMaxWidth().height(48.dp),
@@ -219,7 +219,7 @@ fun ProfileScreen(
                     ) {
                         Text("Debug: Generate Sample Notes")
                     }
-                    
+
                     OutlinedButton(
                         onClick = { viewModel.seedPomodoro() },
                         modifier = Modifier.fillMaxWidth().height(48.dp),

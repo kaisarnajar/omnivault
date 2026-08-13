@@ -15,7 +15,7 @@ import app.taskvault.MainActivity
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(
         context: Context,
-        intent: Intent,
+        intent: Intent
     ) {
         val todoId = intent.getIntExtra("EXTRA_TODO_ID", 0)
         val title = intent.getStringExtra("EXTRA_TODO_TITLE") ?: "Task due soon!"
@@ -26,7 +26,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private fun showNotification(
         context: Context,
         notificationId: Int,
-        title: String,
+        title: String
     ) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "taskvault_alarm_channel"
@@ -40,7 +40,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 NotificationChannel(
                     channelId,
                     channelName,
-                    NotificationManager.IMPORTANCE_HIGH,
+                    NotificationManager.IMPORTANCE_HIGH
                 ).apply {
                     description = "Alarm notifications for tasks"
 
@@ -65,7 +65,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 context,
                 notificationId,
                 openAppIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
         val builder =

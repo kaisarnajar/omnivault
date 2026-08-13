@@ -8,12 +8,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-
-
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
+    private val firebaseAuth: FirebaseAuth
 ) : AuthRepository {
     override val authState: Flow<AuthState> =
         callbackFlow {
@@ -30,7 +28,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(
         email: String,
-        password: String,
+        password: String
     ): Result<Unit> {
         return try {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
@@ -42,7 +40,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun register(
         email: String,
-        password: String,
+        password: String
     ): Result<Unit> {
         return try {
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()

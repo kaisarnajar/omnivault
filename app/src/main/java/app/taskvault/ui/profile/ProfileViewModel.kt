@@ -2,19 +2,16 @@ package app.taskvault.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.taskvault.domain.NoteRepository
+import app.taskvault.domain.PomodoroHistoryRepository
 import app.taskvault.domain.ProfileRepository
 import app.taskvault.domain.TodoRepository
 import app.taskvault.domain.UserProfile
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-import app.taskvault.domain.NoteRepository
-import app.taskvault.domain.PomodoroHistoryRepository
-
-
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +19,7 @@ class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val todoRepository: TodoRepository,
     private val noteRepository: NoteRepository,
-    private val pomodoroHistoryRepository: PomodoroHistoryRepository,
+    private val pomodoroHistoryRepository: PomodoroHistoryRepository
 ) : ViewModel() {
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
@@ -42,7 +39,7 @@ class ProfileViewModel @Inject constructor(
 
     fun updateProfile(
         displayName: String,
-        email: String,
+        email: String
     ) {
         _uiState.value = ProfileUiState.Loading
         viewModelScope.launch {

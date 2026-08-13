@@ -61,54 +61,54 @@ fun TodoItemCard(
                     onClick = {
                         showDeleteDialog = false
                         onDelete()
-                    },
+                    }
                 ) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(
-                    onClick = { showDeleteDialog = false },
+                    onClick = { showDeleteDialog = false }
                 ) {
                     Text("Cancel")
                 }
-            },
+            }
         )
     }
 
     GlassCard(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable { onToggleCompletion() }
-                .padding(bottom = 8.dp),
+        Modifier
+            .fillMaxWidth()
+            .clickable { onToggleCompletion() }
+            .padding(bottom = 8.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             // Custom Checkbox
             Box(
                 modifier =
-                    Modifier
-                        .size(24.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(if (todo.isCompleted) MaterialTheme.colorScheme.secondary else Color.Transparent)
-                        .border(
-                            2.dp,
-                            if (todo.isCompleted) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                            RoundedCornerShape(6.dp),
-                        )
-                        .clickable { onToggleCompletion() },
-                contentAlignment = Alignment.Center,
+                Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(if (todo.isCompleted) MaterialTheme.colorScheme.secondary else Color.Transparent)
+                    .border(
+                        2.dp,
+                        if (todo.isCompleted) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                        RoundedCornerShape(6.dp)
+                    )
+                    .clickable { onToggleCompletion() },
+                contentAlignment = Alignment.Center
             ) {
                 if (todo.isCompleted) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
@@ -120,14 +120,14 @@ fun TodoItemCard(
                     text = todo.title,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = opacity),
-                    textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
+                    textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
                 )
                 Text(
                     text = "${todo.priority} Priority • $displayDate",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
@@ -138,7 +138,7 @@ fun TodoItemCard(
                             .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(4.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
-                    
+
                     if (todo.eisenhowerTag.isNotEmpty()) {
                         val (tagColor, tagBgColor) = when (todo.eisenhowerTag) {
                             "Do" -> Color(0xFFD32F2F) to Color(0xFFFFEBEE)
@@ -163,7 +163,7 @@ fun TodoItemCard(
                 Icon(
                     Icons.Default.Edit,
                     contentDescription = "Edit",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
                 )
             }
 
@@ -171,7 +171,7 @@ fun TodoItemCard(
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
                 )
             }
         }

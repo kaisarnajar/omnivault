@@ -60,7 +60,7 @@ fun AddEditSecretScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-            
+
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -82,7 +82,7 @@ fun AddEditSecretScreen(
                     }
                 }
             )
-            
+
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },

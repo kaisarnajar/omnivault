@@ -22,20 +22,20 @@ import java.util.Locale
 @Composable
 fun DateTimeSelectors(
     dueDate: Long?,
-    onDueDateChange: (Long) -> Unit,
+    onDueDateChange: (Long) -> Unit
 ) {
     val context = LocalContext.current
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = "DUE DATE",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 val dateFormatted = dueDate?.let { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(it)) } ?: "Select Date"
@@ -51,33 +51,33 @@ fun DateTimeSelectors(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors =
-                            TextFieldDefaults.colors(
-                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                            ),
+                        TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
                     )
                     Box(
                         modifier =
-                            Modifier
-                                .matchParentSize()
-                                .clickable {
-                                    val calendar = Calendar.getInstance()
-                                    if (dueDate != null) calendar.timeInMillis = dueDate
-                                    DatePickerDialog(
-                                        context,
-                                        { _, year, month, dayOfMonth ->
-                                            val cal = Calendar.getInstance()
-                                            if (dueDate != null) cal.timeInMillis = dueDate
-                                            cal.set(year, month, dayOfMonth)
-                                            onDueDateChange(cal.timeInMillis)
-                                        },
-                                        calendar.get(Calendar.YEAR),
-                                        calendar.get(Calendar.MONTH),
-                                        calendar.get(Calendar.DAY_OF_MONTH),
-                                    ).show()
-                                },
+                        Modifier
+                            .matchParentSize()
+                            .clickable {
+                                val calendar = Calendar.getInstance()
+                                if (dueDate != null) calendar.timeInMillis = dueDate
+                                DatePickerDialog(
+                                    context,
+                                    { _, year, month, dayOfMonth ->
+                                        val cal = Calendar.getInstance()
+                                        if (dueDate != null) cal.timeInMillis = dueDate
+                                        cal.set(year, month, dayOfMonth)
+                                        onDueDateChange(cal.timeInMillis)
+                                    },
+                                    calendar.get(Calendar.YEAR),
+                                    calendar.get(Calendar.MONTH),
+                                    calendar.get(Calendar.DAY_OF_MONTH)
+                                ).show()
+                            }
                     )
                 }
             }
@@ -85,7 +85,7 @@ fun DateTimeSelectors(
                 Text(
                     text = "DUE TIME",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 val timeFormatted = dueDate?.let { SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it)) } ?: "Select Time"
@@ -101,34 +101,34 @@ fun DateTimeSelectors(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors =
-                            TextFieldDefaults.colors(
-                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                            ),
+                        TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
                     )
                     Box(
                         modifier =
-                            Modifier
-                                .matchParentSize()
-                                .clickable {
-                                    val calendar = Calendar.getInstance()
-                                    if (dueDate != null) calendar.timeInMillis = dueDate
-                                    TimePickerDialog(
-                                        context,
-                                        { _, hourOfDay, minute ->
-                                            val cal = Calendar.getInstance()
-                                            if (dueDate != null) cal.timeInMillis = dueDate
-                                            cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                                            cal.set(Calendar.MINUTE, minute)
-                                            onDueDateChange(cal.timeInMillis)
-                                        },
-                                        calendar.get(Calendar.HOUR_OF_DAY),
-                                        calendar.get(Calendar.MINUTE),
-                                        true,
-                                    ).show()
-                                },
+                        Modifier
+                            .matchParentSize()
+                            .clickable {
+                                val calendar = Calendar.getInstance()
+                                if (dueDate != null) calendar.timeInMillis = dueDate
+                                TimePickerDialog(
+                                    context,
+                                    { _, hourOfDay, minute ->
+                                        val cal = Calendar.getInstance()
+                                        if (dueDate != null) cal.timeInMillis = dueDate
+                                        cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                                        cal.set(Calendar.MINUTE, minute)
+                                        onDueDateChange(cal.timeInMillis)
+                                    },
+                                    calendar.get(Calendar.HOUR_OF_DAY),
+                                    calendar.get(Calendar.MINUTE),
+                                    true
+                                ).show()
+                            }
                     )
                 }
             }

@@ -5,6 +5,7 @@ import app.taskvault.data.repository.ExpenseRepositoryImpl
 import app.taskvault.data.repository.NoteRepositoryImpl
 import app.taskvault.data.repository.PomodoroHistoryRepositoryImpl
 import app.taskvault.data.repository.ProfileRepositoryImpl
+import app.taskvault.data.repository.SecretRepository
 import app.taskvault.data.repository.SecretRepositoryImpl
 import app.taskvault.data.repository.TodoRepositoryImpl
 import app.taskvault.domain.AuthRepository
@@ -13,7 +14,6 @@ import app.taskvault.domain.NoteRepository
 import app.taskvault.domain.PomodoroHistoryRepository
 import app.taskvault.domain.ProfileRepository
 import app.taskvault.domain.TodoRepository
-import app.taskvault.data.repository.SecretRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

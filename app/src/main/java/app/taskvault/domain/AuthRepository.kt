@@ -13,12 +13,12 @@ interface AuthRepository {
 
     suspend fun login(
         email: String,
-        password: String,
+        password: String
     ): Result<Unit>
 
     suspend fun register(
         email: String,
-        password: String,
+        password: String
     ): Result<Unit>
 
     suspend fun signInWithGoogle(idToken: String): Result<Unit>

@@ -5,9 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-
-import javax.inject.Inject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 class AlarmScheduler @Inject constructor(@ApplicationContext private val context: Context) {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -15,7 +14,7 @@ class AlarmScheduler @Inject constructor(@ApplicationContext private val context
     fun scheduleAlarm(
         todoId: Int,
         title: String,
-        timeInMillis: Long,
+        timeInMillis: Long
     ) {
         val intent =
             Intent(context, AlarmReceiver::class.java).apply {
@@ -28,7 +27,7 @@ class AlarmScheduler @Inject constructor(@ApplicationContext private val context
                 context,
                 todoId, // Unique ID for this alarm
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
         try {
@@ -37,21 +36,21 @@ class AlarmScheduler @Inject constructor(@ApplicationContext private val context
                     alarmManager.setExactAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
                         timeInMillis,
-                        pendingIntent,
+                        pendingIntent
                     )
                 } else {
                     // Fallback to inexact if permission is missing
                     alarmManager.setAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,
                         timeInMillis,
-                        pendingIntent,
+                        pendingIntent
                     )
                 }
             } else {
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     timeInMillis,
-                    pendingIntent,
+                    pendingIntent
                 )
             }
         } catch (e: SecurityException) {
@@ -60,7 +59,7 @@ class AlarmScheduler @Inject constructor(@ApplicationContext private val context
             alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 timeInMillis,
-                pendingIntent,
+                pendingIntent
             )
         }
     }
@@ -72,7 +71,7 @@ class AlarmScheduler @Inject constructor(@ApplicationContext private val context
                 context,
                 todoId,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         alarmManager.cancel(pendingIntent)
     }

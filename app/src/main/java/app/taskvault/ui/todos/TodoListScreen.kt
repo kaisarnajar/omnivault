@@ -1,30 +1,28 @@
 package app.taskvault.ui.todos
 
-import app.taskvault.util.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.taskvault.ui.components.DashboardTopAppBar
 import app.taskvault.ui.components.TaskListHeader
 import app.taskvault.ui.components.TaskSearchBar
 import app.taskvault.ui.components.TodoItemCard
-import app.taskvault.ui.profile.ProfileViewModel
 import app.taskvault.ui.components.gradientBackground
+import app.taskvault.util.DateUtils
 
 @Composable
 fun TodoListScreen(
     viewModel: TodoViewModel,
     onNavigateToAddTodo: () -> Unit,
-    onNavigateBack: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val todos by viewModel.todos.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
@@ -32,7 +30,7 @@ fun TodoListScreen(
 
     val filteredTodos = todos.filter { todo ->
         val matchesSearch = todo.title.contains(searchQuery, ignoreCase = true)
-        
+
         val matchesFilter = when (selectedFilter) {
             "All Tasks" -> !todo.isCompleted
             "Today" -> !todo.isCompleted && (todo.dueDate == null || DateUtils.isToday(todo.dueDate))
@@ -75,21 +73,21 @@ fun TodoListScreen(
                 Icon(Icons.Default.Add, contentDescription = "Add Task", tint = androidx.compose.ui.graphics.Color.White)
             }
         },
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 TaskSearchBar(
                     query = searchQuery,
-                    onQueryChange = { searchQuery = it },
+                    onQueryChange = { searchQuery = it }
                 )
             }
             item {
@@ -106,7 +104,7 @@ fun TodoListScreen(
                         viewModel.selectTodoForEdit(todo)
                         onNavigateToAddTodo()
                     },
-                    onDelete = { viewModel.deleteTodo(todo.id) },
+                    onDelete = { viewModel.deleteTodo(todo.id) }
                 )
             }
             item {

@@ -4,15 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.taskvault.data.local.ExpenseEntity
 import app.taskvault.domain.ExpenseRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
-
-
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,11 +28,10 @@ class ExpenseViewModel @Inject constructor(
     val currentMonthTotal: StateFlow<Double> = expenses.map { list ->
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        
+
         list.filter { expense ->
             val expenseCalendar = Calendar.getInstance().apply { timeInMillis = expense.timestamp }
-            expenseCalendar.get(Calendar.MONTH) == currentMonth && 
-            expenseCalendar.get(Calendar.YEAR) == currentYear
+            expenseCalendar.get(Calendar.MONTH) == currentMonth && expenseCalendar.get(Calendar.YEAR) == currentYear
         }.sumOf { it.amount }
     }.stateIn(
         scope = viewModelScope,

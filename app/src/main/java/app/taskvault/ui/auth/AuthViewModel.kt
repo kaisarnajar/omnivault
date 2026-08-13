@@ -3,18 +3,16 @@ package app.taskvault.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.taskvault.domain.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     val authState = authRepository.authState
 
@@ -26,7 +24,7 @@ class AuthViewModel @Inject constructor(
 
     fun login(
         email: String,
-        password: String,
+        password: String
     ) {
         _uiState.value = AuthUiState.Loading
         viewModelScope.launch {
@@ -41,7 +39,7 @@ class AuthViewModel @Inject constructor(
 
     fun register(
         email: String,
-        password: String,
+        password: String
     ) {
         _uiState.value = AuthUiState.Loading
         viewModelScope.launch {

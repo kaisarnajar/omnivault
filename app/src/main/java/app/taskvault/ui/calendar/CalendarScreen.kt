@@ -5,9 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,12 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.taskvault.domain.Todo
 import app.taskvault.ui.components.TodoItemCard
 import app.taskvault.ui.todos.TodoViewModel
-import app.taskvault.util.DateUtils
 import java.util.Calendar
 import java.util.Locale
 
@@ -31,7 +28,7 @@ fun CalendarScreen(
     onNavigateBack: () -> Unit
 ) {
     val todos by viewModel.todos.collectAsState()
-    
+
     // Calendar State
     var currentMonth by remember { mutableStateOf(Calendar.getInstance()) }
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
@@ -77,14 +74,14 @@ fun CalendarScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Row {
-                    TextButton(onClick = { 
+                    TextButton(onClick = {
                         val prev = currentMonth.clone() as Calendar
                         prev.add(Calendar.MONTH, -1)
                         currentMonth = prev
                     }) {
                         Text("<")
                     }
-                    TextButton(onClick = { 
+                    TextButton(onClick = {
                         val next = currentMonth.clone() as Calendar
                         next.add(Calendar.MONTH, 1)
                         currentMonth = next
@@ -136,7 +133,7 @@ fun CalendarScreen(
                                 if (dayNumber in 1..daysInMonth) {
                                     val cellDate = currentMonth.clone() as Calendar
                                     cellDate.set(Calendar.DAY_OF_MONTH, dayNumber)
-                                    
+
                                     val isSelected = isSameDay(selectedDate.timeInMillis, cellDate.timeInMillis)
                                     val hasTasks = todos.any { it.dueDate != null && isSameDay(it.dueDate, cellDate.timeInMillis) }
 
@@ -209,5 +206,5 @@ private fun isSameDay(time1: Long, time2: Long): Boolean {
     val cal1 = Calendar.getInstance().apply { timeInMillis = time1 }
     val cal2 = Calendar.getInstance().apply { timeInMillis = time2 }
     return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-           cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+        cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
 }

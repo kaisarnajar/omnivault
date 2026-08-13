@@ -4,19 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.taskvault.domain.Todo
 import app.taskvault.domain.TodoRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class TodoViewModel @Inject constructor(
     private val repository: TodoRepository,
-    private val authRepository: app.taskvault.domain.AuthRepository,
+    private val authRepository: app.taskvault.domain.AuthRepository
 ) : ViewModel() {
     private val _todos = MutableStateFlow<List<Todo>>(emptyList())
     val todos: StateFlow<List<Todo>> = _todos.asStateFlow()
@@ -72,7 +70,7 @@ class TodoViewModel @Inject constructor(
                         priority = priority,
                         category = category,
                         eisenhowerTag = eisenhowerTag
-                    ),
+                    )
                 )
             }
         }

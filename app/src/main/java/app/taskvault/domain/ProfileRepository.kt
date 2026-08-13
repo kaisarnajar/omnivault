@@ -3,7 +3,7 @@ package app.taskvault.domain
 data class UserProfile(
     val displayName: String?,
     val email: String?,
-    val photoUrl: String?,
+    val photoUrl: String?
 )
 
 interface ProfileRepository {

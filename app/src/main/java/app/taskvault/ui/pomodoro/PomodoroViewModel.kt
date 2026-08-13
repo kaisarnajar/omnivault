@@ -2,21 +2,19 @@ package app.taskvault.ui.pomodoro
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.taskvault.data.local.PomodoroSessionEntity
 import app.taskvault.data.repository.PomodoroPreferencesRepository
 import app.taskvault.domain.PomodoroHistoryRepository
-import app.taskvault.data.local.PomodoroSessionEntity
 import app.taskvault.domain.PomodoroMode
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-
-
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,7 +50,7 @@ class PomodoroViewModel @Inject constructor(
             val defaultDuration = preferencesRepository.pomodoroDuration.first()
             _timeRemaining.value = defaultDuration * 60
         }
-        
+
         viewModelScope.launch {
             historyRepository.getSessions().collect { sessions ->
                 _historySessions.value = sessions
@@ -86,7 +84,7 @@ class PomodoroViewModel @Inject constructor(
             if (_timeRemaining.value == 0 && _isPlaying.value) {
                 _isPlaying.value = false
                 _timerEvent.emit(Unit)
-                
+
                 // Save session if it was a POMODORO mode
                 if (_currentMode.value == PomodoroMode.POMODORO) {
                     val duration = preferencesRepository.pomodoroDuration.first()

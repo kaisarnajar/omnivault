@@ -36,7 +36,7 @@ fun SplashScreen(
     LaunchedEffect(key1 = true) {
         startAnimation = true
         delay(2000)
-        
+
         // Check Auth Status and Navigate
         if (FirebaseAuth.getInstance().currentUser != null) {
             onNavigateToHome()

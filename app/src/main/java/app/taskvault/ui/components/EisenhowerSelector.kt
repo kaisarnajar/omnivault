@@ -26,14 +26,14 @@ fun EisenhowerSelector(
         Text(
             text = "EISENHOWER MATRIX",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp)),
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
         ) {
             Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
                 QuadrantCard(

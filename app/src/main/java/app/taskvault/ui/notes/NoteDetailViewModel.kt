@@ -1,18 +1,15 @@
 package app.taskvault.ui.notes
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.taskvault.domain.NoteRepository
-import kotlinx.coroutines.FlowPreview
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import androidx.lifecycle.SavedStateHandle
 
 @HiltViewModel
 class NoteDetailViewModel @Inject constructor(
@@ -45,7 +42,7 @@ class NoteDetailViewModel @Inject constructor(
     fun updateContent(newContent: String) {
         _content.value = newContent
     }
-    
+
     fun saveNote() {
         viewModelScope.launch {
             if (_title.value.isNotBlank() || _content.value.isNotBlank()) {

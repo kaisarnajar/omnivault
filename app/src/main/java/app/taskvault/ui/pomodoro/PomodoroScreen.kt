@@ -1,48 +1,46 @@
 package app.taskvault.ui.pomodoro
 
+import android.media.MediaPlayer
+import android.media.RingtoneManager
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.Locale
-import app.taskvault.ui.components.gradientBackground
-import app.taskvault.domain.PomodoroMode
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
-import android.media.RingtoneManager
-import android.media.MediaPlayer
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import app.taskvault.R
+import app.taskvault.domain.PomodoroMode
+import app.taskvault.ui.components.gradientBackground
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,12 +60,12 @@ fun PomodoroScreen(
     val timeRemaining by viewModel.timeRemaining.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentMode by viewModel.currentMode.collectAsState()
-    
+
     var showSettingsDialog by remember { mutableStateOf(false) }
     var showHistoryDialog by remember { mutableStateOf(false) }
     var selectedSound by remember { mutableStateOf("None") }
     val mediaPlayer = remember { mutableStateOf<MediaPlayer?>(null) }
-    
+
     DisposableEffect(selectedSound) {
         mediaPlayer.value?.release()
         val soundRes = when (selectedSound) {
@@ -76,7 +74,7 @@ fun PomodoroScreen(
             "Cafe" -> R.raw.cafe
             else -> null
         }
-        
+
         if (soundRes != null) {
             mediaPlayer.value = MediaPlayer.create(context, soundRes)
             mediaPlayer.value?.isLooping = true
@@ -84,12 +82,12 @@ fun PomodoroScreen(
         } else {
             mediaPlayer.value = null
         }
-        
+
         onDispose {
             mediaPlayer.value?.release()
         }
     }
-    
+
     LaunchedEffect(isPlaying) {
         if (isPlaying) {
             mediaPlayer.value?.start()
@@ -205,7 +203,7 @@ fun PomodoroScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             // Ambient Sound Selector
             Text(
                 text = "AMBIENT SOUND",

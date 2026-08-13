@@ -1,7 +1,6 @@
 package app.taskvault
 
 import android.os.Bundle
-import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,35 +13,33 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.taskvault.ui.auth.AuthViewModel
 import app.taskvault.ui.auth.LoginScreen
 import app.taskvault.ui.auth.RegisterScreen
-import app.taskvault.ui.splash.SplashScreen
-import app.taskvault.ui.vault.VaultViewModel
-import app.taskvault.ui.vault.VaultListScreen
-import app.taskvault.ui.vault.AddEditSecretScreen
-
 import app.taskvault.ui.calendar.CalendarScreen
-import app.taskvault.ui.tools.ToolsScreen
+import app.taskvault.ui.expense.ExpenseScreen
+import app.taskvault.ui.expense.ExpenseViewModel
+import app.taskvault.ui.notes.NoteDetailScreen
+import app.taskvault.ui.notes.NoteDetailViewModel
+import app.taskvault.ui.notes.NotesListScreen
+import app.taskvault.ui.notes.NotesListViewModel
 import app.taskvault.ui.pomodoro.PomodoroScreen
 import app.taskvault.ui.pomodoro.PomodoroViewModel
 import app.taskvault.ui.profile.ProfileScreen
 import app.taskvault.ui.profile.ProfileViewModel
+import app.taskvault.ui.splash.SplashScreen
 import app.taskvault.ui.todos.AddTodoScreen
 import app.taskvault.ui.todos.TodoListScreen
 import app.taskvault.ui.todos.TodoViewModel
-import app.taskvault.ui.expense.ExpenseScreen
-import app.taskvault.ui.expense.ExpenseViewModel
-import app.taskvault.ui.notes.NotesListScreen
-import app.taskvault.ui.notes.NotesListViewModel
-import app.taskvault.ui.notes.NoteDetailScreen
-import app.taskvault.ui.notes.NoteDetailViewModel
-import com.google.firebase.auth.FirebaseAuth
+import app.taskvault.ui.tools.ToolsScreen
+import app.taskvault.ui.vault.AddEditSecretScreen
+import app.taskvault.ui.vault.VaultListScreen
+import app.taskvault.ui.vault.VaultViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,7 +47,7 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         setContent {
             var isDarkTheme by remember { mutableStateOf<Boolean?>(null) }
             val systemTheme = androidx.compose.foundation.isSystemInDarkTheme()
@@ -67,11 +64,11 @@ class MainActivity : FragmentActivity() {
 
 @Composable
 fun TaskVaultApp(
-    onThemeChange: (Boolean?) -> Unit,
+    onThemeChange: (Boolean?) -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.background
     ) {
         val navController = rememberNavController()
 
@@ -111,7 +108,7 @@ fun TaskVaultApp(
                             navController.navigate("tools") {
                                 popUpTo("login") { inclusive = true }
                             }
-                        },
+                        }
                     )
                 }
                 composable("register") {
@@ -122,7 +119,7 @@ fun TaskVaultApp(
                             navController.navigate("tools") {
                                 popUpTo("login") { inclusive = true }
                             }
-                        },
+                        }
                     )
                 }
                 composable("todo_list") {
@@ -135,7 +132,7 @@ fun TaskVaultApp(
                 composable("add_todo") {
                     AddTodoScreen(
                         viewModel = viewModel,
-                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
                 composable("profile") {
@@ -154,7 +151,7 @@ fun TaskVaultApp(
                 composable("pomodoro") {
                     PomodoroScreen(
                         viewModel = pomodoroViewModel,
-                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
                 composable("expense_tracker") {

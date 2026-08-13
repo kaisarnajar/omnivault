@@ -5,14 +5,11 @@ import app.taskvault.data.local.ExpenseEntity
 import app.taskvault.domain.AuthRepository
 import app.taskvault.domain.AuthState
 import app.taskvault.domain.ExpenseRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import java.util.UUID
-
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-
-
 import javax.inject.Inject
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)

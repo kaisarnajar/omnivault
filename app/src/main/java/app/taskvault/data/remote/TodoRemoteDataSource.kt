@@ -3,11 +3,10 @@ package app.taskvault.data.remote
 import app.taskvault.domain.Todo
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
-
 import javax.inject.Inject
 
 class TodoRemoteDataSource @Inject constructor(
-    private val firebaseDatabase: FirebaseDatabase,
+    private val firebaseDatabase: FirebaseDatabase
 ) {
     private fun getTodosRef(userId: String) = firebaseDatabase.getReference("users/$userId/todos")
 
@@ -22,21 +21,21 @@ class TodoRemoteDataSource @Inject constructor(
 
     suspend fun addTodo(
         userId: String,
-        todo: Todo,
+        todo: Todo
     ) {
         getTodosRef(userId).child(todo.id).setValue(todo).await()
     }
 
     suspend fun updateTodo(
         userId: String,
-        todo: Todo,
+        todo: Todo
     ) {
         getTodosRef(userId).child(todo.id).setValue(todo).await()
     }
 
     suspend fun deleteTodo(
         userId: String,
-        todoId: String,
+        todoId: String
     ) {
         getTodosRef(userId).child(todoId).removeValue().await()
     }

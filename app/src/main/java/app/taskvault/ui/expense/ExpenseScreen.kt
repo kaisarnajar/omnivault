@@ -1,7 +1,6 @@
 package app.taskvault.ui.expense
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,27 +11,26 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import app.taskvault.data.local.ExpenseEntity
+import app.taskvault.ui.components.GlassCard
+import app.taskvault.ui.components.gradientBackground
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import app.taskvault.data.local.ExpenseEntity
-import app.taskvault.ui.components.gradientBackground
-import app.taskvault.ui.components.GlassCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +40,7 @@ fun ExpenseScreen(
 ) {
     val expenses by viewModel.expenses.collectAsState()
     val totalThisMonth by viewModel.currentMonthTotal.collectAsState()
-    
+
     var showAddDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -103,7 +101,7 @@ fun ExpenseScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
 
             // Expenses List
@@ -153,7 +151,7 @@ fun ExpenseItem(expense: ExpenseEntity, onDelete: () -> Unit) {
         "Bills" -> Icons.Default.Receipt
         else -> Icons.Default.MoreHoriz
     }
-    
+
     val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(expense.timestamp))
 
     GlassCard(modifier = Modifier.fillMaxWidth()) {
@@ -176,9 +174,9 @@ fun ExpenseItem(expense: ExpenseEntity, onDelete: () -> Unit) {
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = expense.description.ifBlank { expense.category },
@@ -191,14 +189,14 @@ fun ExpenseItem(expense: ExpenseEntity, onDelete: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Text(
                 text = NumberFormat.getCurrencyInstance().format(expense.amount),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.error
             )
-            
+
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Delete,
@@ -218,7 +216,7 @@ fun AddExpenseDialog(
     var amount by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Food") }
-    
+
     val categories = listOf("Food", "Transport", "Shopping", "Bills", "Other")
 
     AlertDialog(
@@ -233,16 +231,16 @@ fun AddExpenseDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
-                
+
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description (Optional)") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                
+
                 Text("Category", style = MaterialTheme.typography.labelMedium)
-                
+
                 // Simple category selector using chips
                 androidx.compose.foundation.lazy.LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

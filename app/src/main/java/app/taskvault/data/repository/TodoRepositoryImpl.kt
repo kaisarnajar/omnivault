@@ -10,22 +10,20 @@ import app.taskvault.domain.Todo
 import app.taskvault.domain.TodoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.UUID
-
-
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
     private val todoDao: TodoDao,
     private val remoteDataSource: TodoRemoteDataSource,
     private val authRepository: AuthRepository,
-    private val alarmScheduler: app.taskvault.worker.AlarmScheduler,
+    private val alarmScheduler: app.taskvault.worker.AlarmScheduler
 ) : TodoRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -130,7 +128,7 @@ class TodoRepositoryImpl @Inject constructor(
             }
         }
     }
-    
+
     override suspend fun clearCompletedTodos() {
         // Not currently implemented: user logic goes here.
     }
@@ -140,10 +138,10 @@ class TodoRepositoryImpl @Inject constructor(
         val categories = listOf("Work", "Personal", "Health", "Study", "Finance", "Other")
         val priorities = listOf("High", "Medium", "Low")
         val eisenhowerTags = listOf("Do", "Schedule", "Delegate", "Delete")
-        
+
         val randomTasks = mutableListOf<Todo>()
         val currentTime = System.currentTimeMillis()
-        
+
         for (i in 1..50) {
             val isCompleted = Math.random() > 0.8
             val todo = Todo(
@@ -162,10 +160,8 @@ class TodoRepositoryImpl @Inject constructor(
             randomTasks.add(todo)
             todoDao.insertTodo(todo.toEntityModel())
         }
-        
+
         // Batch push to remote (best effort via single adds)
-        randomTasks.forEach { 
-            try { remoteDataSource.addTodo(userId, it) } catch (e: Exception) {} 
-        }
+        randomTasks.forEach { try { remoteDataSource.addTodo(userId, it) } catch (e: Exception) {} }
     }
 }
