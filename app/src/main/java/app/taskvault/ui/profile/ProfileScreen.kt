@@ -12,7 +12,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Bookmark
+import app.taskvault.ui.theme.SleepAccent
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
@@ -322,7 +324,8 @@ fun DebugToolsDialog(
         DebugSeedItem("Credit/Debit", Icons.Default.AccountBalanceWallet, LedgerAccent) { viewModel.seedLedger() },
         DebugSeedItem("Mood Journal", Icons.Default.Face, MoodAccent) { viewModel.seedMood() },
         DebugSeedItem("Bookmarks", Icons.Default.Bookmark, BookmarkAccent) { viewModel.seedBookmarks() },
-        DebugSeedItem("Fitness Tracker", Icons.Default.FitnessCenter, FitnessAccent) { viewModel.seedFitness() }
+        DebugSeedItem("Fitness Tracker", Icons.Default.FitnessCenter, FitnessAccent) { viewModel.seedFitness() },
+        DebugSeedItem("Sleep Log", Icons.Default.Bedtime, SleepAccent) { viewModel.seedSleep() }
     )
 
     AlertDialog(

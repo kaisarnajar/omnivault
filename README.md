@@ -2,7 +2,7 @@
 
 > **An all-in-one, offline-first Android productivity, security & utility hub — built with Jetpack Compose, Material 3, and Kotlin.**
 
-OmniVault combines 10 essential tools into a single, beautifully designed app so you can manage tasks, track expenses, log workouts, save web bookmarks, track debts, log moods, stay focused, and secure your secrets — all in one place.
+OmniVault combines 11 essential tools into a single, beautifully designed app so you can manage tasks, track expenses, log workouts, track sleep, save web bookmarks, track debts, log moods, stay focused, and secure your secrets — all in one place.
 
 ---
 
@@ -21,6 +21,7 @@ OmniVault combines 10 essential tools into a single, beautifully designed app so
 | 😄 **Mood Journal** | Log daily moods with emojis, reflections, and a chronological history timeline |
 | 🔖 **Bookmarks** | Save and categorize URLs, articles, and web content for later reading |
 | 🏋️ **Fitness Tracker** | Track gym workouts (with target muscles), running distance/duration, and sports |
+| 😴 **Sleep Log** | Track nightly sleep schedules, sleep duration, and quality ratings |
 
 ### 🏠 Home Screen Widgets
 Key features come with **Jetpack Glance home screen widgets** so you can view your tasks, notes, focus time, expenses, and vault secrets right from your Android home screen.

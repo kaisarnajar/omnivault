@@ -42,6 +42,7 @@ import app.taskvault.ui.bookmark.BookmarkScreen
 import app.taskvault.ui.bookmark.BookmarkViewModel
 import app.taskvault.ui.fitness.FitnessScreen
 import app.taskvault.ui.fitness.FitnessViewModel
+import app.taskvault.ui.sleep.SleepViewModel
 
 import app.taskvault.ui.todos.AddTodoScreen
 import app.taskvault.ui.todos.TodoListScreen
@@ -93,6 +94,7 @@ fun TaskVaultApp(
         val moodViewModel: MoodViewModel = hiltViewModel()
         val bookmarkViewModel: BookmarkViewModel = hiltViewModel()
         val fitnessViewModel: FitnessViewModel = hiltViewModel()
+        val sleepViewModel: SleepViewModel = hiltViewModel()
 
         val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
         val startDest = if (currentUser != null) "tools" else "login"
@@ -256,6 +258,13 @@ fun TaskVaultApp(
                 composable("fitness") {
                     FitnessScreen(
                         viewModel = fitnessViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable("sleep") {
+                    app.taskvault.ui.sleep.SleepScreen(
+                        viewModel = sleepViewModel,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }

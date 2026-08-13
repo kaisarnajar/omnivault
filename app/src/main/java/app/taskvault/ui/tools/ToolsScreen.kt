@@ -20,7 +20,9 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Bookmark
+import app.taskvault.ui.theme.SleepAccent
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Timer
@@ -147,6 +149,14 @@ fun ToolsScreen(
             icon = Icons.Default.FitnessCenter,
             route = "fitness",
             accentColor = FitnessAccent
+        ),
+        ToolItem(
+            title = "Sleep Log",
+            description = "Bedtime & Quality",
+            details = "Track sleep schedules, nightly duration, and sleep quality ratings.",
+            icon = Icons.Default.Bedtime,
+            route = "sleep",
+            accentColor = SleepAccent
         )
     )
 

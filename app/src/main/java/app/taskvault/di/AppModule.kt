@@ -74,4 +74,7 @@ object AppModule {
 
     @Provides
     fun provideFitnessDao(database: TodoDatabase): app.taskvault.data.local.FitnessDao = database.fitnessDao
+
+    @Provides
+    fun provideSleepDao(database: TodoDatabase): app.taskvault.data.local.SleepDao = database.sleepDao
 }

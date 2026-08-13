@@ -89,4 +89,10 @@ abstract class RepositoryModule {
     abstract fun bindFitnessRepository(
         fitnessRepositoryImpl: app.taskvault.data.repository.FitnessRepositoryImpl
     ): app.taskvault.domain.FitnessRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSleepRepository(
+        sleepRepositoryImpl: app.taskvault.data.repository.SleepRepositoryImpl
+    ): app.taskvault.domain.SleepRepository
 }
