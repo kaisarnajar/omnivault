@@ -111,7 +111,7 @@ dependencies {
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
     // ML Kit Barcode Scanning
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     // Concurrent futures for ListenableFuture
     implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
