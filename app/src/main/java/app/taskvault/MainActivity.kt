@@ -32,7 +32,7 @@ import app.taskvault.ui.pomodoro.PomodoroScreen
 import app.taskvault.ui.pomodoro.PomodoroViewModel
 import app.taskvault.ui.profile.ProfileScreen
 import app.taskvault.ui.profile.ProfileViewModel
-import app.taskvault.ui.splash.SplashScreen
+
 import app.taskvault.ui.todos.AddTodoScreen
 import app.taskvault.ui.todos.TodoListScreen
 import app.taskvault.ui.todos.TodoViewModel
@@ -80,26 +80,15 @@ fun TaskVaultApp(
         val expenseViewModel: ExpenseViewModel = hiltViewModel()
         val vaultViewModel: VaultViewModel = hiltViewModel()
 
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val startDest = if (currentUser != null) "tools" else "login"
+
         Scaffold { padding ->
             NavHost(
                 navController = navController,
-                startDestination = "splash",
+                startDestination = startDest,
                 modifier = Modifier.padding(padding)
             ) {
-                composable("splash") {
-                    SplashScreen(
-                        onNavigateToLogin = {
-                            navController.navigate("login") {
-                                popUpTo("splash") { inclusive = true }
-                            }
-                        },
-                        onNavigateToHome = {
-                            navController.navigate("tools") {
-                                popUpTo("splash") { inclusive = true }
-                            }
-                        }
-                    )
-                }
                 composable("login") {
                     LoginScreen(
                         viewModel = authViewModel,
