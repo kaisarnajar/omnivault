@@ -187,7 +187,6 @@ fun QRScannerScreen(
 fun CameraPreview(
     onBarcodeScanned: (String) -> Unit
 ) {
-    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(

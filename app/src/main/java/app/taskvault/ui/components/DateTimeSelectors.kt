@@ -21,12 +21,13 @@ import java.util.Locale
 
 @Composable
 fun DateTimeSelectors(
+    modifier: Modifier = Modifier,
     dueDate: Long?,
     onDueDateChange: (Long) -> Unit
 ) {
     val context = LocalContext.current
 
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)

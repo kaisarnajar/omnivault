@@ -21,12 +21,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AddTodoTopAppBar(
+    modifier: Modifier = Modifier,
     isEditing: Boolean = false,
     onNavigateBack: () -> Unit
 ) {
     Row(
         modifier =
-        Modifier
+        modifier
             .fillMaxWidth()
             .height(64.dp)
             .background(MaterialTheme.colorScheme.surface)

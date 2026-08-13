@@ -14,6 +14,7 @@ import app.taskvault.domain.UserProfile
 
 @Composable
 fun DashboardTopAppBar(
+    modifier: Modifier = Modifier,
     userProfile: UserProfile?,
     onThemeChange: (Boolean?) -> Unit,
     onLogout: () -> Unit
@@ -23,7 +24,7 @@ fun DashboardTopAppBar(
 
     Row(
         modifier =
-        Modifier
+        modifier
             .fillMaxWidth()
             .height(80.dp)
             .background(androidx.compose.ui.graphics.Color.Transparent)

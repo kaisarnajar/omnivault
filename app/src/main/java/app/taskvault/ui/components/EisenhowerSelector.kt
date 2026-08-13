@@ -19,10 +19,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun EisenhowerSelector(
+    modifier: Modifier = Modifier,
     selectedTag: String,
     onTagSelect: (String) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = "EISENHOWER MATRIX",
             style = MaterialTheme.typography.labelSmall,

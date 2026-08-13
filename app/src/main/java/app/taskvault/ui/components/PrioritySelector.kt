@@ -15,10 +15,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PrioritySelector(
+    modifier: Modifier = Modifier,
     selectedPriority: String,
     onPrioritySelect: (String) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(
             text = "PRIORITY LEVEL",
             style = MaterialTheme.typography.labelSmall,

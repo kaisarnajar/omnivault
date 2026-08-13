@@ -30,6 +30,7 @@ import java.util.Locale
 
 @Composable
 fun TodoItemCard(
+    modifier: Modifier = Modifier,
     todo: Todo,
     onToggleCompletion: () -> Unit,
     onEdit: () -> Unit,
@@ -78,7 +79,7 @@ fun TodoItemCard(
 
     GlassCard(
         modifier =
-        Modifier
+        modifier
             .fillMaxWidth()
             .clickable { onToggleCompletion() }
             .padding(bottom = 8.dp),

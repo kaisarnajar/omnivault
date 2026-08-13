@@ -19,13 +19,14 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListHeader(
+    modifier: Modifier = Modifier,
     selectedFilter: String,
     onFilterSelected: (String) -> Unit
 ) {
     val filters = listOf("All Tasks", "Today", "This Week", "This Month", "Completed")
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState())
             .padding(top = 8.dp, bottom = 8.dp),

@@ -30,7 +30,7 @@ class VaultViewModel @Inject constructor(
     private fun loadSecrets() {
         viewModelScope.launch {
             repository.getAllSecrets()
-                .catch { e ->
+                .catch { _ ->
                     // Handle error (e.g., log it)
                 }
                 .collect { list ->

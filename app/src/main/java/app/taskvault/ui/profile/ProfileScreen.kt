@@ -199,6 +199,7 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
+                        @Suppress("DEPRECATION")
                         Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Logout")
