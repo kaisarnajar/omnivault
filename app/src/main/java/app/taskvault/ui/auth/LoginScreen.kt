@@ -1,5 +1,7 @@
 package app.taskvault.ui.auth
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,23 +13,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.platform.LocalContext
+import app.taskvault.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import app.taskvault.R
 
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
     onNavigateToRegister: () -> Unit,
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -60,30 +60,30 @@ fun LoginScreen(
 
     Box(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(24.dp),
-        contentAlignment = Alignment.Center,
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = "OmniVault",
                 style =
-                    MaterialTheme.typography.displayMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                    ),
+                MaterialTheme.typography.displayMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             )
 
             Text(
                 text = "Sign in to continue",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -95,7 +95,7 @@ fun LoginScreen(
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true,
+                singleLine = true
             )
 
             OutlinedTextField(
@@ -106,7 +106,7 @@ fun LoginScreen(
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true,
+                singleLine = true
             )
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
@@ -122,7 +122,7 @@ fun LoginScreen(
                 Text(
                     text = (uiState as AuthUiState.Error).message,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
 
@@ -163,7 +163,7 @@ fun LoginScreen(
                     text = "Sign up",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { onNavigateToRegister() },
+                    modifier = Modifier.clickable { onNavigateToRegister() }
                 )
             }
         }
@@ -171,9 +171,9 @@ fun LoginScreen(
 
     if (showResetDialog) {
         var resetEmail by remember { mutableStateOf(email) }
-        
+
         AlertDialog(
-            onDismissRequest = { 
+            onDismissRequest = {
                 showResetDialog = false
                 viewModel.resetPasswordState()
             },
@@ -189,7 +189,7 @@ fun LoginScreen(
                             onValueChange = { resetEmail = it },
                             label = { Text("Email") },
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
+                            singleLine = true
                         )
                         if (resetState is ResetPasswordState.Error) {
                             Text(
@@ -215,7 +215,7 @@ fun LoginScreen(
                         }
                     }
                 } else {
-                    Button(onClick = { 
+                    Button(onClick = {
                         showResetDialog = false
                         viewModel.resetPasswordState()
                     }) {
@@ -225,7 +225,7 @@ fun LoginScreen(
             },
             dismissButton = {
                 if (resetState !is ResetPasswordState.Success) {
-                    TextButton(onClick = { 
+                    TextButton(onClick = {
                         showResetDialog = false 
                         viewModel.resetPasswordState()
                     }) {

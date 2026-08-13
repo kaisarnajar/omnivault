@@ -28,12 +28,19 @@ import app.taskvault.ui.theme.GradientStart
 fun GlassCard(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(16.dp),
+    customFill: Color? = null,
+    customBorder: Color? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     val isDark = isSystemInDarkTheme()
-    val fill = if (isDark) GlassFillDark else GlassFillLight
-    val border = if (isDark) GlassBorderDark else GlassBorderLight
 
+    // Fallback to theme colors if custom colors are not provided
+    val fill = customFill ?: if (isDark) GlassFillDark else GlassFillLight
+    val border = customBorder ?: if (isDark) GlassBorderDark else GlassBorderLight
+
+    // To simulate the glass gradient effect in Stitch design, we can use a linear gradient
+    // starting slightly more opaque to fully transparent, but for simplicity here we use the fill directly
+    // and rely on a blur if we had Android 12+, otherwise just the semi-transparent fill.
     Box(
         modifier = modifier
             .clip(shape)
@@ -61,8 +68,11 @@ fun GradientButton(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .then(
-                if (enabled) Modifier.gradientBackground(RoundedCornerShape(12.dp))
-                else Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+                if (enabled) {
+                    Modifier.gradientBackground(RoundedCornerShape(12.dp))
+                } else {
+                    Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+                }
             )
             .clickable(enabled = enabled && !isLoading, onClick = onClick)
             .padding(vertical = 16.dp),

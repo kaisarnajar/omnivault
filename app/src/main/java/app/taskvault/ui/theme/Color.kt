@@ -62,8 +62,13 @@ val md_theme_dark_inversePrimary = Color(0xFF4F46E5)
 val GradientStart = Color(0xFF6366F1) // Indigo
 val GradientEnd = Color(0xFFA855F7) // Violet
 
+val BackgroundGradientStart = Color(0xFF0B1326) // Deep Blue
+val BackgroundGradientEnd = Color(0xFF1E1B4B) // Deep Purple
+
 val GlassBorderLight = Color(0x33000000)
 val GlassFillLight = Color(0x99FFFFFF)
 
-val GlassBorderDark = Color(0x1FFFFFFF)
-val GlassFillDark = Color(0x990F172A)
+val GlassBorderDark = Color(0x1AFFFFFF) // 10% White
+val GlassFillDark = Color(0x0AFFFFFF) // 4% White
+
+val VaultAccent = Color(0xFFD946EF) // Magenta accent
