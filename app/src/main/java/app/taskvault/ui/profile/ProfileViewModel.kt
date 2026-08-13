@@ -23,7 +23,8 @@ class ProfileViewModel @Inject constructor(
     private val expenseRepository: app.taskvault.domain.ExpenseRepository,
     private val secretRepository: app.taskvault.data.repository.SecretRepository,
     private val ledgerRepository: app.taskvault.domain.LedgerRepository,
-    private val moodRepository: app.taskvault.domain.MoodRepository
+    private val moodRepository: app.taskvault.domain.MoodRepository,
+    private val bookmarkRepository: app.taskvault.domain.BookmarkRepository
 ) : ViewModel() {
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
@@ -100,6 +101,10 @@ class ProfileViewModel @Inject constructor(
 
     suspend fun seedMood() {
         moodRepository.seedSampleData()
+    }
+
+    suspend fun seedBookmarks() {
+        bookmarkRepository.seedSampleData()
     }
 
     fun resetState() {

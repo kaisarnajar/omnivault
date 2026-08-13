@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
@@ -129,6 +130,14 @@ fun ToolsScreen(
             icon = Icons.Default.Face,
             route = "mood_journal",
             accentColor = MoodAccent
+        ),
+        ToolItem(
+            title = "Bookmarks",
+            description = "Save & Categorize",
+            details = "Save web links, articles, and URLs to read or reference later.",
+            icon = Icons.Default.Bookmark,
+            route = "bookmarks",
+            accentColor = BookmarkAccent
         )
     )
 

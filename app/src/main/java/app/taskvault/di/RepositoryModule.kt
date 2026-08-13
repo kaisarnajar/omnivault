@@ -77,4 +77,10 @@ abstract class RepositoryModule {
     abstract fun bindMoodRepository(
         moodRepositoryImpl: app.taskvault.data.repository.MoodRepositoryImpl
     ): app.taskvault.domain.MoodRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBookmarkRepository(
+        bookmarkRepositoryImpl: app.taskvault.data.repository.BookmarkRepositoryImpl
+    ): app.taskvault.domain.BookmarkRepository
 }

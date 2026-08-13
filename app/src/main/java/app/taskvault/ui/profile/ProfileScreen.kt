@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
@@ -318,7 +319,8 @@ fun DebugToolsDialog(
         DebugSeedItem("Expenses", Icons.Default.ShoppingCart, ExpensesAccent) { viewModel.seedExpenses() },
         DebugSeedItem("Secret Vault", Icons.Default.Lock, VaultAccent) { viewModel.seedSecrets() },
         DebugSeedItem("Credit/Debit", Icons.Default.AccountBalanceWallet, LedgerAccent) { viewModel.seedLedger() },
-        DebugSeedItem("Mood Journal", Icons.Default.Face, MoodAccent) { viewModel.seedMood() }
+        DebugSeedItem("Mood Journal", Icons.Default.Face, MoodAccent) { viewModel.seedMood() },
+        DebugSeedItem("Bookmarks", Icons.Default.Bookmark, BookmarkAccent) { viewModel.seedBookmarks() }
     )
 
     AlertDialog(
