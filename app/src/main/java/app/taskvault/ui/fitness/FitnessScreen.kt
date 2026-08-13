@@ -29,8 +29,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.taskvault.data.local.FitnessActivityEntity
+import app.taskvault.ui.components.FeatureHeaderCard
 import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
+import app.taskvault.ui.components.pressScale
 import app.taskvault.ui.components.gradientBackground
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -80,42 +82,26 @@ fun FitnessScreen(
                     .padding(padding)
             ) {
                 // Today's Fitness Summary Header
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .gradientBackground()
+                FeatureHeaderCard(
+                    title = "Today's Fitness Overview",
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text(
-                            text = "Today's Fitness Overview",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White.copy(alpha = 0.85f)
+                        SummaryStatItem(
+                            label = "Active Mins",
+                            value = "${todaySummary.totalActiveMinutes}m"
                         )
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            SummaryStatItem(
-                                label = "Active Mins",
-                                value = "${todaySummary.totalActiveMinutes}m"
-                            )
-                            SummaryStatItem(
-                                label = "Distance",
-                                value = String.format(Locale.getDefault(), "%.1f km", todaySummary.totalDistanceKm)
-                            )
-                            SummaryStatItem(
-                                label = "Workouts",
-                                value = "${todaySummary.totalWorkouts}"
-                            )
-                        }
+                        SummaryStatItem(
+                            label = "Distance",
+                            value = String.format(Locale.getDefault(), "%.1f km", todaySummary.totalDistanceKm)
+                        )
+                        SummaryStatItem(
+                            label = "Workouts",
+                            value = "${todaySummary.totalWorkouts}"
+                        )
                     }
                 }
 
@@ -212,7 +198,7 @@ fun FitnessItemCard(
 
     val dateStr = SimpleDateFormat("MMM dd, yyyy • hh:mm a", Locale.getDefault()).format(Date(activity.timestamp))
 
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
+    GlassCard(modifier = Modifier.fillMaxWidth().pressScale()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

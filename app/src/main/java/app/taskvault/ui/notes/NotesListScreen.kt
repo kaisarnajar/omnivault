@@ -20,7 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.taskvault.data.local.NoteEntity
+import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
+import app.taskvault.ui.components.pressScale
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -96,9 +98,10 @@ fun NotesListScreen(
 
 @Composable
 fun NoteCard(note: NoteEntity, onClick: () -> Unit, onDelete: () -> Unit) {
-    app.taskvault.ui.components.GlassCard(
+    GlassCard(
         modifier = Modifier
             .fillMaxWidth()
+            .pressScale()
             .clickable { onClick() }
     ) {
         Column(

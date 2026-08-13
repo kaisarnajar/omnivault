@@ -26,8 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.taskvault.data.local.ExpenseEntity
+import app.taskvault.ui.components.FeatureHeaderCard
 import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
+import app.taskvault.ui.components.pressScale
 import app.taskvault.ui.components.gradientBackground
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -76,32 +78,16 @@ fun ExpenseScreen(
                     .padding(padding)
             ) {
                 // Header Card
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .gradientBackground()
+                FeatureHeaderCard(
+                    title = "Total Spent This Month",
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Total Spent This Month",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = NumberFormat.getCurrencyInstance().format(totalThisMonth),
-                            style = MaterialTheme.typography.displayMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = androidx.compose.ui.graphics.Color.White
-                        )
-                    }
+                    Text(
+                        text = NumberFormat.getCurrencyInstance().format(totalThisMonth),
+                        style = MaterialTheme.typography.displayMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -157,7 +143,7 @@ fun ExpenseItem(expense: ExpenseEntity, onDelete: () -> Unit) {
 
     val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(expense.timestamp))
 
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
+    GlassCard(modifier = Modifier.fillMaxWidth().pressScale()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import app.taskvault.data.local.BookmarkEntity
 import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
+import app.taskvault.ui.components.pressScale
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -155,7 +156,7 @@ fun BookmarkItemCard(
 ) {
     val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(bookmark.timestamp))
 
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
+    GlassCard(modifier = Modifier.fillMaxWidth().pressScale()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

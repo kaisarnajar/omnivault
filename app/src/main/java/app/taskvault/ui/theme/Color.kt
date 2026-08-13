@@ -87,3 +87,10 @@ val LedgerAccent = Color(0xFF0891B2) // Cyan/Teal
 val MoodAccent = Color(0xFFEC4899) // Pink / Magenta accent
 val BookmarkAccent = Color(0xFF3B82F6) // Royal Blue accent
 val FitnessAccent = Color(0xFFE11D48) // Vibrant Crimson Red accent
+
+// Ambient Mesh Background Glow Tokens
+val AmbientGlowDark1 = Color(0x256366F1) // Soft Glowing Indigo
+val AmbientGlowDark2 = Color(0x20EC4899) // Soft Glowing Pink
+val AmbientGlowLight1 = Color(0x30E0E7FF) // Soft Lavender Light Glow
+val AmbientGlowLight2 = Color(0x25FCE7F3) // Soft Rose Light Glow
+

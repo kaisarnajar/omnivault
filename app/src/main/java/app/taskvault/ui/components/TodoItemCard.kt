@@ -3,6 +3,7 @@ package app.taskvault.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,11 +79,14 @@ fun TodoItemCard(
         )
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+
     GlassCard(
         modifier =
         modifier
             .fillMaxWidth()
-            .clickable { onToggleCompletion() }
+            .pressScale(interactionSource = interactionSource)
+            .clickable(interactionSource = interactionSource, indication = null) { onToggleCompletion() }
             .padding(bottom = 8.dp),
         shape = RoundedCornerShape(16.dp)
     ) {

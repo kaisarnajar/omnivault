@@ -22,8 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.taskvault.data.local.LedgerPersonEntity
 import app.taskvault.data.local.LedgerTransactionEntity
+import app.taskvault.ui.components.FeatureHeaderCard
 import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
+import app.taskvault.ui.components.pressScale
 import app.taskvault.ui.components.gradientBackground
 import java.text.NumberFormat
 import kotlin.math.abs
@@ -70,38 +72,17 @@ fun LedgerListScreen(
                     .padding(padding)
             ) {
                 // Grand Total Header
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .gradientBackground()
+                FeatureHeaderCard(
+                    title = if (grandTotal >= 0) "Others Owe You" else "You Owe Others",
+                    subtitle = "${persons.size} people",
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = if (grandTotal >= 0) "Others Owe You" else "You Owe Others",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = NumberFormat.getCurrencyInstance().format(abs(grandTotal)),
-                            style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "${persons.size} people",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.7f)
-                        )
-                    }
+                    Text(
+                        text = NumberFormat.getCurrencyInstance().format(abs(grandTotal)),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -159,7 +140,7 @@ fun PersonItem(
     val balanceColor = if (balance >= 0) Color(0xFF10B981) else Color(0xFFEF4444) // Green / Red
     val balanceLabel = if (balance >= 0) "owes you" else "you owe"
 
-    GlassCard(modifier = Modifier.fillMaxWidth().clickable { onClick() }) {
+    GlassCard(modifier = Modifier.fillMaxWidth().pressScale().clickable { onClick() }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

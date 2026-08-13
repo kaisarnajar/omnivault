@@ -22,8 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.taskvault.data.local.MoodEntryEntity
+import app.taskvault.ui.components.FeatureHeaderCard
 import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
+import app.taskvault.ui.components.pressScale
 import app.taskvault.ui.components.gradientBackground
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -82,73 +84,55 @@ fun MoodScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                // Header Card: How are you feeling today?
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .gradientBackground()
+                FeatureHeaderCard(
+                    title = if (todayMood != null) "Today's Mood" else "How are you feeling today?",
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = if (todayMood != null) "Today's Mood" else "How are you feeling today?",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        if (todayMood != null) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(text = todayMood!!.emoji, fontSize = 44.sp)
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column {
+                    if (todayMood != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = todayMood!!.emoji, fontSize = 44.sp)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = todayMood!!.mood,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                if (todayMood!!.note.isNotBlank()) {
                                     Text(
-                                        text = todayMood!!.mood,
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
+                                        text = todayMood!!.note,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White.copy(alpha = 0.8f),
+                                        maxLines = 2
                                     )
-                                    if (todayMood!!.note.isNotBlank()) {
-                                        Text(
-                                            text = todayMood!!.note,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White.copy(alpha = 0.8f),
-                                            maxLines = 2
-                                        )
-                                    }
                                 }
                             }
-                        } else {
-                            // Quick Selector Row
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(horizontal = 8.dp)
-                            ) {
-                                items(moodOptions) { option ->
-                                    Box(
-                                        modifier = Modifier
-                                            .size(54.dp)
-                                            .clip(CircleShape)
-                                            .background(Color.White.copy(alpha = 0.25f))
-                                            .clickable {
-                                                selectedMoodOption = option
-                                                showAddDialog = true
-                                            },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(text = option.emoji, fontSize = 28.sp)
-                                    }
+                        }
+                    } else {
+                        // Quick Selector Row
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            items(moodOptions) { option ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(54.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.25f))
+                                        .pressScale()
+                                        .clickable {
+                                            selectedMoodOption = option
+                                            showAddDialog = true
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = option.emoji, fontSize = 28.sp)
                                 }
                             }
                         }
@@ -216,7 +200,7 @@ fun MoodItemCard(
 ) {
     val dateStr = SimpleDateFormat("EEE, MMM dd, yyyy • hh:mm a", Locale.getDefault()).format(Date(entry.timestamp))
 
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
+    GlassCard(modifier = Modifier.fillMaxWidth().pressScale()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
