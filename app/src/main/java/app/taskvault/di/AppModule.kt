@@ -62,4 +62,7 @@ object AppModule {
 
     @Provides
     fun provideSecretDao(database: TodoDatabase): app.taskvault.data.local.SecretDao = database.secretDao
+
+    @Provides
+    fun provideLedgerDao(database: TodoDatabase): app.taskvault.data.local.LedgerDao = database.ledgerDao
 }

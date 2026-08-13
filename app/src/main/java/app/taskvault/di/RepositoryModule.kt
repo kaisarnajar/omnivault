@@ -65,4 +65,10 @@ abstract class RepositoryModule {
     abstract fun bindSecretRepository(
         secretRepositoryImpl: SecretRepositoryImpl
     ): SecretRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLedgerRepository(
+        ledgerRepositoryImpl: app.taskvault.data.repository.LedgerRepositoryImpl
+    ): app.taskvault.domain.LedgerRepository
 }

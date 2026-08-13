@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -111,6 +112,14 @@ fun ToolsScreen(
             icon = Icons.Default.QrCodeScanner,
             route = "qr_scanner",
             accentColor = QRAccent
+        ),
+        ToolItem(
+            title = "Ledger",
+            description = "Credit & Debit",
+            details = "Track who owes you and who you owe with transaction history.",
+            icon = Icons.Default.AccountBalanceWallet,
+            route = "ledger_list",
+            accentColor = LedgerAccent
         )
     )
 

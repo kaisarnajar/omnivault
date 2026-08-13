@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +33,9 @@ import app.taskvault.ui.pomodoro.PomodoroScreen
 import app.taskvault.ui.pomodoro.PomodoroViewModel
 import app.taskvault.ui.profile.ProfileScreen
 import app.taskvault.ui.profile.ProfileViewModel
+import app.taskvault.ui.ledger.LedgerDetailScreen
+import app.taskvault.ui.ledger.LedgerListScreen
+import app.taskvault.ui.ledger.LedgerViewModel
 
 import app.taskvault.ui.todos.AddTodoScreen
 import app.taskvault.ui.todos.TodoListScreen
@@ -79,6 +83,7 @@ fun TaskVaultApp(
         val notesListViewModel: NotesListViewModel = hiltViewModel()
         val expenseViewModel: ExpenseViewModel = hiltViewModel()
         val vaultViewModel: VaultViewModel = hiltViewModel()
+        val ledgerViewModel: LedgerViewModel = hiltViewModel()
 
         val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
         val startDest = if (currentUser != null) "tools" else "login"
@@ -197,6 +202,30 @@ fun TaskVaultApp(
                 composable("add_edit_secret") {
                     AddEditSecretScreen(
                         viewModel = vaultViewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable("ledger_list") {
+                    LedgerListScreen(
+                        viewModel = ledgerViewModel,
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToPerson = { personId ->
+                            navController.navigate("ledger_detail/$personId")
+                        }
+                    )
+                }
+                composable(
+                    route = "ledger_detail/{personId}",
+                    arguments = listOf(androidx.navigation.navArgument("personId") { type = androidx.navigation.NavType.StringType })
+                ) { backStackEntry ->
+                    val personId = backStackEntry.arguments?.getString("personId") ?: ""
+                    val persons by ledgerViewModel.persons.collectAsState()
+                    val personName = persons.find { it.id == personId }?.name ?: "Person"
+                    LedgerDetailScreen(
+                        viewModel = ledgerViewModel,
+                        personId = personId,
+                        personName = personName,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
