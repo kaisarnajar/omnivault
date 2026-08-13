@@ -77,6 +77,12 @@ fun ToolsScreen(
             icon = Icons.Default.Lock,
             route = "vault_list",
             isVault = true
+        ),
+        ToolItem(
+            title = "QR Scanner",
+            description = "Scan Codes",
+            icon = androidx.compose.material.icons.Icons.Default.QrCodeScanner,
+            route = "qr_scanner"
         )
     )
 

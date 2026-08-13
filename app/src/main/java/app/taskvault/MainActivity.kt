@@ -154,6 +154,11 @@ fun TaskVaultApp(
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
+                composable("qr_scanner") {
+                    app.taskvault.ui.scanner.QRScannerScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
                 composable("expense_tracker") {
                     ExpenseScreen(
                         viewModel = expenseViewModel,
