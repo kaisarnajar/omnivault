@@ -211,51 +211,49 @@ fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.Start
+                    .padding(14.dp)
             ) {
-                // Top section: Icon + Title/Description in a Row
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                // Icon circle
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(tool.accentColor.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Icon circle with accent tint
-                    Box(
-                        modifier = Modifier
-                            .size(46.dp)
-                            .clip(CircleShape)
-                            .background(tool.accentColor.copy(alpha = 0.12f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = tool.icon,
-                            contentDescription = tool.title,
-                            tint = tool.accentColor,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column {
-                        Text(
-                            text = tool.title,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = tool.description,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = tool.accentColor
-                        )
-                    }
+                    Icon(
+                        imageVector = tool.icon,
+                        contentDescription = tool.title,
+                        tint = tool.accentColor,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
 
-                // Bottom section: Details text
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Title
+                Text(
+                    text = tool.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1
+                )
+
+                Spacer(modifier = Modifier.height(2.dp))
+
+                // Subtitle
+                Text(
+                    text = tool.description,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = tool.accentColor,
+                    maxLines = 1
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Details
                 Text(
                     text = tool.details,
                     style = MaterialTheme.typography.bodySmall,
