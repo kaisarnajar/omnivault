@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package app.taskvault.ui.auth
 
 import androidx.activity.compose.rememberLauncherForActivityResult
