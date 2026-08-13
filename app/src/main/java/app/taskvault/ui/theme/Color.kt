@@ -19,9 +19,9 @@ val md_theme_light_error = Color(0xFFDC2626)
 val md_theme_light_errorContainer = Color(0xFFFEE2E2)
 val md_theme_light_onError = Color(0xFFFFFFFF)
 val md_theme_light_onErrorContainer = Color(0xFF991B1B)
-val md_theme_light_background = Color(0xFFF8FAFC) // Slate 50
+val md_theme_light_background = Color(0xFFF0F0FA) // Softer blue-tinted white
 val md_theme_light_onBackground = Color(0xFF0F172A) // Slate 900
-val md_theme_light_surface = Color(0xFFF8FAFC)
+val md_theme_light_surface = Color(0xFFF0F0FA)
 val md_theme_light_onSurface = Color(0xFF0F172A)
 val md_theme_light_surfaceVariant = Color(0xFFE2E8F0)
 val md_theme_light_onSurfaceVariant = Color(0xFF475569)
@@ -65,13 +65,21 @@ val GradientEnd = Color(0xFFA855F7) // Violet
 val BackgroundGradientStart = Color(0xFF0B1326) // Deep Blue
 val BackgroundGradientEnd = Color(0xFF1E1B4B) // Deep Purple
 
-val LightBackgroundGradientStart = Color(0xFFE0E7FF) // Indigo 100
-val LightBackgroundGradientEnd = Color(0xFFF3E8FF) // Purple 100
+val LightBackgroundGradientStart = Color(0xFFC7D2FE) // Indigo 200 - Deeper
+val LightBackgroundGradientEnd = Color(0xFFE9D5FF) // Purple 200 - Deeper
 
-val GlassBorderLight = Color(0x40FFFFFF) // 25% white
-val GlassFillLight = Color(0x66FFFFFF) // 40% white
+val GlassBorderLight = Color(0x60FFFFFF) // 37% white - more visible
+val GlassFillLight = Color(0xB3FFFFFF) // 70% white - more opaque for contrast
 
 val GlassBorderDark = Color(0x1AFFFFFF) // 10% White
 val GlassFillDark = Color(0x0AFFFFFF) // 4% White
 
 val VaultAccent = Color(0xFFD946EF) // Magenta accent
+
+// Per-Card Accent Colors for ToolCards
+val TasksAccent = Color(0xFF4F46E5) // Indigo
+val CalendarAccent = Color(0xFF0EA5E9) // Sky Blue
+val PomodoroAccent = Color(0xFFF97316) // Orange
+val NotesAccent = Color(0xFF10B981) // Emerald
+val ExpensesAccent = Color(0xFFF43F5E) // Rose
+val QRAccent = Color(0xFF8B5CF6) // Violet
