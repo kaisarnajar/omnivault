@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import app.taskvault.ui.theme.BackgroundGradientEnd
 import app.taskvault.ui.theme.BackgroundGradientStart
 import app.taskvault.ui.theme.VaultAccent
+import app.taskvault.ui.theme.GlassFillDark
+import app.taskvault.ui.theme.GlassBorderDark
 
 data class ToolItem(
     val title: String,
@@ -129,8 +131,8 @@ fun ToolsScreen(
 
 @Composable
 fun ToolCard(tool: ToolItem, onClick: () -> Unit) {
-    val customFill = if (tool.isVault) VaultAccent.copy(alpha = 0.15f) else null
-    val customBorder = if (tool.isVault) VaultAccent.copy(alpha = 0.5f) else null
+    val customFill = if (tool.isVault) VaultAccent.copy(alpha = 0.15f) else GlassFillDark
+    val customBorder = if (tool.isVault) VaultAccent.copy(alpha = 0.5f) else GlassBorderDark
 
     app.taskvault.ui.components.GlassCard(
         modifier = Modifier
