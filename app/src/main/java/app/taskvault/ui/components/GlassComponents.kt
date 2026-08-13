@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import app.taskvault.ui.theme.GlassBorderDark
 import app.taskvault.ui.theme.GlassBorderLight
@@ -33,7 +34,7 @@ fun GlassCard(
     customBorder: Color? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = androidx.compose.material3.MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     // Fallback to theme colors if custom colors are not provided
     val fill = customFill ?: if (isDark) GlassFillDark else GlassFillLight
@@ -97,7 +98,7 @@ fun GradientButton(
 
 @Composable
 fun OmniVaultBackground(content: @Composable () -> Unit) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = androidx.compose.material3.MaterialTheme.colorScheme.background.luminance() < 0.5f
     val gradientStart = if (isDark) app.taskvault.ui.theme.BackgroundGradientStart else app.taskvault.ui.theme.LightBackgroundGradientStart
     val gradientEnd = if (isDark) app.taskvault.ui.theme.BackgroundGradientEnd else app.taskvault.ui.theme.LightBackgroundGradientEnd
 
