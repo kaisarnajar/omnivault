@@ -1,9 +1,11 @@
 package app.taskvault.ui.expense
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -370,15 +372,17 @@ fun AddExpenseDialog(
                 Text("Category", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
                 val categories = listOf("Food", "Transport", "Shopping", "Bills", "Other")
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     categories.forEach { cat ->
                         FilterChip(
                             selected = category == cat,
                             onClick = { category = cat },
-                            label = { Text(cat, fontSize = 11.sp) },
-                            shape = RoundedCornerShape(8.dp)
+                            label = { Text(cat, fontSize = 12.sp, fontWeight = if (category == cat) FontWeight.Bold else FontWeight.Normal) },
+                            shape = RoundedCornerShape(10.dp)
                         )
                     }
                 }
