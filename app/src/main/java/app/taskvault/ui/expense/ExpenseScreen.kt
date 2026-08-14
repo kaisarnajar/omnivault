@@ -48,36 +48,6 @@ fun ExpenseScreen(
     val thisYearTotal by viewModel.thisYearTotal.collectAsState()
 
     var showAddDialog by remember { mutableStateOf(false) }
-    var expenseToDelete by remember { mutableStateOf<ExpenseEntity?>(null) }
-
-    if (expenseToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { expenseToDelete = null },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = MaterialTheme.colorScheme.surface,
-            title = { Text("Delete Expense", fontWeight = FontWeight.Bold) },
-            text = { Text("Do you want to delete this expense of ${NumberFormat.getCurrencyInstance().format(expenseToDelete?.amount ?: 0.0)}?") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        expenseToDelete?.let { viewModel.deleteExpense(it.id) }
-                        expenseToDelete = null
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Delete", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { expenseToDelete = null }) {
-                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-        )
-    }
 
     OmniVaultBackground {
         Scaffold(
@@ -204,7 +174,7 @@ fun ExpenseScreen(
                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                             ExpenseItem(
                                 expense = expense,
-                                onDelete = { expenseToDelete = expense }
+                                onDelete = { viewModel.deleteExpense(expense.id) }
                             )
                         }
                     }
@@ -271,6 +241,37 @@ fun ExpensePeriodCard(
 
 @Composable
 fun ExpenseItem(expense: ExpenseEntity, onDelete: () -> Unit) {
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmDialog = false },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = { Text("Delete Expense", fontWeight = FontWeight.Bold) },
+            text = { Text("Do you want to delete this expense of ${NumberFormat.getCurrencyInstance().format(expense.amount)}?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirmDialog = false
+                        onDelete()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Delete", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        )
+    }
+
     val icon = when (expense.category) {
         "Food" -> Icons.Default.Fastfood
         "Transport" -> Icons.Default.DirectionsCar
@@ -320,7 +321,7 @@ fun ExpenseItem(expense: ExpenseEntity, onDelete: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = { showDeleteConfirmDialog = true }) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = "Delete",
