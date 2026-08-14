@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -31,6 +32,22 @@ class LedgerViewModel @Inject constructor(
     // Grand total: positive = others owe you, negative = you owe others
     val grandTotal: StateFlow<Double> = allTransactions.map { txns ->
         txns.sumOf { if (it.isCredit) it.amount else -it.amount }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    // Sum of all money others owe you (positive person balances)
+    val totalTheyOweMe: StateFlow<Double> = combine(persons, allTransactions) { personList, txnList ->
+        personList.sumOf { person ->
+            val b = getBalanceForPerson(person.id, txnList)
+            if (b > 0) b else 0.0
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    // Sum of all money you owe others (negative person balances)
+    val totalIOweThem: StateFlow<Double> = combine(persons, allTransactions) { personList, txnList ->
+        personList.sumOf { person ->
+            val b = getBalanceForPerson(person.id, txnList)
+            if (b < 0) abs(b) else 0.0
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
     // Selected person for detail screen
@@ -67,3 +84,9 @@ class LedgerViewModel @Inject constructor(
             .sumOf { if (it.isCredit) it.amount else -it.amount }
     }
 }
+
+private fun <T1, T2, R> combine(
+    flow1: kotlinx.coroutines.flow.Flow<T1>,
+    flow2: kotlinx.coroutines.flow.Flow<T2>,
+    transform: suspend (T1, T2) -> R
+): kotlinx.coroutines.flow.Flow<R> = kotlinx.coroutines.flow.combine(flow1, flow2, transform)
