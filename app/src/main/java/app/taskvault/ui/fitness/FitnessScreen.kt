@@ -36,6 +36,11 @@ import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.pressScale
 import app.taskvault.ui.components.gradientBackground
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Today
+import androidx.compose.ui.graphics.Brush
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -51,6 +56,9 @@ fun FitnessScreen(
 ) {
     val activities by viewModel.activities.collectAsState()
     val todaySummary by viewModel.todaySummary.collectAsState()
+    val thisWeekSummary by viewModel.thisWeekSummary.collectAsState()
+    val thisMonthSummary by viewModel.thisMonthSummary.collectAsState()
+    val thisYearSummary by viewModel.thisYearSummary.collectAsState()
     val selectedFilter by viewModel.selectedFilter.collectAsState()
 
     var showAddDialog by remember { mutableStateOf(false) }
@@ -82,75 +90,134 @@ fun FitnessScreen(
             },
             containerColor = Color.Transparent
         ) { padding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(padding),
+                contentPadding = PaddingValues(bottom = 80.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Today's Fitness Summary Header
-                FeatureHeaderCard(
-                    title = "Today's Activity",
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
+                // Period Totals Summary Grid (Today, This Week, This Month, This Year)
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        SummaryStatItem(
-                            label = "Workouts",
-                            value = "${todaySummary.totalWorkouts}"
+                        Text(
+                            text = "FITNESS SUMMARY",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            letterSpacing = 1.sp
                         )
-                        SummaryStatItem(
-                            label = "Active Mins",
-                            value = "${todaySummary.totalActiveMinutes}"
-                        )
-                        SummaryStatItem(
-                            label = "Distance",
-                            value = String.format(Locale.getDefault(), "%.1f km", todaySummary.totalDistanceKm)
-                        )
-                    }
-                }
 
-                // Filter Chips
-                val filters = listOf("All", "Workout", "Running", "Sports", "Other")
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(filters) { filter ->
-                        FilterChip(
-                            selected = (selectedFilter ?: "All") == filter,
-                            onClick = { viewModel.selectFilter(if (filter == "All") null else filter) },
-                            label = { Text(filter) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = Color.White
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            FitnessPeriodCard(
+                                title = "Today",
+                                summary = todaySummary,
+                                gradientColors = listOf(Color(0xFF059669), Color(0xFF10B981)),
+                                icon = Icons.Default.Today,
+                                modifier = Modifier.weight(1f)
                             )
-                        )
+                            FitnessPeriodCard(
+                                title = "This Week",
+                                summary = thisWeekSummary,
+                                gradientColors = listOf(Color(0xFF1D4ED8), Color(0xFF3B82F6)),
+                                icon = Icons.Default.DateRange,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            FitnessPeriodCard(
+                                title = "This Month",
+                                summary = thisMonthSummary,
+                                gradientColors = listOf(Color(0xFF6D28D9), Color(0xFF8B5CF6)),
+                                icon = Icons.Default.CalendarMonth,
+                                modifier = Modifier.weight(1f)
+                            )
+                            FitnessPeriodCard(
+                                title = "This Year",
+                                summary = thisYearSummary,
+                                gradientColors = listOf(Color(0xFFD97706), Color(0xFFF59E0B)),
+                                icon = Icons.Default.CalendarToday,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                // Filter Chips Header & Row
+                item {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "CATEGORIES",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            letterSpacing = 1.sp,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        )
+
+                        val filters = listOf("All", "Workout", "Running", "Sports", "Other")
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(filters) { filter ->
+                                FilterChip(
+                                    selected = (selectedFilter ?: "All") == filter,
+                                    onClick = { viewModel.selectFilter(if (filter == "All") null else filter) },
+                                    label = { Text(filter) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = Color.White
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Activity List Header
+                item {
+                    Text(
+                        text = "RECENT ACTIVITIES",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 1.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 4.dp)
+                    )
+                }
 
                 // Activity List
                 if (activities.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "No fitness activities recorded yet.\nTap + to log your workout or run!",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No fitness activities recorded yet.\nTap + to log your workout or run!",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 } else {
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(activities, key = { it.id }) { item ->
+                    items(activities, key = { it.id }) { item ->
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                             FitnessItemCard(
                                 activity = item,
                                 onEdit = {
@@ -187,19 +254,93 @@ fun FitnessScreen(
 }
 
 @Composable
-fun SummaryStatItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = Color.White.copy(alpha = 0.8f)
-        )
+fun FitnessPeriodCard(
+    title: String,
+    summary: FitnessPeriodSummary,
+    gradientColors: List<Color>,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.pressScale(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Brush.linearGradient(gradientColors))
+                .padding(14.dp)
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.25f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "${summary.activeMinutes} mins",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (summary.distanceKm > 0) {
+                        Text(
+                            text = String.format(Locale.getDefault(), "%.1f km", summary.distanceKm),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.85f),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    if (summary.caloriesBurned > 0) {
+                        Text(
+                            text = "• ${summary.caloriesBurned} kcal",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.85f),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    Text(
+                        text = "• ${summary.workoutCount} logs",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.85f),
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
     }
 }
 

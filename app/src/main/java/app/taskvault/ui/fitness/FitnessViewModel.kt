@@ -15,10 +15,11 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
-data class TodayFitnessSummary(
-    val totalActiveMinutes: Int = 0,
-    val totalDistanceKm: Double = 0.0,
-    val totalWorkouts: Int = 0
+data class FitnessPeriodSummary(
+    val activeMinutes: Int = 0,
+    val distanceKm: Double = 0.0,
+    val caloriesBurned: Int = 0,
+    val workoutCount: Int = 0
 )
 
 @HiltViewModel
@@ -37,22 +38,34 @@ class FitnessViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val todaySummary: StateFlow<TodayFitnessSummary> = allActivities.map { list ->
-        val cal = Calendar.getInstance()
-        val currentDay = cal.get(Calendar.DAY_OF_YEAR)
-        val currentYear = cal.get(Calendar.YEAR)
+    val todaySummary: StateFlow<FitnessPeriodSummary> = allActivities.map { list ->
+        val now = System.currentTimeMillis()
+        createSummary(list.filter { isSameDay(it.timestamp, now) })
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FitnessPeriodSummary())
 
-        val todayList = list.filter { entry ->
-            val entryCal = Calendar.getInstance().apply { timeInMillis = entry.timestamp }
-            entryCal.get(Calendar.DAY_OF_YEAR) == currentDay && entryCal.get(Calendar.YEAR) == currentYear
-        }
+    val thisWeekSummary: StateFlow<FitnessPeriodSummary> = allActivities.map { list ->
+        val now = System.currentTimeMillis()
+        createSummary(list.filter { isSameWeek(it.timestamp, now) })
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FitnessPeriodSummary())
 
-        TodayFitnessSummary(
-            totalActiveMinutes = todayList.sumOf { it.durationMinutes },
-            totalDistanceKm = todayList.sumOf { it.distanceKm },
-            totalWorkouts = todayList.count { it.activityType.equals("Workout", ignoreCase = true) }
+    val thisMonthSummary: StateFlow<FitnessPeriodSummary> = allActivities.map { list ->
+        val now = System.currentTimeMillis()
+        createSummary(list.filter { isSameMonth(it.timestamp, now) })
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FitnessPeriodSummary())
+
+    val thisYearSummary: StateFlow<FitnessPeriodSummary> = allActivities.map { list ->
+        val now = System.currentTimeMillis()
+        createSummary(list.filter { isSameYear(it.timestamp, now) })
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FitnessPeriodSummary())
+
+    private fun createSummary(items: List<FitnessActivityEntity>): FitnessPeriodSummary {
+        return FitnessPeriodSummary(
+            activeMinutes = items.sumOf { it.durationMinutes },
+            distanceKm = items.sumOf { it.distanceKm },
+            caloriesBurned = items.sumOf { it.caloriesBurned },
+            workoutCount = items.size
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TodayFitnessSummary())
+    }
 
     fun selectFilter(filter: String?) {
         selectedFilter.value = filter
@@ -109,4 +122,31 @@ class FitnessViewModel @Inject constructor(
             repository.deleteActivity(id)
         }
     }
+}
+
+private fun isSameDay(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+        c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)
+}
+
+private fun isSameWeek(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+        c1.get(Calendar.WEEK_OF_YEAR) == c2.get(Calendar.WEEK_OF_YEAR)
+}
+
+private fun isSameMonth(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+        c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)
+}
+
+private fun isSameYear(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
 }
