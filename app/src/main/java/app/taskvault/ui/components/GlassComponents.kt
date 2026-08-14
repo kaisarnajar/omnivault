@@ -60,13 +60,17 @@ fun GlassCard(
 ) {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-    val fill = customFill ?: if (isDark) GlassFillDark else GlassFillLight
+    val fill = customFill ?: if (isDark) {
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.40f)
+    } else {
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.55f)
+    }
     val borderBrush = if (customBorder != null) {
         Brush.linearGradient(listOf(customBorder, customBorder))
     } else if (isDark) {
-        Brush.linearGradient(listOf(Color(0x35FFFFFF), Color(0x05FFFFFF)))
+        Brush.linearGradient(listOf(Color(0x30FFFFFF), Color(0x08FFFFFF)))
     } else {
-        Brush.linearGradient(listOf(Color(0x80FFFFFF), Color(0x30FFFFFF)))
+        Brush.linearGradient(listOf(Color(0x90FFFFFF), Color(0x30FFFFFF)))
     }
 
     Box(

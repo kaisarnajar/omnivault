@@ -151,32 +151,32 @@ fun TodoItemCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = opacity)
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = todo.category,
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(4.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
                     )
 
                     if (todo.eisenhowerTag.isNotEmpty()) {
                         val (tagColor, tagBgColor) = when (todo.eisenhowerTag) {
-                            "Do" -> Color(0xFFD32F2F) to Color(0xFFFFEBEE)
-                            "Schedule" -> Color(0xFF1976D2) to Color(0xFFE3F2FD)
-                            "Delegate" -> Color(0xFF388E3C) to Color(0xFFE8F5E9)
-                            "Delete" -> Color(0xFF616161) to Color(0xFFF5F5F5)
-                            else -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.secondaryContainer
+                            "Do" -> Color(0xFFEF4444) to Color(0x25EF4444)
+                            "Schedule" -> Color(0xFF3B82F6) to Color(0x253B82F6)
+                            "Delegate" -> Color(0xFF10B981) to Color(0x2510B981)
+                            "Delete" -> Color(0xFF9CA3AF) to Color(0x259CA3AF)
+                            else -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
                         }
                         Text(
                             text = todo.eisenhowerTag,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = tagColor,
                             modifier = Modifier
-                                .background(tagBgColor, RoundedCornerShape(4.dp))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                .background(tagBgColor, RoundedCornerShape(6.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
                         )
                     }
                 }
@@ -236,24 +236,24 @@ fun TaskDetailsDialog(
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(4.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
                     )
                     if (todo.eisenhowerTag.isNotEmpty()) {
                         val (tagColor, tagBgColor) = when (todo.eisenhowerTag) {
-                            "Do" -> Color(0xFFD32F2F) to Color(0xFFFFEBEE)
-                            "Schedule" -> Color(0xFF1976D2) to Color(0xFFE3F2FD)
-                            "Delegate" -> Color(0xFF388E3C) to Color(0xFFE8F5E9)
-                            "Delete" -> Color(0xFF616161) to Color(0xFFF5F5F5)
-                            else -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.secondaryContainer
+                            "Do" -> Color(0xFFEF4444) to Color(0x25EF4444)
+                            "Schedule" -> Color(0xFF3B82F6) to Color(0x253B82F6)
+                            "Delegate" -> Color(0xFF10B981) to Color(0x2510B981)
+                            "Delete" -> Color(0xFF9CA3AF) to Color(0x259CA3AF)
+                            else -> MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
                         }
                         Text(
                             text = todo.eisenhowerTag,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = tagColor,
                             modifier = Modifier
-                                .background(tagBgColor, RoundedCornerShape(4.dp))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                .background(tagBgColor, RoundedCornerShape(6.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
                         )
                     }
                 }

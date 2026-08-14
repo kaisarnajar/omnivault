@@ -68,8 +68,8 @@ val BackgroundGradientEnd = Color(0xFF1E1B4B) // Deep Purple
 val LightBackgroundGradientStart = Color(0xFFC7D2FE) // Indigo 200 - Deeper
 val LightBackgroundGradientEnd = Color(0xFFE9D5FF) // Purple 200 - Deeper
 
-val GlassBorderLight = Color(0x60FFFFFF) // 37% white - more visible
-val GlassFillLight = Color(0xB3FFFFFF) // 70% white - more opaque for contrast
+val GlassBorderLight = Color(0x90FFFFFF) // Specular shimmer border
+val GlassFillLight = Color(0x66FFFFFF) // 40% translucent frosted glass fill
 
 val GlassBorderDark = Color(0x1AFFFFFF) // 10% White
 val GlassFillDark = Color(0x0AFFFFFF) // 4% White
