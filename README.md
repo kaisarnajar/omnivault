@@ -6,19 +6,27 @@ TaskVault combines **11 essential tools** into a single, beautifully designed ap
 
 ---
 
-## 📸 Screenshots Showcase
-
-<p align="center">
-  <img src="docs/screenshots/real_tools_dashboard.png" width="30%" alt="Tools Dashboard & Categorized Bottom Bar" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/real_tasks_screen.png" width="30%" alt="Tasks List & Glassmorphic Cards" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/real_notes_screen.png" width="30%" alt="Notes Section with Read-Only & Edit Mode" />
-</p>
-
-<p align="center">
-  <em>📱 Tools Dashboard Hub &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📝 Tasks & Priority Matrix &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📄 Note Details & Edit Mode</em>
-</p>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="33%" valign="top">
+        <img src="docs/screenshots/real_tools_dashboard.png" alt="Tools Dashboard Hub" />
+        <br />
+        <sub><b>📱 Tools Dashboard Hub</b></sub>
+      </td>
+      <td align="center" width="33%" valign="top">
+        <img src="docs/screenshots/real_tasks_screen.png" alt="Tasks & Priority Matrix" />
+        <br />
+        <sub><b>📝 Tasks & Priority Matrix</b></sub>
+      </td>
+      <td align="center" width="33%" valign="top">
+        <img src="docs/screenshots/real_notes_screen.png" alt="Note Details & Edit Mode" />
+        <br />
+        <sub><b>📄 Note Details & Edit Mode</b></sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
