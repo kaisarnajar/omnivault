@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Today
@@ -29,9 +30,12 @@ import androidx.compose.ui.unit.sp
 import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.TodoItemCard
+import app.taskvault.ui.components.gradientBackground
 import app.taskvault.ui.components.pressScale
 import app.taskvault.ui.todos.TodoViewModel
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,12 +49,32 @@ fun CalendarScreen(
     // Calendar State
     var currentMonth by remember { mutableStateOf(Calendar.getInstance()) }
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
+    var showAddEventDialog by remember { mutableStateOf(false) }
 
     // Filter tasks for selected date
     val tasksForSelectedDate = remember(todos, selectedDate) {
         todos.filter { todo ->
             todo.dueDate != null && isSameDay(todo.dueDate, selectedDate.timeInMillis)
         }
+    }
+
+    if (showAddEventDialog) {
+        AddEventDialog(
+            selectedDate = selectedDate,
+            onDismiss = { showAddEventDialog = false },
+            onSave = { title, description, priority, category, eisenhowerTag ->
+                viewModel.addTodo(
+                    title = title,
+                    description = description,
+                    dueDate = selectedDate.timeInMillis,
+                    remindMe = null,
+                    priority = priority,
+                    category = category,
+                    eisenhowerTag = eisenhowerTag
+                )
+                showAddEventDialog = false
+            }
+        )
     }
 
     OmniVaultBackground {
@@ -79,6 +103,19 @@ fun CalendarScreen(
                         containerColor = Color.Transparent
                     )
                 )
+            },
+            floatingActionButton = {
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = 16.dp, end = 16.dp)
+                        .size(60.dp)
+                        .gradientBackground(CircleShape)
+                        .pressScale()
+                        .clickable { showAddEventDialog = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Event", tint = Color.White)
+                }
             },
             containerColor = Color.Transparent
         ) { padding ->
@@ -135,7 +172,7 @@ fun CalendarScreen(
                     }
                 }
 
-                // Month Grid Card (Swipes up smoothly with content, & supports horizontal drag for month change)
+                // Month Grid Card (Swipes up smoothly with content & supports horizontal drag gesture)
                 item {
                     var totalDragOffset by remember { mutableFloatStateOf(0f) }
 
@@ -220,7 +257,14 @@ fun CalendarScreen(
                                                         else Color.Transparent
                                                     )
                                                     .pressScale()
-                                                    .clickable { selectedDate = cellDate },
+                                                    .clickable {
+                                                        if (isSelected) {
+                                                            // Tapping selected date again opens Add Event Dialog directly!
+                                                            showAddEventDialog = true
+                                                        } else {
+                                                            selectedDate = cellDate
+                                                        }
+                                                    },
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -253,7 +297,7 @@ fun CalendarScreen(
                     }
                 }
 
-                // Selected Date Tasks Section Title
+                // Selected Date Tasks Section Title with "+ Add Event" button
                 item {
                     val isToday = isSameDay(selectedDate.timeInMillis, Calendar.getInstance().timeInMillis)
                     val dateLabel = if (isToday) "Today" else "${selectedDate.get(Calendar.DAY_OF_MONTH)} ${selectedDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())}"
@@ -271,11 +315,12 @@ fun CalendarScreen(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        Text(
-                            text = "${tasksForSelectedDate.size} ${if (tasksForSelectedDate.size == 1) "task" else "tasks"}",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+
+                        TextButton(onClick = { showAddEventDialog = true }) {
+                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Add Event", fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
 
@@ -285,19 +330,29 @@ fun CalendarScreen(
                         GlassCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 12.dp)
+                                .padding(vertical = 8.dp)
                         ) {
-                            Box(
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 32.dp),
-                                contentAlignment = Alignment.Center
+                                    .padding(vertical = 24.dp, horizontal = 16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "No tasks scheduled for this day.",
+                                    text = "No events or tasks scheduled for this day.",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Button(
+                                    onClick = { showAddEventDialog = true },
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Add Event to Day")
+                                }
                             }
                         }
                     }
@@ -313,11 +368,116 @@ fun CalendarScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
         }
     }
+}
+
+@Composable
+fun AddEventDialog(
+    selectedDate: Calendar,
+    onDismiss: () -> Unit,
+    onSave: (title: String, description: String, priority: String, category: String, eisenhowerTag: String) -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var priority by remember { mutableStateOf("Medium") }
+    var category by remember { mutableStateOf("General") }
+    var eisenhowerTag by remember { mutableStateOf("Do") }
+
+    val formattedDate = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault()).format(Date(selectedDate.timeInMillis))
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Column {
+                Text(
+                    text = "Add Event / Task",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = "Scheduled for $formattedDate",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Event Title") },
+                    placeholder = { Text("e.g. Doctor Appointment, Team Sync") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Notes / Description") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    maxLines = 3
+                )
+
+                // Category Selection
+                Text("Category", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf("General", "Work", "Personal", "Health", "Study").forEach { cat ->
+                        FilterChip(
+                            selected = category == cat,
+                            onClick = { category = cat },
+                            label = { Text(cat, fontSize = 11.sp) },
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    }
+                }
+
+                // Priority Selection
+                Text("Priority", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf("High", "Medium", "Low").forEach { prio ->
+                        FilterChip(
+                            selected = priority == prio,
+                            onClick = { priority = prio },
+                            label = { Text(prio, fontSize = 11.sp) },
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (title.isNotBlank()) {
+                        onSave(title.trim(), description.trim(), priority, category, eisenhowerTag)
+                    }
+                },
+                enabled = title.isNotBlank(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Save Event", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 private fun isSameDay(time1: Long, time2: Long): Boolean {
