@@ -262,11 +262,11 @@ fun BookmarkItemCard(
                 )
             }
 
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = { showDeleteConfirmDialog = true }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.outline
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }
