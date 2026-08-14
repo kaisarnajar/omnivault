@@ -1,33 +1,51 @@
-# 🔐 OmniVault
+# 🔐 TaskVault (OmniVault)
 
 > **An all-in-one, offline-first Android productivity, security & utility hub — built with Jetpack Compose, Material 3, and Kotlin.**
 
-OmniVault combines 11 essential tools into a single, beautifully designed app so you can manage tasks, track expenses, log workouts, track sleep, save web bookmarks, track debts, log moods, stay focused, and secure your secrets — all in one place.
+TaskVault combines **11 essential tools** into a single, beautifully designed app with a frosted glassmorphic UI system so you can manage tasks, track expenses, log workouts, track sleep, save web bookmarks, track debts, log moods, stay focused, and secure your secrets — all in one place.
 
 ---
 
-## ✨ Features
+## 📸 Screenshots Showcase
 
-| Feature | Description |
-|---|---|
-| ✅ **Tasks** | Manage to-dos with Eisenhower priority matrix, deadlines, and search |
-| 📅 **Calendar** | View and organize your upcoming schedule at a glance |
-| 🍅 **Pomodoro Timer** | Stay focused with timed sessions, breaks, ambient sounds, and session history |
-| 📝 **Notes** | Jot down ideas, meeting minutes, and personal reflections |
-| 💸 **Expense Tracker** | Monitor daily spending and categorize your financial outflow |
-| 🔒 **Secret Vault** | Store passwords, API keys, and sensitive data behind biometric authentication |
-| 📷 **QR Scanner** | Instantly scan and read QR codes and barcodes |
-| 💳 **Credit / Debit Ledger** | Track who owes you and who you owe with transaction logs and net balances |
-| 😄 **Mood Journal** | Log daily moods with emojis, reflections, and a chronological history timeline |
-| 🔖 **Bookmarks** | Save and categorize URLs, articles, and web content for later reading |
-| 🏋️ **Fitness Tracker** | Track gym workouts (with target muscles), running distance/duration, and sports |
-| 😴 **Sleep Log** | Track nightly sleep schedules, sleep duration, and quality ratings |
+<p align="center">
+  <img src="docs/screenshots/dark_dashboard.png" width="45%" alt="Dark Theme Hub" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="docs/screenshots/light_dashboard.png" width="45%" alt="Light Theme Hub" />
+</p>
 
-### 🏠 Home Screen Widgets
-Key features come with **Jetpack Glance home screen widgets** so you can view your tasks, notes, focus time, expenses, and vault secrets right from your Android home screen.
+<p align="center">
+  <em>Dark Mode Hub &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Light Mode Hub</em>
+</p>
 
-### 🔧 Dedicated Debug Tools
-Includes a dedicated, scrollable **Debug Tools** modal dialog accessible from Profile settings to inject test sample data for all 9 data-backed features with instant toast feedback.
+---
+
+## ✨ Key Features & Tools
+
+| Icon | Tool / Feature | Highlights & Capabilities |
+|:---:|---|---|
+| ✅ | **Tasks (To-Dos)** | Task management with Eisenhower priority matrix, translucent pastel tags, task details modal, and explicit completion confirmation. |
+| 📅 | **Calendar** | Integrated month calendar grid in a unified scroll container, horizontal drag gestures for month swiping, and **Tasks vs Events** segmented tab control with live counts. |
+| 🍅 | **Pomodoro Timer** | Focus timer with circular progress ring, ambient soundscapes (White Noise, Rain, Cafe), **Finish Early** button, and a dedicated **View Focus History** glass modal. |
+| 📝 | **Notes** | Jot down notes with an explicit **Read-Only View Mode** and **Edit Mode** toggled strictly via the Edit action button. |
+| 💸 **Expense Tracker** | Monitor spending with live **Today**, **This Week**, **This Month**, and **This Year** period summary cards and transaction logs. |
+| 🔒 | **Secret Vault** | Store passwords, API keys, and sensitive data behind biometric authentication. |
+| 📷 | **QR Scanner** | Instantly scan and read QR codes and barcodes. |
+| 💳 | **Credit / Debit Ledger** | Track who owes you and who you owe with transaction logs and net balance indicators. |
+| 😄 | **Mood Journal** | Log daily moods with emojis, reflections, and a chronological history timeline. |
+| 🔖 | **Bookmarks** | Save and categorize URLs, articles, and web content for later reading. |
+| 🏋️ | **Fitness Tracker** | Track gym workouts (with target muscle group tags), running distance/duration, and sports activities. |
+| 😴 | **Sleep Log** | Log nightly sleep schedules, duration in hours/minutes, and quality ratings. |
+
+---
+
+## 🎨 Design System & UI Highlights
+
+- **Categorized Bottom Navigation Bar:** Floating glass bottom bar with 5 category tabs (**All**, **Work**, **Finance**, **Health**, **Tools**), live badge counters, and vibrant signature category accent colors (Indigo, Orange, Emerald, Pink, Royal Blue).
+- **Glassmorphic Surface Design (`GlassCard`):** Frosted glass fill (40% - 55% translucency) replacing harsh opaque rectangles across both Light & Dark modes.
+- **Spring Touch Physics (`.pressScale()`):** Interactive touch feedback micro-animations on cards, action buttons, and filter chips.
+- **Delete Confirmation Dialogs:** Explicit confirmation popups ("Do you want to delete...?") across Notes, Tasks, and Expenses to prevent accidental deletion.
+- **Dedicated Debug Tools:** Scrollable modal dialog in Profile settings to inject test sample data for all 11 features with instant toast feedback.
 
 ---
 
@@ -53,7 +71,7 @@ Includes a dedicated, scrollable **Debug Tools** modal dialog accessible from Pr
 ```
 app/
 ├── data/
-│   ├── local/          # Room entities, DAOs, and database (v15)
+│   ├── local/          # Room entities, DAOs, and database
 │   ├── remote/         # Firebase remote data sources
 │   └── repository/     # Repository implementations
 ├── di/                 # Hilt dependency injection modules
@@ -61,16 +79,17 @@ app/
 ├── ui/
 │   ├── auth/           # Login & Registration screens
 │   ├── bookmark/       # Bookmarks screen & ViewModel
-│   ├── calendar/       # Calendar screen
-│   ├── components/     # Shared UI components (GlassCard, OmniVaultBackground, etc.)
-│   ├── expense/        # Expense tracker screen & ViewModel
+│   ├── calendar/       # Calendar screen (Tasks & Events tabs)
+│   ├── components/     # Shared UI components (GlassCard, CategoryBottomBar, etc.)
+│   ├── expense/        # Expense tracker screen & ViewModel (4 period cards)
 │   ├── fitness/        # Fitness tracker screen & ViewModel
 │   ├── ledger/         # Credit/Debit ledger screens & ViewModel
 │   ├── mood/           # Mood journal screen & ViewModel
-│   ├── notes/          # Notes list & detail screens
-│   ├── pomodoro/       # Pomodoro timer screen & ViewModel
+│   ├── notes/          # Notes list & detail screens (Read-only / Edit modes)
+│   ├── pomodoro/       # Pomodoro timer screen & ViewModel (Finish Early & History)
 │   ├── profile/        # User profile & Debug Tools modal
 │   ├── scanner/        # QR code scanner
+│   ├── sleep/          # Sleep Log screen & ViewModel
 │   ├── theme/          # Curated color palette, typography, and theming
 │   ├── todos/          # Task list & add task screens
 │   ├── tools/          # Central Tools Dashboard Hub
@@ -99,10 +118,9 @@ app/
 
 2. **Configure Firebase:**
    - Go to the [Firebase Console](https://console.firebase.google.com/)
-   - Create a new project (or use an existing one)
    - Add an Android app with package name `app.taskvault`
    - Download `google-services.json` and place it in the `app/` directory
-   - Enable **Firebase Authentication** (Email/Password) and the **Realtime Database**
+   - Enable **Firebase Authentication** (Email/Password) and **Realtime Database**
 
 3. **Open in Android Studio:**
    - Open the project and let Gradle sync complete
@@ -112,14 +130,15 @@ app/
 
 ---
 
-## 📊 Project Stats
+## 📊 Codebase Stats
 
 | Metric | Value |
 |---|---|
-| Kotlin source files | ~100 |
-| Lines of Kotlin code | ~10,000+ |
-| Built-in Tools | 10 |
-| Home screen widgets | 5 |
+| **Kotlin Source Files** | 115 files |
+| **Lines of Kotlin Code** | 11,476 lines |
+| **Total Lines of Code** | 11,791 lines |
+| **Built-in Tools** | 11 tools |
+| **Home Screen Widgets** | 5 widgets |
 
 ---
 
