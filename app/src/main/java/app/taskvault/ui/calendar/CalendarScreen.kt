@@ -5,10 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.taskvault.domain.Todo
 import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.TodoItemCard
@@ -51,6 +52,7 @@ fun CalendarScreen(
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
     var selectedTab by remember { mutableStateOf("Tasks") } // "Tasks" or "Events"
     var showAddEventDialog by remember { mutableStateOf(false) }
+    var todoToEdit by remember { mutableStateOf<Todo?>(null) }
 
     // Filter items for selected date
     val itemsForSelectedDate = remember(todos, selectedDate) {
@@ -69,11 +71,15 @@ fun CalendarScreen(
 
     val currentList = if (selectedTab == "Tasks") tasksForDate else eventsForDate
 
-    if (showAddEventDialog) {
-        AddEventDialog(
+    if (showAddEventDialog || todoToEdit != null) {
+        EventEditorDialog(
+            todoToEdit = todoToEdit,
             selectedDate = selectedDate,
-            onDismiss = { showAddEventDialog = false },
-            onSave = { title, description, priority, category, eisenhowerTag ->
+            onDismiss = {
+                showAddEventDialog = false
+                todoToEdit = null
+            },
+            onSaveNew = { title, description, priority, category, eisenhowerTag ->
                 viewModel.addTodo(
                     title = title,
                     description = description,
@@ -84,6 +90,23 @@ fun CalendarScreen(
                     eisenhowerTag = eisenhowerTag
                 )
                 showAddEventDialog = false
+                todoToEdit = null
+            },
+            onUpdateExisting = { id, title, description, priority, category, eisenhowerTag ->
+                val existingDueDate = todoToEdit?.dueDate ?: selectedDate.timeInMillis
+                val existingRemindMe = todoToEdit?.remindMe
+                viewModel.updateTodoDetail(
+                    id = id,
+                    title = title,
+                    description = description,
+                    dueDate = existingDueDate,
+                    remindMe = existingRemindMe,
+                    priority = priority,
+                    category = category,
+                    eisenhowerTag = eisenhowerTag
+                )
+                showAddEventDialog = false
+                todoToEdit = null
             }
         )
     }
@@ -392,7 +415,7 @@ fun CalendarScreen(
                         TodoItemCard(
                             todo = todo,
                             onToggleCompletion = { viewModel.toggleTodoCompletion(todo) },
-                            onEdit = { /* Edit action handled inside dialog */ },
+                            onEdit = { todoToEdit = todo },
                             onDelete = { viewModel.deleteTodo(todo.id) }
                         )
                     }
@@ -407,18 +430,22 @@ fun CalendarScreen(
 }
 
 @Composable
-fun AddEventDialog(
+fun EventEditorDialog(
+    todoToEdit: Todo?,
     selectedDate: Calendar,
     onDismiss: () -> Unit,
-    onSave: (title: String, description: String, priority: String, category: String, eisenhowerTag: String) -> Unit
+    onSaveNew: (title: String, description: String, priority: String, category: String, eisenhowerTag: String) -> Unit,
+    onUpdateExisting: (id: String, title: String, description: String, priority: String, category: String, eisenhowerTag: String) -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var priority by remember { mutableStateOf("Medium") }
-    var category by remember { mutableStateOf("Event") }
-    var eisenhowerTag by remember { mutableStateOf("Do") }
+    val isEditing = todoToEdit != null
 
-    val formattedDate = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault()).format(Date(selectedDate.timeInMillis))
+    var title by remember { mutableStateOf(todoToEdit?.title ?: "") }
+    var description by remember { mutableStateOf(todoToEdit?.description ?: "") }
+    var priority by remember { mutableStateOf(todoToEdit?.priority ?: "Medium") }
+    var category by remember { mutableStateOf(todoToEdit?.category ?: "Event") }
+    var eisenhowerTag by remember { mutableStateOf(todoToEdit?.eisenhowerTag ?: "Do") }
+
+    val formattedDate = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault()).format(Date(todoToEdit?.dueDate ?: selectedDate.timeInMillis))
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -427,7 +454,7 @@ fun AddEventDialog(
         title = {
             Column {
                 Text(
-                    text = "Add Event / Task",
+                    text = if (isEditing) "Edit Event / Task" else "Add Event / Task",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface
@@ -506,7 +533,11 @@ fun AddEventDialog(
             Button(
                 onClick = {
                     if (title.isNotBlank()) {
-                        onSave(title.trim(), description.trim(), priority, category, eisenhowerTag)
+                        if (isEditing && todoToEdit != null) {
+                            onUpdateExisting(todoToEdit.id, title.trim(), description.trim(), priority, category, eisenhowerTag)
+                        } else {
+                            onSaveNew(title.trim(), description.trim(), priority, category, eisenhowerTag)
+                        }
                     }
                 },
                 enabled = title.isNotBlank(),
@@ -515,7 +546,7 @@ fun AddEventDialog(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Text("Save Event", fontWeight = FontWeight.Bold)
+                Text(if (isEditing) "Update Event" else "Save Event", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
