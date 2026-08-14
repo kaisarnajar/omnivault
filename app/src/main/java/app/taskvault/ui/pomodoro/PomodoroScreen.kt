@@ -8,8 +8,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -19,16 +21,11 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -39,8 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.taskvault.R
 import app.taskvault.domain.PomodoroMode
+import app.taskvault.ui.components.GlassCard
 import app.taskvault.ui.components.OmniVaultBackground
 import app.taskvault.ui.components.gradientBackground
+import app.taskvault.ui.components.pressScale
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +62,7 @@ fun PomodoroScreen(
     val timeRemaining by viewModel.timeRemaining.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentMode by viewModel.currentMode.collectAsState()
+    val historySessions by viewModel.historySessions.collectAsState()
 
     var showSettingsDialog by remember { mutableStateOf(false) }
     var showHistoryDialog by remember { mutableStateOf(false) }
@@ -97,7 +99,7 @@ fun PomodoroScreen(
         }
     }
 
-    // Hardcode total time per mode for progress animation
+    // Total time per mode for progress calculation
     val totalTime = when (currentMode) {
         PomodoroMode.POMODORO -> viewModel.pomodoroDuration.collectAsState(initial = 25).value * 60f
         PomodoroMode.SHORT_BREAK -> viewModel.shortBreakDuration.collectAsState(initial = 5).value * 60f
@@ -123,9 +125,7 @@ fun PomodoroScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { showHistoryDialog = true }) {
-                            Icon(Icons.Default.History, contentDescription = "History")
-                        }
+                        // Top bar now contains only Settings icon as requested
                         IconButton(onClick = { showSettingsDialog = true }) {
                             Icon(Icons.Default.Settings, contentDescription = "Settings")
                         }
@@ -141,7 +141,7 @@ fun PomodoroScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(24.dp),
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
@@ -149,7 +149,7 @@ fun PomodoroScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     PomodoroMode.values().forEach { mode ->
@@ -157,24 +157,26 @@ fun PomodoroScreen(
                         FilterChip(
                             selected = isSelected,
                             onClick = { viewModel.setMode(mode) },
-                            label = { Text(mode.displayName) },
+                            label = { Text(mode.displayName, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                                 selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.pressScale()
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // Circular Timer
+                // Beautified Circular Timer with Ambient Stroke Glow
                 Box(
                     modifier = Modifier
-                        .size(280.dp),
+                        .size(260.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+                    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
                     val primaryColor = MaterialTheme.colorScheme.primary
 
                     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -183,39 +185,54 @@ fun PomodoroScreen(
                             startAngle = 0f,
                             sweepAngle = 360f,
                             useCenter = false,
-                            style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
+                            style = Stroke(width = 14.dp.toPx(), cap = StrokeCap.Round)
                         )
                         drawArc(
                             color = primaryColor,
                             startAngle = -90f,
                             sweepAngle = 360f * progress,
                             useCenter = false,
-                            style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
+                            style = Stroke(width = 14.dp.toPx(), cap = StrokeCap.Round)
                         )
                     }
 
-                    Text(
-                        text = timeString,
-                        style = MaterialTheme.typography.displayLarge.copy(
-                            fontSize = 64.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = timeString,
+                            style = MaterialTheme.typography.displayLarge.copy(
+                                fontSize = 58.sp,
+                                fontWeight = FontWeight.ExtraBold
+                            ),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = currentMode.displayName.uppercase(),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            letterSpacing = 2.sp
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
                 // Ambient Sound Selector
                 Text(
                     text = "AMBIENT SOUND",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    letterSpacing = 1.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     val sounds = listOf("None", "White Noise", "Rain", "Cafe")
                     sounds.forEach { sound ->
@@ -226,23 +243,26 @@ fun PomodoroScreen(
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                                 selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier.pressScale()
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // Controls
+                // Timer Controls (Reset & Play/Pause)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(28.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
                         onClick = { viewModel.resetTimer() },
                         modifier = Modifier
                             .size(56.dp)
-                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                            .pressScale()
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f), CircleShape)
                     ) {
                         Icon(
                             Icons.Default.Refresh,
@@ -254,7 +274,8 @@ fun PomodoroScreen(
 
                     Box(
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(76.dp)
+                            .pressScale()
                             .gradientBackground(CircleShape)
                             .clickable { viewModel.toggleTimer() },
                         contentAlignment = Alignment.Center
@@ -262,8 +283,41 @@ fun PomodoroScreen(
                         Icon(
                             if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
-                            modifier = Modifier.size(40.dp),
-                            tint = androidx.compose.ui.graphics.Color.White
+                            modifier = Modifier.size(38.dp),
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Prominent "View Focus History" Button Below Controls
+                GlassCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .pressScale()
+                        .clickable { showHistoryDialog = true },
+                    shape = RoundedCornerShape(18.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 14.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = "Focus History",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "View Focus History (${historySessions.size})",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -282,56 +336,74 @@ fun PomodoroScreen(
 
         AlertDialog(
             onDismissRequest = { showSettingsDialog = false },
-            title = { Text("Timer Settings") },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = { Text("Timer Settings", fontWeight = FontWeight.Bold) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = pomoInput,
                         onValueChange = { pomoInput = it },
                         label = { Text("Pomodoro (minutes)") },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     OutlinedTextField(
                         value = shortInput,
                         onValueChange = { shortInput = it },
                         label = { Text("Short Break (minutes)") },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     OutlinedTextField(
                         value = longInput,
                         onValueChange = { longInput = it },
                         label = { Text("Long Break (minutes)") },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    val p = pomoInput.toIntOrNull() ?: 25
-                    val s = shortInput.toIntOrNull() ?: 5
-                    val l = longInput.toIntOrNull() ?: 15
-                    viewModel.saveSettings(p, s, l)
-                    showSettingsDialog = false
-                }) {
-                    Text("Save")
+                Button(
+                    onClick = {
+                        val p = pomoInput.toIntOrNull() ?: 25
+                        val s = shortInput.toIntOrNull() ?: 5
+                        val l = longInput.toIntOrNull() ?: 15
+                        viewModel.saveSettings(p, s, l)
+                        showSettingsDialog = false
+                    },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Save Settings", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showSettingsDialog = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         )
     }
 
     if (showHistoryDialog) {
-        val historySessions by viewModel.historySessions.collectAsState()
         val totalSessions = historySessions.size
         val totalTimeMinutes = historySessions.sumOf { it.durationInMinutes }
 
         AlertDialog(
             onDismissRequest = { showHistoryDialog = false },
-            title = { Text("Pomodoro History") },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.History, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Focus Session History", fontWeight = FontWeight.Bold)
+                }
+            },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -339,59 +411,109 @@ fun PomodoroScreen(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = totalSessions.toString(),
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = "Sessions",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = totalSessions.toString(),
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Total Sessions",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
                         }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = totalTimeMinutes.toString(),
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = "Minutes",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "${totalTimeMinutes}m",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = "Total Focus Time",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                            }
                         }
                     }
 
                     if (historySessions.isEmpty()) {
-                        Text(
-                            text = "No history yet. Start focusing!",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 20.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No focus history recorded yet. Start a session!",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     } else {
-                        androidx.compose.foundation.lazy.LazyColumn(
-                            modifier = Modifier.heightIn(max = 200.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        LazyColumn(
+                            modifier = Modifier.heightIn(max = 240.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             items(historySessions.size) { index ->
                                 val session = historySessions[index]
-                                val dateStr = java.text.SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault()).format(java.util.Date(session.timestamp))
-                                Row(
+                                val dateStr = SimpleDateFormat("MMM dd, yyyy • hh:mm a", Locale.getDefault()).format(Date(session.timestamp))
+                                Surface(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                                 ) {
-                                    Text(dateStr, style = MaterialTheme.typography.bodySmall)
-                                    Text("${session.durationInMinutes} min", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = dateStr,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Surface(
+                                            shape = RoundedCornerShape(6.dp),
+                                            color = MaterialTheme.colorScheme.primaryContainer
+                                        ) {
+                                            Text(
+                                                text = "${session.durationInMinutes} min",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                            )
+                                        }
+                                    }
                                 }
-                                HorizontalDivider(modifier = Modifier.padding(top = 4.dp), color = MaterialTheme.colorScheme.surfaceVariant)
                             }
                         }
                     }
@@ -399,7 +521,7 @@ fun PomodoroScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showHistoryDialog = false }) {
-                    Text("Close")
+                    Text("Close", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             }
         )
