@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Bookmark
 import app.taskvault.ui.components.CategoryBottomBar
 import app.taskvault.ui.components.ToolCategory
+import app.taskvault.ui.components.pressScale
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Timer
@@ -209,8 +210,29 @@ fun ToolsScreen(
                         actionIconContentColor = MaterialTheme.colorScheme.onSurface
                     ),
                     actions = {
-                        IconButton(onClick = onNavigateToProfile) {
-                            Icon(imageVector = Icons.Default.Person, contentDescription = "Profile")
+                        Box(
+                            modifier = Modifier
+                                .padding(end = 12.dp)
+                                .size(42.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(
+                                            Color(0xFF6366F1), // Indigo
+                                            Color(0xFF8B5CF6)  // Violet
+                                        )
+                                    )
+                                )
+                                .pressScale()
+                                .clickable(onClick = onNavigateToProfile),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
                         }
                     }
                 )

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
@@ -29,13 +28,14 @@ import androidx.compose.ui.unit.sp
 
 enum class ToolCategory(
     val displayName: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val accentColor: Color
 ) {
-    ALL("All", Icons.Default.GridView),
-    PRODUCTIVITY("Work", Icons.Default.FlashOn),
-    FINANCE("Finance", Icons.Default.Shield),
-    HEALTH("Health", Icons.Default.Favorite),
-    UTILITIES("Tools", Icons.Default.Build)
+    ALL("All", Icons.Default.GridView, Color(0xFF6366F1)),         // Indigo Accent
+    PRODUCTIVITY("Work", Icons.Default.FlashOn, Color(0xFFF97316)),  // Vibrant Orange Accent
+    FINANCE("Finance", Icons.Default.Shield, Color(0xFF10B981)),   // Emerald Accent
+    HEALTH("Health", Icons.Default.Favorite, Color(0xFFEC4899)),   // Rose Pink Accent
+    UTILITIES("Tools", Icons.Default.Build, Color(0xFF3B82F6))      // Royal Blue Accent
 }
 
 @Composable
@@ -66,11 +66,11 @@ fun CategoryBottomBar(
                 ToolCategory.values().forEach { category ->
                     val isSelected = selectedCategory == category
                     val activeBgColor by animateColorAsState(
-                        targetValue = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.22f) else Color.Transparent,
+                        targetValue = if (isSelected) category.accentColor.copy(alpha = 0.20f) else Color.Transparent,
                         label = "activeBgColor"
                     )
                     val activeContentColor by animateColorAsState(
-                        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        targetValue = if (isSelected) category.accentColor else category.accentColor.copy(alpha = 0.65f),
                         label = "activeContentColor"
                     )
 
@@ -98,8 +98,8 @@ fun CategoryBottomBar(
                                 badge = {
                                     if (count > 0) {
                                         Badge(
-                                            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
-                                            contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSecondaryContainer
+                                            containerColor = if (isSelected) category.accentColor else category.accentColor.copy(alpha = 0.25f),
+                                            contentColor = if (isSelected) Color.White else category.accentColor
                                         ) {
                                             Text(
                                                 text = "$count",
@@ -121,7 +121,7 @@ fun CategoryBottomBar(
                             Text(
                                 text = category.displayName,
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
                                 color = activeContentColor,
                                 fontSize = 11.sp,
                                 maxLines = 1,
