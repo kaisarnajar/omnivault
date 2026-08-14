@@ -185,43 +185,84 @@ fun BookmarkItemCard(
         )
     }
 
+    val categoryColor = when (bookmark.category.lowercase()) {
+        "tech", "dev", "coding" -> Color(0xFF0EA5E9)      // Cyan
+        "finance", "money", "crypto" -> Color(0xFF10B981) // Emerald
+        "reading", "articles", "news" -> Color(0xFFF59E0B)// Amber
+        "design", "art", "inspiration" -> Color(0xFFEC4899)// Pink
+        else -> Color(0xFF6366F1)                         // Indigo
+    }
+
     val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(bookmark.timestamp))
 
-    GlassCard(modifier = Modifier.fillMaxWidth().pressScale().clickable { onOpenUrl() }) {
+    GlassCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .pressScale()
+            .clickable { onOpenUrl() },
+        shape = RoundedCornerShape(20.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Category / Avatar Icon Badge
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(categoryColor.copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Bookmark,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    contentDescription = bookmark.category,
+                    tint = categoryColor,
+                    modifier = Modifier.size(22.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = bookmark.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = bookmark.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
 
-                Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                // Clickable URL
+                    // Vibrant Glass Category Chip
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(categoryColor.copy(alpha = 0.2f))
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            text = bookmark.category,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = categoryColor,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Clickable URL with External Link Icon
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickable { onOpenUrl() }
@@ -230,6 +271,7 @@ fun BookmarkItemCard(
                         text = bookmark.url,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Medium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
@@ -239,7 +281,7 @@ fun BookmarkItemCard(
                         imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                         contentDescription = "Open Link",
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(13.dp)
                     )
                 }
 
@@ -254,7 +296,7 @@ fun BookmarkItemCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = dateStr,
                     style = MaterialTheme.typography.labelSmall,
