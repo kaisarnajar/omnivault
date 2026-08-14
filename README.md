@@ -1,4 +1,4 @@
-# 🔐 TaskVault (OmniVault)
+# 🔐 OmniVault
 
 > **An all-in-one, offline-first Android productivity, security & utility hub — built with Jetpack Compose, Material 3, and Kotlin.**
 
