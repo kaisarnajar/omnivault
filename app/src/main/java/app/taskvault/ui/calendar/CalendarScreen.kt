@@ -266,14 +266,7 @@ fun CalendarScreen(
                                                         else Color.Transparent
                                                     )
                                                     .pressScale()
-                                                    .clickable {
-                                                        if (isSelected) {
-                                                            // Tapping selected date again opens Add Event Dialog directly!
-                                                            showAddEventDialog = true
-                                                        } else {
-                                                            selectedDate = cellDate
-                                                        }
-                                                    },
+                                                    .clickable { selectedDate = cellDate },
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -356,12 +349,6 @@ fun CalendarScreen(
                                     )
                                 }
                             }
-                        }
-
-                        TextButton(onClick = { showAddEventDialog = true }) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Add Event", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
