@@ -59,21 +59,27 @@ fun TodoItemCard(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Task") },
-            text = { Text("Do you want to delete this task?") },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = { Text("Delete Task", fontWeight = FontWeight.Bold) },
+            text = { Text("Do you want to delete \"${todo.title}\"?") },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         showDeleteDialog = false
                         onDelete()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text("Delete", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         )
@@ -91,7 +97,7 @@ fun TodoItemCard(
             },
             onDelete = {
                 showDetailsDialog = false
-                onDelete()
+                showDeleteDialog = true
             }
         )
     }

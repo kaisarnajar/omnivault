@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +35,40 @@ fun NotesListScreen(
     onNavigateToNote: (noteId: String?, isEditMode: Boolean) -> Unit
 ) {
     val notes by viewModel.notes.collectAsState()
+    var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
+
+    if (noteToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { noteToDelete = null },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = {
+                Text("Delete Note", fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Text("Do you want to delete \"${noteToDelete?.title?.ifEmpty { "Untitled Note" }}\"?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        noteToDelete?.let { viewModel.deleteNote(it.id) }
+                        noteToDelete = null
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Delete", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { noteToDelete = null }) {
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        )
+    }
 
     OmniVaultBackground {
         Scaffold(
@@ -84,12 +117,12 @@ fun NotesListScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalItemSpacing = 16.dp
                 ) {
-                    items(notes) { note ->
+                    items(notes, key = { it.id }) { note ->
                         NoteCard(
                             note = note,
                             onClick = { onNavigateToNote(note.id, false) },
                             onEditClick = { onNavigateToNote(note.id, true) },
-                            onDelete = { viewModel.deleteNote(note.id) }
+                            onDelete = { noteToDelete = note }
                         )
                     }
                 }
