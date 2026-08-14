@@ -1,8 +1,6 @@
 package app.taskvault.ui.calendar
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -49,14 +47,25 @@ fun CalendarScreen(
     // Calendar State
     var currentMonth by remember { mutableStateOf(Calendar.getInstance()) }
     var selectedDate by remember { mutableStateOf(Calendar.getInstance()) }
+    var selectedTab by remember { mutableStateOf("Tasks") } // "Tasks" or "Events"
     var showAddEventDialog by remember { mutableStateOf(false) }
 
-    // Filter tasks for selected date
-    val tasksForSelectedDate = remember(todos, selectedDate) {
+    // Filter items for selected date
+    val itemsForSelectedDate = remember(todos, selectedDate) {
         todos.filter { todo ->
             todo.dueDate != null && isSameDay(todo.dueDate, selectedDate.timeInMillis)
         }
     }
+
+    val tasksForDate = remember(itemsForSelectedDate) {
+        itemsForSelectedDate.filter { it.category != "Event" && it.category != "Meeting" && it.category != "Appointment" }
+    }
+
+    val eventsForDate = remember(itemsForSelectedDate) {
+        itemsForSelectedDate.filter { it.category == "Event" || it.category == "Meeting" || it.category == "Appointment" }
+    }
+
+    val currentList = if (selectedTab == "Tasks") tasksForDate else eventsForDate
 
     if (showAddEventDialog) {
         AddEventDialog(
@@ -297,11 +306,8 @@ fun CalendarScreen(
                     }
                 }
 
-                // Selected Date Tasks Section Title with "+ Add Event" button
+                // Two Tab Buttons: Tasks vs Events
                 item {
-                    val isToday = isSameDay(selectedDate.timeInMillis, Calendar.getInstance().timeInMillis)
-                    val dateLabel = if (isToday) "Today" else "${selectedDate.get(Calendar.DAY_OF_MONTH)} ${selectedDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())}"
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -309,12 +315,48 @@ fun CalendarScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Tasks for $dateLabel",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        // Glass Segmented Tab Controls
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+                                .padding(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val tabs = listOf(
+                                "Tasks" to tasksForDate.size,
+                                "Events" to eventsForDate.size
+                            )
+
+                            tabs.forEach { (tabName, count) ->
+                                val isTabSelected = selectedTab == tabName
+                                val tabBgColor by animateColorAsState(
+                                    targetValue = if (isTabSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                    label = "tabBg"
+                                )
+                                val tabTextColor by animateColorAsState(
+                                    targetValue = if (isTabSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    label = "tabText"
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(tabBgColor)
+                                        .pressScale()
+                                        .clickable { selectedTab = tabName }
+                                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "$tabName ($count)",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = if (isTabSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = tabTextColor
+                                    )
+                                }
+                            }
+                        }
 
                         TextButton(onClick = { showAddEventDialog = true }) {
                             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -324,8 +366,8 @@ fun CalendarScreen(
                     }
                 }
 
-                // Tasks List for selected date
-                if (tasksForSelectedDate.isEmpty()) {
+                // Render Active List (Tasks or Events) for selected date
+                if (currentList.isEmpty()) {
                     item {
                         GlassCard(
                             modifier = Modifier
@@ -340,7 +382,7 @@ fun CalendarScreen(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "No events or tasks scheduled for this day.",
+                                    text = if (selectedTab == "Tasks") "No tasks scheduled for this day." else "No events scheduled for this day.",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -351,13 +393,13 @@ fun CalendarScreen(
                                 ) {
                                     Icon(Icons.Default.Add, contentDescription = null)
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text("Add Event to Day")
+                                    Text(if (selectedTab == "Tasks") "Add Task" else "Add Event")
                                 }
                             }
                         }
                     }
                 } else {
-                    items(tasksForSelectedDate, key = { it.id }) { todo ->
+                    items(currentList, key = { it.id }) { todo ->
                         TodoItemCard(
                             todo = todo,
                             onToggleCompletion = { viewModel.toggleTodoCompletion(todo) },
@@ -384,7 +426,7 @@ fun AddEventDialog(
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var priority by remember { mutableStateOf("Medium") }
-    var category by remember { mutableStateOf("General") }
+    var category by remember { mutableStateOf("Event") }
     var eisenhowerTag by remember { mutableStateOf("Do") }
 
     val formattedDate = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault()).format(Date(selectedDate.timeInMillis))
@@ -410,7 +452,7 @@ fun AddEventDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Event Title") },
+                    label = { Text("Title") },
                     placeholder = { Text("e.g. Doctor Appointment, Team Sync") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -432,7 +474,7 @@ fun AddEventDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    listOf("General", "Work", "Personal", "Health", "Study").forEach { cat ->
+                    listOf("Event", "Meeting", "Appointment", "General", "Work").forEach { cat ->
                         FilterChip(
                             selected = category == cat,
                             onClick = { category = cat },
@@ -469,7 +511,7 @@ fun AddEventDialog(
                 enabled = title.isNotBlank(),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Save Event", fontWeight = FontWeight.Bold)
+                Text("Save", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
