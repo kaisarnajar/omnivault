@@ -91,25 +91,46 @@ fun MoodScreen(
                     if (todayMood != null) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = todayMood!!.emoji, fontSize = 44.sp)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = todayMood!!.mood,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                if (todayMood!!.note.isNotBlank()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(text = todayMood!!.emoji, fontSize = 44.sp)
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
                                     Text(
-                                        text = todayMood!!.note,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White.copy(alpha = 0.8f),
-                                        maxLines = 2
+                                        text = todayMood!!.mood,
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
                                     )
+                                    if (todayMood!!.note.isNotBlank()) {
+                                        Text(
+                                            text = todayMood!!.note,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.White.copy(alpha = 0.85f),
+                                            maxLines = 2
+                                        )
+                                    }
                                 }
+                            }
+
+                            Button(
+                                onClick = {
+                                    selectedMoodOption = moodOptions.find { it.label == todayMood?.mood } ?: moodOptions.first()
+                                    showAddDialog = true
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White.copy(alpha = 0.25f),
+                                    contentColor = Color.White
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Text("Update", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             }
                         }
                     } else {
@@ -182,11 +203,17 @@ fun MoodScreen(
 
         if (showAddDialog) {
             AddMoodDialog(
-                initialOption = selectedMoodOption ?: moodOptions.first(),
-                onDismiss = { showAddDialog = false },
+                initialOption = selectedMoodOption ?: moodOptions.find { it.label == todayMood?.mood } ?: moodOptions.first(),
+                existingTodayNote = if (todayMood != null && selectedMoodOption == null) todayMood?.note ?: "" else "",
+                isUpdate = todayMood != null,
+                onDismiss = {
+                    showAddDialog = false
+                    selectedMoodOption = null
+                },
                 onSave = { mood, emoji, note ->
                     viewModel.addMood(mood, emoji, note)
                     showAddDialog = false
+                    selectedMoodOption = null
                 }
             )
         }
@@ -279,18 +306,30 @@ fun MoodItemCard(
 @Composable
 fun AddMoodDialog(
     initialOption: MoodOption,
+    existingTodayNote: String = "",
+    isUpdate: Boolean = false,
     onDismiss: () -> Unit,
     onSave: (String, String, String) -> Unit
 ) {
     var selectedOption by remember { mutableStateOf(initialOption) }
-    var note by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf(existingTodayNote) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Log Your Mood") },
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = {
+            Text(
+                if (isUpdate) "Update Today's Mood" else "Log Your Mood",
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("Select your current mood:", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    if (isUpdate) "Update your feeling for today:" else "Select your current mood:",
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
                 // Emoji Selection Row
                 Row(
@@ -326,23 +365,25 @@ fun AddMoodDialog(
                     value = note,
                     onValueChange = { note = it },
                     label = { Text("Note / Reflection (Optional)") },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     onSave(selectedOption.label, selectedOption.emoji, note.trim())
-                }
+                },
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Save")
+                Text(if (isUpdate) "Update Mood" else "Save Mood", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )

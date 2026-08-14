@@ -9,6 +9,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.firstOrNull
+import java.util.Calendar
 import java.util.UUID
 import javax.inject.Inject
 
@@ -35,8 +37,18 @@ class MoodRepositoryImpl @Inject constructor(
 
     override suspend fun addMood(mood: String, emoji: String, note: String) {
         val userId = authRepository.getCurrentUserId() ?: return
+        val currentMoods = moodDao.getMoodsForUser(userId).firstOrNull() ?: emptyList()
+        val cal = Calendar.getInstance()
+        val currentDay = cal.get(Calendar.DAY_OF_YEAR)
+        val currentYear = cal.get(Calendar.YEAR)
+
+        val existingTodayMood = currentMoods.firstOrNull { entry ->
+            val entryCal = Calendar.getInstance().apply { timeInMillis = entry.timestamp }
+            entryCal.get(Calendar.DAY_OF_YEAR) == currentDay && entryCal.get(Calendar.YEAR) == currentYear
+        }
+
         val entity = MoodEntryEntity(
-            id = UUID.randomUUID().toString(),
+            id = existingTodayMood?.id ?: UUID.randomUUID().toString(),
             userId = userId,
             mood = mood,
             emoji = emoji,
