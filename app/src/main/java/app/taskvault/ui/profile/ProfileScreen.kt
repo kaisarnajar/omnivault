@@ -49,6 +49,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel,
     onLogout: () -> Unit,
     onThemeChange: (Boolean?) -> Unit,
+    onNavigateToDebugTools: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
@@ -57,10 +58,8 @@ fun ProfileScreen(
     var isEditing by remember { mutableStateOf(false) }
     var displayName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var showDebugDialog by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+
 
     // Initialize fields when profile is loaded
     LaunchedEffect(userProfile) {
@@ -239,7 +238,7 @@ fun ProfileScreen(
                     GlassCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showDebugDialog = true },
+                            .clickable { onNavigateToDebugTools() },
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Row(
@@ -269,7 +268,7 @@ fun ProfileScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "Generate sample data for testing",
+                                    text = "Generate sample data for all 11 features",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -283,21 +282,6 @@ fun ProfileScreen(
                     }
                 }
             }
-        }
-
-        // Dedicated Debug Tools Dialog / Panel
-        if (showDebugDialog) {
-            DebugToolsDialog(
-                onDismiss = { showDebugDialog = false },
-                onSeed = { featureName, seedAction ->
-                    scope.launch {
-                        Toast.makeText(context, "Started injecting $featureName data...", Toast.LENGTH_SHORT).show()
-                        seedAction()
-                        Toast.makeText(context, "Data injection completed for $featureName!", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                viewModel = viewModel
-            )
         }
     }
 }

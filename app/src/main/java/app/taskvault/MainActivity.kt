@@ -150,6 +150,13 @@ fun TaskVaultApp(
                             }
                         },
                         onThemeChange = onThemeChange,
+                        onNavigateToDebugTools = { navController.navigate("debug_tools") },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+                composable("debug_tools") {
+                    app.taskvault.ui.profile.DebugToolsScreen(
+                        viewModel = profileViewModel,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }

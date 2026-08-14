@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BugReport
 import app.taskvault.ui.components.CategoryBottomBar
 import app.taskvault.ui.components.ToolCategory
 import app.taskvault.ui.components.pressScale
@@ -177,6 +178,15 @@ fun ToolsScreen(
                 route = "sleep",
                 accentColor = SleepAccent,
                 category = ToolCategory.HEALTH
+            ),
+            ToolItem(
+                title = "Debug Tools",
+                description = "Sample Data Generator",
+                details = "Inject test sample data for all 11 features across the application.",
+                icon = Icons.Default.BugReport,
+                route = "debug_tools",
+                accentColor = Color(0xFFE11D48),
+                category = ToolCategory.UTILITIES
             )
         )
     }
