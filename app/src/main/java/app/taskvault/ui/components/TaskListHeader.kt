@@ -23,7 +23,7 @@ fun TaskListHeader(
     selectedFilter: String,
     onFilterSelected: (String) -> Unit
 ) {
-    val filters = listOf("All Tasks", "Today", "This Week", "This Month", "Completed")
+    val filters = listOf("Completed", "All Tasks", "Today", "This Week", "This Month")
 
     Row(
         modifier = modifier
