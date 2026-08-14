@@ -4,6 +4,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -420,22 +422,26 @@ fun AddEventDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
             Column {
                 Text(
                     text = "Add Event / Task",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "Scheduled for $formattedDate",
                     style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
@@ -455,35 +461,43 @@ fun AddEventDialog(
                     maxLines = 3
                 )
 
-                // Category Selection
-                Text("Category", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    listOf("Event", "Meeting", "Appointment", "General", "Work").forEach { cat ->
-                        FilterChip(
-                            selected = category == cat,
-                            onClick = { category = cat },
-                            label = { Text(cat, fontSize = 11.sp) },
-                            shape = RoundedCornerShape(8.dp)
-                        )
+                // Category Selection with horizontalScroll
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("Category", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("Event", "Meeting", "Appointment", "General", "Work").forEach { cat ->
+                            FilterChip(
+                                selected = category == cat,
+                                onClick = { category = cat },
+                                label = { Text(cat, fontSize = 12.sp, fontWeight = if (category == cat) FontWeight.Bold else FontWeight.Normal) },
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                        }
                     }
                 }
 
-                // Priority Selection
-                Text("Priority", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    listOf("High", "Medium", "Low").forEach { prio ->
-                        FilterChip(
-                            selected = priority == prio,
-                            onClick = { priority = prio },
-                            label = { Text(prio, fontSize = 11.sp) },
-                            shape = RoundedCornerShape(8.dp)
-                        )
+                // Priority Selection with horizontalScroll
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("Priority", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("High", "Medium", "Low").forEach { prio ->
+                            FilterChip(
+                                selected = priority == prio,
+                                onClick = { priority = prio },
+                                label = { Text(prio, fontSize = 12.sp, fontWeight = if (priority == prio) FontWeight.Bold else FontWeight.Normal) },
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -496,14 +510,17 @@ fun AddEventDialog(
                     }
                 },
                 enabled = title.isNotBlank(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             ) {
-                Text("Save", fontWeight = FontWeight.Bold)
+                Text("Save Event", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )
