@@ -176,16 +176,8 @@ fun NoteDetailScreen(
                                         style = MaterialTheme.typography.headlineSmall,
                                         fontWeight = FontWeight.ExtraBold,
                                         color = MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.fillMaxWidth()
                                     )
-
-                                    IconButton(onClick = { isEditing = true }) {
-                                        Icon(
-                                            Icons.Default.Edit,
-                                            contentDescription = "Edit Note",
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
                                 }
 
                                 HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
