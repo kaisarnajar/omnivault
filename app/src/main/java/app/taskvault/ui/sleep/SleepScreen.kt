@@ -254,11 +254,7 @@ fun SleepItemCard(
     val qualityOpt = sleepQualities.find { it.name.equals(entry.sleepQuality, ignoreCase = true) }
         ?: sleepQualities[1]
 
-    val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
     val dateFormat = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault())
-
-    val bedtimeStr = timeFormat.format(Date(entry.bedtime))
-    val wakeTimeStr = timeFormat.format(Date(entry.wakeTime))
     val dateStr = dateFormat.format(Date(entry.timestamp))
 
     val hours = entry.durationMinutes / 60
@@ -287,7 +283,7 @@ fun SleepItemCard(
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "$bedtimeStr → $wakeTimeStr",
+                        text = "$durationStr Slept",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -301,7 +297,7 @@ fun SleepItemCard(
                         color = qualityOpt.color.copy(alpha = 0.18f)
                     ) {
                         Text(
-                            text = durationStr,
+                            text = qualityOpt.name,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = qualityOpt.color,
@@ -316,7 +312,7 @@ fun SleepItemCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "${qualityOpt.emoji} ${qualityOpt.name}",
+                        text = "${qualityOpt.emoji} ${qualityOpt.name} Quality",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
                         color = qualityOpt.color
