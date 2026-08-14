@@ -25,14 +25,36 @@ class ExpenseViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val currentMonthTotal: StateFlow<Double> = expenses.map { list ->
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    val todayTotal: StateFlow<Double> = expenses.map { list ->
+        val now = System.currentTimeMillis()
+        list.filter { isSameDay(it.timestamp, now) }.sumOf { it.amount }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0.0
+    )
 
-        list.filter { expense ->
-            val expenseCalendar = Calendar.getInstance().apply { timeInMillis = expense.timestamp }
-            expenseCalendar.get(Calendar.MONTH) == currentMonth && expenseCalendar.get(Calendar.YEAR) == currentYear
-        }.sumOf { it.amount }
+    val thisWeekTotal: StateFlow<Double> = expenses.map { list ->
+        val now = System.currentTimeMillis()
+        list.filter { isSameWeek(it.timestamp, now) }.sumOf { it.amount }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0.0
+    )
+
+    val currentMonthTotal: StateFlow<Double> = expenses.map { list ->
+        val now = System.currentTimeMillis()
+        list.filter { isSameMonth(it.timestamp, now) }.sumOf { it.amount }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0.0
+    )
+
+    val thisYearTotal: StateFlow<Double> = expenses.map { list ->
+        val now = System.currentTimeMillis()
+        list.filter { isSameYear(it.timestamp, now) }.sumOf { it.amount }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -50,4 +72,31 @@ class ExpenseViewModel @Inject constructor(
             repository.deleteExpense(id)
         }
     }
+}
+
+private fun isSameDay(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+        c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)
+}
+
+private fun isSameWeek(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+        c1.get(Calendar.WEEK_OF_YEAR) == c2.get(Calendar.WEEK_OF_YEAR)
+}
+
+private fun isSameMonth(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+        c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)
+}
+
+private fun isSameYear(t1: Long, t2: Long): Boolean {
+    val c1 = Calendar.getInstance().apply { timeInMillis = t1 }
+    val c2 = Calendar.getInstance().apply { timeInMillis = t2 }
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
 }
