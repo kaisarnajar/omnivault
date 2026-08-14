@@ -186,15 +186,24 @@ fun TaskVaultApp(
                     NotesListScreen(
                         viewModel = notesListViewModel,
                         onNavigateBack = { navController.popBackStack() },
-                        onNavigateToNote = { noteId ->
-                            val id = noteId ?: java.util.UUID.randomUUID().toString()
-                            navController.navigate("note_detail/$id")
+                        onNavigateToNote = { noteId, isEditMode ->
+                            val id = noteId ?: ""
+                            navController.navigate("note_detail/$id?isEdit=$isEditMode")
                         }
                     )
                 }
                 composable(
-                    route = "note_detail/{noteId}",
-                    arguments = listOf(androidx.navigation.navArgument("noteId") { type = androidx.navigation.NavType.StringType })
+                    route = "note_detail/{noteId}?isEdit={isEdit}",
+                    arguments = listOf(
+                        androidx.navigation.navArgument("noteId") {
+                            type = androidx.navigation.NavType.StringType
+                            defaultValue = ""
+                        },
+                        androidx.navigation.navArgument("isEdit") {
+                            type = androidx.navigation.NavType.StringType
+                            defaultValue = "false"
+                        }
+                    )
                 ) { _ ->
                     val noteDetailViewModel: NoteDetailViewModel = hiltViewModel()
                     NoteDetailScreen(

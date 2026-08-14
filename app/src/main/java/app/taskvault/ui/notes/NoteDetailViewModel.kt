@@ -17,7 +17,8 @@ class NoteDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val noteId: String = savedStateHandle.get<String>("noteId") ?: ""
+    val noteId: String = savedStateHandle.get<String>("noteId") ?: ""
+    val initialEditMode: Boolean = savedStateHandle.get<String>("isEdit")?.toBoolean() ?: noteId.isEmpty()
 
     private val _title = MutableStateFlow("")
     val title: StateFlow<String> = _title.asStateFlow()
@@ -25,13 +26,19 @@ class NoteDetailViewModel @Inject constructor(
     private val _content = MutableStateFlow("")
     val content: StateFlow<String> = _content.asStateFlow()
 
+    private val _isLoaded = MutableStateFlow(false)
+    val isLoaded: StateFlow<Boolean> = _isLoaded.asStateFlow()
+
     init {
         viewModelScope.launch {
-            val note = repository.getNoteById(noteId)
-            if (note != null) {
-                _title.value = note.title
-                _content.value = note.content
+            if (noteId.isNotEmpty()) {
+                val note = repository.getNoteById(noteId)
+                if (note != null) {
+                    _title.value = note.title
+                    _content.value = note.content
+                }
             }
+            _isLoaded.value = true
         }
     }
 

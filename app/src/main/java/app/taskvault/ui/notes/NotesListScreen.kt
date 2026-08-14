@@ -33,7 +33,7 @@ import java.util.Locale
 fun NotesListScreen(
     viewModel: NotesListViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToNote: (String?) -> Unit
+    onNavigateToNote: (noteId: String?, isEditMode: Boolean) -> Unit
 ) {
     val notes by viewModel.notes.collectAsState()
 
@@ -54,7 +54,7 @@ fun NotesListScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { onNavigateToNote(null) },
+                    onClick = { onNavigateToNote(null, true) },
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add Note", tint = Color.White)
@@ -87,7 +87,8 @@ fun NotesListScreen(
                     items(notes) { note ->
                         NoteCard(
                             note = note,
-                            onClick = { onNavigateToNote(note.id) },
+                            onClick = { onNavigateToNote(note.id, false) },
+                            onEditClick = { onNavigateToNote(note.id, true) },
                             onDelete = { viewModel.deleteNote(note.id) }
                         )
                     }
@@ -98,7 +99,12 @@ fun NotesListScreen(
 }
 
 @Composable
-fun NoteCard(note: NoteEntity, onClick: () -> Unit, onDelete: () -> Unit) {
+fun NoteCard(
+    note: NoteEntity,
+    onClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDelete: () -> Unit
+) {
     GlassCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,7 +135,7 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit, onDelete: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = onClick,
+                        onClick = onEditClick,
                         modifier = Modifier.size(24.dp)
                     ) {
                         Icon(

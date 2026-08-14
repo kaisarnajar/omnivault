@@ -27,11 +27,13 @@ fun NoteDetailScreen(
 ) {
     val title by viewModel.title.collectAsState()
     val content by viewModel.content.collectAsState()
+    val isLoaded by viewModel.isLoaded.collectAsState()
 
-    // If note is new (title/content initialized empty and noteId blank), start in edit mode.
-    // If opening an existing note, start in view mode (isEditing = false).
-    val isNewNote = remember { title.isEmpty() && content.isEmpty() }
-    var isEditing by remember { mutableStateOf(isNewNote) }
+    // Determine initial edit mode based strictly on how note was opened:
+    // Normal click -> View Mode (isEditing = false)
+    // Edit button click or New Note (+) -> Edit Mode (isEditing = true)
+    var isEditing by remember(viewModel.initialEditMode) { mutableStateOf(viewModel.initialEditMode) }
+    val isNewNote = remember(viewModel.noteId) { viewModel.noteId.isEmpty() }
 
     OmniVaultBackground {
         Scaffold(
@@ -81,109 +83,120 @@ fun NoteDetailScreen(
             },
             containerColor = Color.Transparent
         ) { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 20.dp, vertical = 8.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                if (isEditing) {
-                    // EDIT MODE: Text fields for user input
-                    OutlinedTextField(
-                        value = title,
-                        onValueChange = { viewModel.updateTitle(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                "Note Title...",
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold
+            if (!isLoaded) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (isEditing) {
+                        // EDIT MODE: Active editable text fields
+                        OutlinedTextField(
+                            value = title,
+                            onValueChange = { viewModel.updateTitle(it) },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = {
+                                Text(
+                                    "Note Title...",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            shape = RoundedCornerShape(14.dp),
+                            textStyle = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 22.sp
                             )
-                        },
-                        shape = RoundedCornerShape(14.dp),
-                        textStyle = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp
                         )
-                    )
 
-                    OutlinedTextField(
-                        value = content,
-                        onValueChange = { viewModel.updateContent(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 300.dp),
-                        placeholder = {
-                            Text(
-                                "Write your note here...",
-                                fontSize = 16.sp
-                            )
-                        },
-                        shape = RoundedCornerShape(14.dp),
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp)
-                    )
-
-                    Button(
-                        onClick = {
-                            viewModel.saveNote()
-                            isEditing = false
-                            if (isNewNote) {
-                                onNavigateBack()
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(14.dp)
-                    ) {
-                        Icon(Icons.Default.Check, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Save Note", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    }
-                } else {
-                    // VIEW MODE: Read-only display of note
-                    GlassCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Column(
+                        OutlinedTextField(
+                            value = content,
+                            onValueChange = { viewModel.updateContent(it) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                                .heightIn(min = 300.dp),
+                            placeholder = {
                                 Text(
-                                    text = title.ifEmpty { "Untitled Note" },
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.weight(1f)
+                                    "Write your note here...",
+                                    fontSize = 16.sp
                                 )
+                            },
+                            shape = RoundedCornerShape(14.dp),
+                            textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp)
+                        )
 
-                                IconButton(onClick = { isEditing = true }) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = "Edit Note",
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
+                        Button(
+                            onClick = {
+                                viewModel.saveNote()
+                                isEditing = false
+                                if (isNewNote) {
+                                    onNavigateBack()
                                 }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Icon(Icons.Default.Check, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Save Note", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        }
+                    } else {
+                        // READ-ONLY VIEW MODE: Clean static display (Note cannot be edited without tapping Edit button)
+                        GlassCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = title.ifEmpty { "Untitled Note" },
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    IconButton(onClick = { isEditing = true }) {
+                                        Icon(
+                                            Icons.Default.Edit,
+                                            contentDescription = "Edit Note",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+
+                                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                                Text(
+                                    text = content.ifEmpty { "No additional content." },
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
-
-                            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
-
-                            Text(
-                                text = content.ifEmpty { "No additional content." },
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
                         }
                     }
                 }
