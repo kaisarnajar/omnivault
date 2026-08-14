@@ -9,13 +9,15 @@ TaskVault combines **11 essential tools** into a single, beautifully designed ap
 ## 📸 Screenshots Showcase
 
 <p align="center">
-  <img src="docs/screenshots/dark_dashboard.png" width="45%" alt="Dark Theme Hub" />
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/screenshots/light_dashboard.png" width="45%" alt="Light Theme Hub" />
+  <img src="docs/screenshots/real_tools_dashboard.png" width="30%" alt="Tools Dashboard & Categorized Bottom Bar" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/real_tasks_screen.png" width="30%" alt="Tasks List & Glassmorphic Cards" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/real_notes_screen.png" width="30%" alt="Notes Section with Read-Only & Edit Mode" />
 </p>
 
 <p align="center">
-  <em>Dark Mode Hub &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Light Mode Hub</em>
+  <em>📱 Tools Dashboard Hub &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📝 Tasks & Priority Matrix &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📄 Note Details & Edit Mode</em>
 </p>
 
 ---
@@ -28,7 +30,7 @@ TaskVault combines **11 essential tools** into a single, beautifully designed ap
 | 📅 | **Calendar** | Integrated month calendar grid in a unified scroll container, horizontal drag gestures for month swiping, and **Tasks vs Events** segmented tab control with live counts. |
 | 🍅 | **Pomodoro Timer** | Focus timer with circular progress ring, ambient soundscapes (White Noise, Rain, Cafe), **Finish Early** button, and a dedicated **View Focus History** glass modal. |
 | 📝 | **Notes** | Jot down notes with an explicit **Read-Only View Mode** and **Edit Mode** toggled strictly via the Edit action button. |
-| 💸 **Expense Tracker** | Monitor spending with live **Today**, **This Week**, **This Month**, and **This Year** period summary cards and transaction logs. |
+| 💸 | **Expense Tracker** | Monitor spending with live **Today**, **This Week**, **This Month**, and **This Year** period summary cards and transaction logs. |
 | 🔒 | **Secret Vault** | Store passwords, API keys, and sensitive data behind biometric authentication. |
 | 📷 | **QR Scanner** | Instantly scan and read QR codes and barcodes. |
 | 💳 | **Credit / Debit Ledger** | Track who owes you and who you owe with transaction logs and net balance indicators. |
