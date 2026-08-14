@@ -6,9 +6,12 @@ import app.taskvault.data.local.SecretEntity
 import app.taskvault.data.repository.SecretRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +23,25 @@ class VaultViewModel @Inject constructor(
     private val _secrets = MutableStateFlow<List<SecretEntity>>(emptyList())
     val secrets: StateFlow<List<SecretEntity>> = _secrets.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    val filteredSecrets: StateFlow<List<SecretEntity>> = combine(_secrets, _searchQuery) { list, query ->
+        if (query.isBlank()) {
+            list
+        } else {
+            list.filter { secret ->
+                secret.title.contains(query, ignoreCase = true) ||
+                    secret.username.contains(query, ignoreCase = true) ||
+                    secret.notes.contains(query, ignoreCase = true)
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     private val _selectedSecret = MutableStateFlow<SecretEntity?>(null)
     val selectedSecret: StateFlow<SecretEntity?> = _selectedSecret.asStateFlow()
 
@@ -30,13 +52,15 @@ class VaultViewModel @Inject constructor(
     private fun loadSecrets() {
         viewModelScope.launch {
             repository.getAllSecrets()
-                .catch { _ ->
-                    // Handle error (e.g., log it)
-                }
+                .catch { _ -> }
                 .collect { list ->
                     _secrets.value = list
                 }
         }
+    }
+
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
     }
 
     fun selectSecretForEdit(secret: SecretEntity?) {

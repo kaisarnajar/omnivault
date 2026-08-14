@@ -2,10 +2,12 @@ package app.taskvault.ui.vault
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.taskvault.ui.components.OmniVaultBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,6 +34,13 @@ fun AddEditSecretScreen(
     var notes by remember { mutableStateOf(selectedSecret?.notes ?: "") }
     var showSecret by remember { mutableStateOf(false) }
 
+    LaunchedEffect(selectedSecret) {
+        title = selectedSecret?.title ?: ""
+        username = selectedSecret?.username ?: ""
+        secretValue = selectedSecret?.secretValue ?: ""
+        notes = selectedSecret?.notes ?: ""
+    }
+
     OmniVaultBackground {
         Scaffold(
             topBar = {
@@ -42,8 +52,7 @@ fun AddEditSecretScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        containerColor = Color.Transparent
                     )
                 )
             },
@@ -60,8 +69,9 @@ fun AddEditSecretScreen(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Title (e.g., Google, Bank)") },
+                    label = { Text("Title (e.g., Google, Bank, Netflix)") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -70,6 +80,7 @@ fun AddEditSecretScreen(
                     onValueChange = { username = it },
                     label = { Text("Username / Email (Optional)") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -78,11 +89,12 @@ fun AddEditSecretScreen(
                     onValueChange = { secretValue = it },
                     label = { Text("Secret / Password") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     visualTransformation = if (showSecret) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     trailingIcon = {
-                        IconButton(onClick = { showSecret = !showSecret }) {
-                            Text(if (showSecret) "HIDE" else "SHOW", style = MaterialTheme.typography.labelSmall)
+                        TextButton(onClick = { showSecret = !showSecret }) {
+                            Text(if (showSecret) "HIDE" else "SHOW", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
                         }
                     }
                 )
@@ -91,6 +103,7 @@ fun AddEditSecretScreen(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text("Notes (Optional)") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3
                 )
@@ -104,10 +117,15 @@ fun AddEditSecretScreen(
                             onNavigateBack()
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(14.dp),
                     enabled = title.isNotBlank() && secretValue.isNotBlank()
                 ) {
-                    Text("Save Secret")
+                    Icon(Icons.Default.Check, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Save Secret", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
         }
