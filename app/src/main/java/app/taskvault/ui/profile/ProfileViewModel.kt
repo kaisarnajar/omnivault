@@ -77,45 +77,36 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    suspend fun seedTasks() {
-        todoRepository.seedSampleData()
+    fun seedAllSampleData(onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                runCatching { todoRepository.seedSampleData() }
+                runCatching { noteRepository.seedSampleData() }
+                runCatching { pomodoroHistoryRepository.seedSampleData() }
+                runCatching { expenseRepository.seedSampleData() }
+                runCatching { secretRepository.seedSampleData() }
+                runCatching { ledgerRepository.seedSampleData() }
+                runCatching { moodRepository.seedSampleData() }
+                runCatching { bookmarkRepository.seedSampleData() }
+                runCatching { fitnessRepository.seedSampleData() }
+                runCatching { sleepRepository.seedSampleData() }
+                onComplete(true)
+            } catch (e: Exception) {
+                onComplete(false)
+            }
+        }
     }
 
-    suspend fun seedNotes() {
-        noteRepository.seedSampleData()
-    }
-
-    suspend fun seedPomodoro() {
-        pomodoroHistoryRepository.seedSampleData()
-    }
-
-    suspend fun seedExpenses() {
-        expenseRepository.seedSampleData()
-    }
-
-    suspend fun seedSecrets() {
-        secretRepository.seedSampleData()
-    }
-
-    suspend fun seedLedger() {
-        ledgerRepository.seedSampleData()
-    }
-
-    suspend fun seedMood() {
-        moodRepository.seedSampleData()
-    }
-
-    suspend fun seedBookmarks() {
-        bookmarkRepository.seedSampleData()
-    }
-
-    suspend fun seedFitness() {
-        fitnessRepository.seedSampleData()
-    }
-
-    suspend fun seedSleep() {
-        sleepRepository.seedSampleData()
-    }
+    suspend fun seedTasks() { runCatching { todoRepository.seedSampleData() } }
+    suspend fun seedNotes() { runCatching { noteRepository.seedSampleData() } }
+    suspend fun seedPomodoro() { runCatching { pomodoroHistoryRepository.seedSampleData() } }
+    suspend fun seedExpenses() { runCatching { expenseRepository.seedSampleData() } }
+    suspend fun seedSecrets() { runCatching { secretRepository.seedSampleData() } }
+    suspend fun seedLedger() { runCatching { ledgerRepository.seedSampleData() } }
+    suspend fun seedMood() { runCatching { moodRepository.seedSampleData() } }
+    suspend fun seedBookmarks() { runCatching { bookmarkRepository.seedSampleData() } }
+    suspend fun seedFitness() { runCatching { fitnessRepository.seedSampleData() } }
+    suspend fun seedSleep() { runCatching { sleepRepository.seedSampleData() } }
 
     fun resetState() {
         _uiState.value = ProfileUiState.Idle

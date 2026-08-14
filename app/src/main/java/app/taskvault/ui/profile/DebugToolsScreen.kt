@@ -148,12 +148,15 @@ fun DebugToolsScreen(
 
                             Button(
                                 onClick = {
-                                    scope.launch {
-                                        isSeedingAll = true
-                                        Toast.makeText(context, "Populating sample data across all 11 features...", Toast.LENGTH_SHORT).show()
-                                        categories.forEach { item -> item.seedAction() }
+                                    isSeedingAll = true
+                                    Toast.makeText(context, "Populating sample data across all 11 features...", Toast.LENGTH_SHORT).show()
+                                    viewModel.seedAllSampleData { success ->
                                         isSeedingAll = false
-                                        Toast.makeText(context, "✅ All 11 features populated successfully!", Toast.LENGTH_LONG).show()
+                                        if (success) {
+                                            Toast.makeText(context, "✅ All 11 features populated successfully!", Toast.LENGTH_LONG).show()
+                                        } else {
+                                            Toast.makeText(context, "❌ Error injecting sample data", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 },
                                 modifier = Modifier
@@ -162,12 +165,19 @@ fun DebugToolsScreen(
                                 enabled = !isSeedingAll,
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Icon(Icons.Default.RocketLaunch, contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = if (isSeedingAll) "Injecting Data..." else "Inject All Sample Data",
-                                    fontWeight = FontWeight.Bold
-                                )
+                                if (isSeedingAll) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        strokeWidth = 2.dp
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Injecting Data...", fontWeight = FontWeight.Bold)
+                                } else {
+                                    Icon(Icons.Default.RocketLaunch, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Inject All Sample Data", fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }
