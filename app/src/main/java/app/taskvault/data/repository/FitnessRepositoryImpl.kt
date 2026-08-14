@@ -58,6 +58,32 @@ class FitnessRepositoryImpl @Inject constructor(
         fitnessDao.insertActivity(entity)
     }
 
+    override suspend fun updateActivity(
+        id: String,
+        activityType: String,
+        title: String,
+        targetMuscle: String,
+        distanceKm: Double,
+        durationMinutes: Int,
+        caloriesBurned: Int,
+        notes: String
+    ) {
+        val userId = authRepository.getCurrentUserId() ?: return
+        val entity = FitnessActivityEntity(
+            id = id,
+            userId = userId,
+            activityType = activityType,
+            title = title.ifBlank { activityType },
+            targetMuscle = targetMuscle,
+            distanceKm = distanceKm,
+            durationMinutes = durationMinutes,
+            caloriesBurned = caloriesBurned,
+            notes = notes,
+            timestamp = System.currentTimeMillis()
+        )
+        fitnessDao.insertActivity(entity)
+    }
+
     override suspend fun deleteActivity(id: String) {
         val userId = authRepository.getCurrentUserId() ?: return
         fitnessDao.deleteActivity(id, userId)

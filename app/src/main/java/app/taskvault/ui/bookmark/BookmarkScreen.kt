@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,6 +49,7 @@ fun BookmarkScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 
     var showAddDialog by remember { mutableStateOf(false) }
+    var bookmarkToEdit by remember { mutableStateOf<BookmarkEntity?>(null) }
     val context = LocalContext.current
 
     OmniVaultBackground {
@@ -65,7 +67,10 @@ fun BookmarkScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { showAddDialog = true },
+                    onClick = {
+                        bookmarkToEdit = null
+                        showAddDialog = true
+                    },
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add Bookmark", tint = Color.White)
@@ -79,26 +84,21 @@ fun BookmarkScreen(
                     .padding(padding)
             ) {
                 // Category Filter Chips
+                val categories = listOf("All", "Tech", "Work", "Reading", "Personal", "Other")
                 LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(bookmarkCategories) { category ->
+                    items(categories) { cat ->
                         FilterChip(
-                            selected = selectedCategory == category,
-                            onClick = { viewModel.selectCategory(category) },
-                            label = { Text(category) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = Color.White
-                            )
+                            selected = (selectedCategory ?: "All") == cat,
+                            onClick = { viewModel.selectCategory(if (cat == "All") null else cat) },
+                            label = { Text(cat) }
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Bookmarks List
                 if (bookmarks.isEmpty()) {
@@ -128,6 +128,10 @@ fun BookmarkScreen(
                                         Toast.makeText(context, "Could not open URL", Toast.LENGTH_SHORT).show()
                                     }
                                 },
+                                onEdit = {
+                                    bookmarkToEdit = bookmark
+                                    showAddDialog = true
+                                },
                                 onDelete = { viewModel.deleteBookmark(bookmark.id) }
                             )
                         }
@@ -137,11 +141,20 @@ fun BookmarkScreen(
         }
 
         if (showAddDialog) {
-            AddBookmarkDialog(
-                onDismiss = { showAddDialog = false },
-                onSave = { title, url, category, notes ->
-                    viewModel.addBookmark(title, url, category, notes)
+            AddEditBookmarkDialog(
+                bookmarkToEdit = bookmarkToEdit,
+                onDismiss = {
                     showAddDialog = false
+                    bookmarkToEdit = null
+                },
+                onSave = { title, url, category, notes ->
+                    if (bookmarkToEdit != null) {
+                        viewModel.updateBookmark(bookmarkToEdit!!.id, title, url, category, notes)
+                    } else {
+                        viewModel.addBookmark(title, url, category, notes)
+                    }
+                    showAddDialog = false
+                    bookmarkToEdit = null
                 }
             )
         }
@@ -152,6 +165,7 @@ fun BookmarkScreen(
 fun BookmarkItemCard(
     bookmark: BookmarkEntity,
     onOpenUrl: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -304,6 +318,14 @@ fun BookmarkItemCard(
                 )
             }
 
+            IconButton(onClick = onEdit) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
             IconButton(onClick = { showDeleteConfirmDialog = true }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
@@ -316,20 +338,24 @@ fun BookmarkItemCard(
 }
 
 @Composable
-fun AddBookmarkDialog(
+fun AddEditBookmarkDialog(
+    bookmarkToEdit: BookmarkEntity? = null,
     onDismiss: () -> Unit,
     onSave: (String, String, String, String) -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var url by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Tech") }
-    var notes by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf(bookmarkToEdit?.title ?: "") }
+    var url by remember { mutableStateOf(bookmarkToEdit?.url ?: "") }
+    var selectedCategory by remember { mutableStateOf(bookmarkToEdit?.category ?: "Tech") }
+    var notes by remember { mutableStateOf(bookmarkToEdit?.notes ?: "") }
+    val isEditMode = bookmarkToEdit != null
 
     val categories = listOf("Tech", "Work", "Reading", "Personal", "Other")
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Bookmark") },
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(if (isEditMode) "Edit Bookmark" else "Add Bookmark", fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 OutlinedTextField(
@@ -337,6 +363,7 @@ fun AddBookmarkDialog(
                     onValueChange = { url = it },
                     label = { Text("URL / Web Link *") },
                     placeholder = { Text("example.com or https://...") },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -345,11 +372,12 @@ fun AddBookmarkDialog(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("Title (Optional)") },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
 
-                Text("Category", style = MaterialTheme.typography.labelMedium)
+                Text("Category", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
 
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -367,26 +395,29 @@ fun AddBookmarkDialog(
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("Notes / Description (Optional)") },
+                    label = { Text("Notes (Optional)") },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     if (url.isNotBlank()) {
                         onSave(title.trim(), url.trim(), selectedCategory, notes.trim())
                     }
-                }
+                },
+                enabled = url.isNotBlank(),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Save")
+                Text(if (isEditMode) "Update" else "Save", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )

@@ -51,6 +51,24 @@ class BookmarkRepositoryImpl @Inject constructor(
         bookmarkDao.insertBookmark(entity)
     }
 
+    override suspend fun updateBookmark(id: String, title: String, url: String, category: String, notes: String) {
+        val userId = authRepository.getCurrentUserId() ?: return
+        var formattedUrl = url.trim()
+        if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
+            formattedUrl = "https://$formattedUrl"
+        }
+        val entity = BookmarkEntity(
+            id = id,
+            userId = userId,
+            title = title.ifBlank { formattedUrl },
+            url = formattedUrl,
+            category = category,
+            notes = notes,
+            timestamp = System.currentTimeMillis()
+        )
+        bookmarkDao.insertBookmark(entity)
+    }
+
     override suspend fun deleteBookmark(id: String) {
         val userId = authRepository.getCurrentUserId() ?: return
         bookmarkDao.deleteBookmark(id, userId)

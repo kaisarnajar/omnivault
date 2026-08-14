@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.SelfImprovement
@@ -53,6 +54,7 @@ fun FitnessScreen(
     val selectedFilter by viewModel.selectedFilter.collectAsState()
 
     var showAddDialog by remember { mutableStateOf(false) }
+    var activityToEdit by remember { mutableStateOf<FitnessActivityEntity?>(null) }
 
     OmniVaultBackground {
         Scaffold(
@@ -69,10 +71,13 @@ fun FitnessScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { showAddDialog = true },
+                    onClick = {
+                        activityToEdit = null
+                        showAddDialog = true
+                    },
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Fitness Activity", tint = Color.White)
+                    Icon(Icons.Default.Add, contentDescription = "Log Activity", tint = Color.White)
                 }
             },
             containerColor = Color.Transparent
@@ -84,39 +89,39 @@ fun FitnessScreen(
             ) {
                 // Today's Fitness Summary Header
                 FeatureHeaderCard(
-                    title = "Today's Fitness Overview",
+                    title = "Today's Activity",
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         SummaryStatItem(
+                            label = "Workouts",
+                            value = "${todaySummary.totalWorkouts}"
+                        )
+                        SummaryStatItem(
                             label = "Active Mins",
-                            value = "${todaySummary.totalActiveMinutes}m"
+                            value = "${todaySummary.totalActiveMinutes}"
                         )
                         SummaryStatItem(
                             label = "Distance",
                             value = String.format(Locale.getDefault(), "%.1f km", todaySummary.totalDistanceKm)
                         )
-                        SummaryStatItem(
-                            label = "Workouts",
-                            value = "${todaySummary.totalWorkouts}"
-                        )
                     }
                 }
 
                 // Filter Chips
+                val filters = listOf("All", "Workout", "Running", "Sports", "Other")
                 LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(fitnessFilters) { filter ->
+                    items(filters) { filter ->
                         FilterChip(
-                            selected = selectedFilter == filter,
-                            onClick = { viewModel.selectFilter(filter) },
+                            selected = (selectedFilter ?: "All") == filter,
+                            onClick = { viewModel.selectFilter(if (filter == "All") null else filter) },
                             label = { Text(filter) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary,
@@ -148,6 +153,10 @@ fun FitnessScreen(
                         items(activities, key = { it.id }) { item ->
                             FitnessItemCard(
                                 activity = item,
+                                onEdit = {
+                                    activityToEdit = item
+                                    showAddDialog = true
+                                },
                                 onDelete = { viewModel.deleteActivity(item.id) }
                             )
                         }
@@ -157,11 +166,20 @@ fun FitnessScreen(
         }
 
         if (showAddDialog) {
-            AddFitnessDialog(
-                onDismiss = { showAddDialog = false },
-                onSave = { type, title, muscle, dist, dur, cal, notes ->
-                    viewModel.addActivity(type, title, muscle, dist, dur, cal, notes)
+            AddEditFitnessDialog(
+                activityToEdit = activityToEdit,
+                onDismiss = {
                     showAddDialog = false
+                    activityToEdit = null
+                },
+                onSave = { type, title, muscle, dist, dur, cal, notes ->
+                    if (activityToEdit != null) {
+                        viewModel.updateActivity(activityToEdit!!.id, type, title, muscle, dist, dur, cal, notes)
+                    } else {
+                        viewModel.addActivity(type, title, muscle, dist, dur, cal, notes)
+                    }
+                    showAddDialog = false
+                    activityToEdit = null
                 }
             )
         }
@@ -188,6 +206,7 @@ fun SummaryStatItem(label: String, value: String) {
 @Composable
 fun FitnessItemCard(
     activity: FitnessActivityEntity,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -282,7 +301,6 @@ fun FitnessItemCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Activity Metrics Badges
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -337,11 +355,19 @@ fun FitnessItemCard(
                 )
             }
 
+            IconButton(onClick = onEdit) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
             IconButton(onClick = { showDeleteConfirmDialog = true }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.outline
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }
@@ -349,28 +375,31 @@ fun FitnessItemCard(
 }
 
 @Composable
-fun AddFitnessDialog(
+fun AddEditFitnessDialog(
+    activityToEdit: FitnessActivityEntity? = null,
     onDismiss: () -> Unit,
     onSave: (String, String, String, Double, Int, Int, String) -> Unit
 ) {
-    var selectedType by remember { mutableStateOf("Workout") }
-    var title by remember { mutableStateOf("") }
-    var selectedMuscle by remember { mutableStateOf("Chest") }
-    var distanceKm by remember { mutableStateOf("") }
-    var durationMinutes by remember { mutableStateOf("") }
-    var calories by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
+    var selectedType by remember { mutableStateOf(activityToEdit?.activityType ?: "Workout") }
+    var title by remember { mutableStateOf(activityToEdit?.title ?: "") }
+    var selectedMuscle by remember { mutableStateOf(activityToEdit?.targetMuscle ?: "Chest") }
+    var distanceKm by remember { mutableStateOf(activityToEdit?.distanceKm?.let { if (it > 0) it.toString() else "" } ?: "") }
+    var durationMinutes by remember { mutableStateOf(activityToEdit?.durationMinutes?.let { if (it > 0) it.toString() else "" } ?: "") }
+    var calories by remember { mutableStateOf(activityToEdit?.caloriesBurned?.let { if (it > 0) it.toString() else "" } ?: "") }
+    var notes by remember { mutableStateOf(activityToEdit?.notes ?: "") }
+    val isEditMode = activityToEdit != null
 
     val activityTypes = listOf("Workout", "Running", "Sports", "Other")
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Log Fitness Activity") },
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(if (isEditMode) "Edit Fitness Activity" else "Log Fitness Activity", fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Text("Activity Type", style = MaterialTheme.typography.labelMedium)
+                Text("Activity Type", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
 
-                // Activity Type Selector Row
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -383,7 +412,7 @@ fun AddFitnessDialog(
                                 if (title.isBlank()) {
                                     title = when (type) {
                                         "Workout" -> "Gym Session"
-                                        "Running" -> "Running"
+                                        "Running" -> "Morning Run"
                                         "Sports" -> "Badminton Match"
                                         else -> "Activity"
                                     }
@@ -408,6 +437,7 @@ fun AddFitnessDialog(
                             }
                         )
                     },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -415,12 +445,13 @@ fun AddFitnessDialog(
                 // Dynamic fields based on Activity Type
                 when (selectedType) {
                     "Workout" -> {
-                        Text("Target Muscle Group", style = MaterialTheme.typography.labelMedium)
+                        Text("Target Muscle Group", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                        val muscles = listOf("Chest", "Back", "Legs", "Shoulders", "Arms", "Abs", "Full Body")
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            items(muscleGroups) { muscle ->
+                            items(muscles) { muscle ->
                                 FilterChip(
                                     selected = selectedMuscle == muscle,
                                     onClick = { selectedMuscle = muscle },
@@ -428,70 +459,57 @@ fun AddFitnessDialog(
                                 )
                             }
                         }
-
-                        OutlinedTextField(
-                            value = durationMinutes,
-                            onValueChange = { durationMinutes = it },
-                            label = { Text("Duration (Minutes)") },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
                     }
-
                     "Running" -> {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedTextField(
-                                value = distanceKm,
-                                onValueChange = { distanceKm = it },
-                                label = { Text("Distance (Km)") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.weight(1f),
-                                singleLine = true
-                            )
-                            OutlinedTextField(
-                                value = durationMinutes,
-                                onValueChange = { durationMinutes = it },
-                                label = { Text("Duration (Mins)") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.weight(1f),
-                                singleLine = true
-                            )
-                        }
-                    }
-
-                    "Sports", "Other" -> {
                         OutlinedTextField(
-                            value = durationMinutes,
-                            onValueChange = { durationMinutes = it },
-                            label = { Text("Duration (Minutes)") },
+                            value = distanceKm,
+                            onValueChange = { distanceKm = it },
+                            label = { Text("Distance (km)") },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
                     }
                 }
 
-                OutlinedTextField(
-                    value = calories,
-                    onValueChange = { calories = it },
-                    label = { Text("Calories Burned (Optional)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = durationMinutes,
+                        onValueChange = { durationMinutes = it },
+                        label = { Text("Duration (mins)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = calories,
+                        onValueChange = { calories = it },
+                        label = { Text("Calories (kcal)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+                }
 
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("Notes / Sets / Reflections (Optional)") },
+                    label = { Text("Notes (Optional)") },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     val dist = distanceKm.toDoubleOrNull() ?: 0.0
                     val dur = durationMinutes.toIntOrNull() ?: 0
@@ -500,14 +518,15 @@ fun AddFitnessDialog(
                     val activityTitle = title.ifBlank { selectedType }
 
                     onSave(selectedType, activityTitle, muscle, dist, dur, cal, notes.trim())
-                }
+                },
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Save")
+                Text(if (isEditMode) "Update Activity" else "Save Activity", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )

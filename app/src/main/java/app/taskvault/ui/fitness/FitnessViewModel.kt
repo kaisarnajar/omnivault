@@ -80,6 +80,30 @@ class FitnessViewModel @Inject constructor(
         }
     }
 
+    fun updateActivity(
+        id: String,
+        activityType: String,
+        title: String,
+        targetMuscle: String,
+        distanceKm: Double,
+        durationMinutes: Int,
+        caloriesBurned: Int,
+        notes: String
+    ) {
+        viewModelScope.launch {
+            repository.updateActivity(
+                id = id,
+                activityType = activityType,
+                title = title,
+                targetMuscle = targetMuscle,
+                distanceKm = distanceKm,
+                durationMinutes = durationMinutes,
+                caloriesBurned = caloriesBurned,
+                notes = notes
+            )
+        }
+    }
+
     fun deleteActivity(id: String) {
         viewModelScope.launch {
             repository.deleteActivity(id)

@@ -14,6 +14,16 @@ interface FitnessRepository {
         caloriesBurned: Int,
         notes: String
     )
+    suspend fun updateActivity(
+        id: String,
+        activityType: String,
+        title: String,
+        targetMuscle: String,
+        distanceKm: Double,
+        durationMinutes: Int,
+        caloriesBurned: Int,
+        notes: String
+    )
     suspend fun deleteActivity(id: String)
     suspend fun seedSampleData()
 }
