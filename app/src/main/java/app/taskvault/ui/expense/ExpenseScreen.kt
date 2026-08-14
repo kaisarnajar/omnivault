@@ -12,18 +12,24 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -89,7 +95,7 @@ fun ExpenseScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
                             text = "EXPENSE SUMMARY",
@@ -101,36 +107,40 @@ fun ExpenseScreen(
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             ExpensePeriodCard(
                                 title = "Today",
                                 amount = todayTotal,
-                                accentColor = MaterialTheme.colorScheme.primary,
+                                gradientColors = listOf(Color(0xFF059669), Color(0xFF10B981)),
+                                icon = Icons.Default.Today,
                                 modifier = Modifier.weight(1f)
                             )
                             ExpensePeriodCard(
                                 title = "This Week",
                                 amount = thisWeekTotal,
-                                accentColor = Color(0xFF3B82F6),
+                                gradientColors = listOf(Color(0xFF1D4ED8), Color(0xFF3B82F6)),
+                                icon = Icons.Default.DateRange,
                                 modifier = Modifier.weight(1f)
                             )
                         }
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             ExpensePeriodCard(
                                 title = "This Month",
                                 amount = currentMonthTotal,
-                                accentColor = Color(0xFF8B5CF6),
+                                gradientColors = listOf(Color(0xFF6D28D9), Color(0xFF8B5CF6)),
+                                icon = Icons.Default.CalendarMonth,
                                 modifier = Modifier.weight(1f)
                             )
                             ExpensePeriodCard(
                                 title = "This Year",
                                 amount = thisYearTotal,
-                                accentColor = Color(0xFFF59E0B),
+                                gradientColors = listOf(Color(0xFFD97706), Color(0xFFF59E0B)),
+                                icon = Icons.Default.CalendarToday,
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -200,42 +210,61 @@ fun ExpenseScreen(
 fun ExpensePeriodCard(
     title: String,
     amount: Double,
-    accentColor: Color,
+    gradientColors: List<Color>,
+    icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
-    GlassCard(
-        modifier = modifier.pressScale(),
-        shape = RoundedCornerShape(18.dp)
+    Box(
+        modifier = modifier
+            .pressScale()
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                brush = Brush.linearGradient(
+                    colors = gradientColors
+                )
+            )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                    text = title.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White.copy(alpha = 0.85f),
+                    letterSpacing = 0.8.sp
+                )
+
                 Box(
                     modifier = Modifier
-                        .size(8.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
-                        .background(accentColor)
-                )
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                        .background(Color.White.copy(alpha = 0.2f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
+
             Text(
                 text = NumberFormat.getCurrencyInstance().format(amount),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 18.sp
+                fontWeight = FontWeight.Black,
+                color = Color.White,
+                fontSize = 20.sp
             )
         }
     }
