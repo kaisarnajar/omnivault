@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -252,9 +253,9 @@ fun PomodoroScreen(
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                // Timer Controls (Reset & Play/Pause)
+                // Timer Controls (Reset, Play/Pause, Finish Early)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(28.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
@@ -285,6 +286,21 @@ fun PomodoroScreen(
                             contentDescription = if (isPlaying) "Pause" else "Play",
                             modifier = Modifier.size(38.dp),
                             tint = Color.White
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { viewModel.finishEarly() },
+                        modifier = Modifier
+                            .size(56.dp)
+                            .pressScale()
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f), CircleShape)
+                    ) {
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = "Finish Early",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }

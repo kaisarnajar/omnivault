@@ -99,6 +99,20 @@ class PomodoroViewModel @Inject constructor(
         timerJob?.cancel()
     }
 
+    fun finishEarly() {
+        viewModelScope.launch {
+            pauseTimer()
+            if (_currentMode.value == PomodoroMode.POMODORO) {
+                val totalDuration = preferencesRepository.pomodoroDuration.first()
+                val elapsedSeconds = (totalDuration * 60) - _timeRemaining.value
+                val elapsedMinutes = (elapsedSeconds / 60).coerceAtLeast(1)
+                historyRepository.saveSession(elapsedMinutes)
+            }
+            _timerEvent.emit(Unit)
+            resetTimer()
+        }
+    }
+
     fun resetTimer() {
         pauseTimer()
         viewModelScope.launch {
