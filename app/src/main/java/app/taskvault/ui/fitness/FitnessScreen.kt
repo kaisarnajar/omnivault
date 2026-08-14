@@ -190,6 +190,36 @@ fun FitnessItemCard(
     activity: FitnessActivityEntity,
     onDelete: () -> Unit
 ) {
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmDialog = false },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = { Text("Delete Fitness Activity", fontWeight = FontWeight.Bold) },
+            text = { Text("Do you want to delete \"${activity.title}\"?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirmDialog = false
+                        onDelete()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Delete", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        )
+    }
     val icon: ImageVector = when (activity.activityType.lowercase()) {
         "workout" -> Icons.Default.FitnessCenter
         "running" -> Icons.AutoMirrored.Filled.DirectionsRun
@@ -307,7 +337,7 @@ fun FitnessItemCard(
                 )
             }
 
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = { showDeleteConfirmDialog = true }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
